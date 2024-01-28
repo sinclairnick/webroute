@@ -1,0 +1,33 @@
+{
+  "name": "express-x",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "scripts": {
+    "test": "vitest",
+    "build": "tsup"
+  },
+  "engines": {
+    "node": "^20.0.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.0.0",
+    "@types/node": "^20.11.8",
+    "express": "^4.0.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.2"
+  },
+  "peerDependencies": {
+    "@types/express": "^4.0.0",
+    "@types/node": "^20.0.0",
+    "express": "^4.0.0"
+  },
+  "dependencies": {
+    "http-status-codes": "^2.3.0"
+  }
+}
