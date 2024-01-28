@@ -1,12 +1,13 @@
 {
-  "name": "express-x",
-  "version": "1.0.0",
+  "name": "harissa",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "scripts": {
     "test": "vitest",
-    "build": "tsup"
+    "build": "tsup",
+    "publish-pkg": "npm run build && npm publish"
   },
   "engines": {
     "node": "^20.0.0"

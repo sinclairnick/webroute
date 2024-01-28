@@ -1,16 +1,16 @@
-# Express X
+# Harissa
 
-> The missing modern DX for express
+> The 🌶️ spiciest DX for express
 
-Express X is thin set of plug-and-play functions that modernise the DX of express. Picture express with async/await, validation, continuation-local-storage and type-safety.
+Harissa is thin set of plug-and-play functions that modernise the DX of express. Picture express with async/await, validation, continuation-local-storage and type-safety.
 
 **Why?**
 
-Express boasts great simplicity, stability and community adoption – but also requires much elbow grease to get production-ready, having to implement things like validation or async/await support.
+Express boasts great simplicity, stability and community adoption – but also requires a bit of nudging to set it up beyond a basic "hello world" app.
 
-Express X is a **set of utilities** that makes `express` nicer to work with, and more production-ready. It is minimal and doesn't require learning new mental models or complicated framework architectures.
+Harissa is a **set of utilities** that makes [`express`](https://github.com/expressjs/express) nicer to work with, and more production-ready. It is minimal and doesn't require learning new mental models or complicated framework architectures.
 
-Express X brings 90% of the convenience of a framework with 1% of the overhead.
+Harissa brings 90% of the convenience of a heavy framework with 1% of the overhead.
 
 ### Roadmap (to 1.0)
 
@@ -18,7 +18,9 @@ Express X brings 90% of the convenience of a framework with 1% of the overhead.
 
 ## Reference
 
-The API is intentionally small and not ground-breaking (only 6 functions), while also helping you avoid reinventing the same wheels time and time again.
+The API aims to only provide the bare essentials with the biggest bang-for-your-buck.
+
+As a result, I think it provides a lovely DX, encourages secure practices (like validation) and ultimately speeds up development.
 
 ## `route()`
 
