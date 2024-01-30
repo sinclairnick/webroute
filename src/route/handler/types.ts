@@ -5,7 +5,7 @@ import { ParseFn } from "../parser";
 
 export interface HandlerParams<
   TConfig extends AnyRootConfig = AnyRootConfig,
-  TPath extends string = string,
+  TPath extends string | UnsetMarker = UnsetMarker,
   TContext = unknown,
   TQueryIn = unknown,
   TQueryOut = unknown,

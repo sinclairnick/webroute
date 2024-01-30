@@ -1,5 +1,5 @@
 import { createBuilder } from "./handler";
-import express from "express";
+import express, { RequestHandler } from "express";
 import { AnyCompiledRoute } from "./handler/types";
 import { Log } from "../internal/logger";
 
@@ -12,7 +12,7 @@ type DefaultConfig = {
   };
 };
 
-export const route = <TPath extends string>(path: TPath) =>
+export const route = <TPath extends string>(path?: TPath) =>
   createBuilder<DefaultConfig>({ path });
 
 /**
@@ -50,7 +50,11 @@ export const registerRoutes = (
       // otherwise express errors
       if (app[methodAsKey] && typeof app[methodAsKey] === "function") {
         Log(methodAsKey, "->", route._def.path);
-        app[methodAsKey](_def.path, route);
+        if (_def.path) {
+          app[methodAsKey](_def.path, route);
+        } else {
+          app[methodAsKey](route);
+        }
       }
     }
   }

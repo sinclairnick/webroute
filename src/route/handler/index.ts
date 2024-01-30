@@ -170,7 +170,7 @@ export function createBuilder<TConfig extends AnyRootConfig>(
   initDef: Partial<AnyHandlerDefinition> = {}
 ): HandlerBuilder<{
   _config: TConfig;
-  _path: string;
+  _path: UnsetMarker;
   _ctx: TConfig["$types"]["ctx"];
   _meta: TConfig["$types"]["meta"];
   _query_in: UnsetMarker;
@@ -272,7 +272,21 @@ export function createBuilder<TConfig extends AnyRootConfig>(
         }
       };
 
-      return Object.assign(_handler, { _def });
+      // `_type` used for various JS type discrimination
+      return Object.assign(_handler, {
+        _def,
+        __harissaType: CompiledRouteSymbol,
+      });
     },
   };
 }
+
+export const CompiledRouteSymbol = Symbol("compiled-route");
+
+export const isCompiledRoute = (x: unknown): x is CompiledRoute<any> => {
+  return (
+    x != null &&
+    typeof x === "function" &&
+    (x as any).__harissaType === CompiledRouteSymbol
+  );
+};
