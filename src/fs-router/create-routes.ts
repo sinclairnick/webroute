@@ -12,7 +12,7 @@ export const createRoutes = (
   mod: any
 ): AnyCompiledRoute[] => {
   const { relativePath, pathMatch } = path;
-
+  Log("Module", mod);
   Log("Path", path.relativePath, `(${pathMatch})`);
 
   const handlers: Record<string, any> = {
@@ -41,7 +41,7 @@ export const createRoutes = (
     Log("Method", method);
 
     if (typeof handler !== "function") {
-      Log("Handler is function.");
+      Log("Handler is not function.");
       continue;
     }
 
