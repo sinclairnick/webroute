@@ -10,7 +10,7 @@
 
 Express is a great web framework. It’s simple, easy to learn, and flexible…. But it hasn’t been updated in years, and every time I start a new express project I’m left wanting for better DX.
 
-**On the other hand**, competing frameworks tend to be heavy, complicated, or not full of their own quirks not worth learning the hard way.
+**On the other hand**, competing frameworks tend to be heavy, complicated, or full of their own quirks not worth learning the hard way.
 
 ### Enter Harissa
 
