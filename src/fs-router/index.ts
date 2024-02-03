@@ -2,9 +2,10 @@ import { RequestHandler } from "express";
 import { FSRouterFormat, FSRouterFormattedRoute } from "./format";
 import fs from "node:fs";
 import nodePath from "node:path";
-import { isCompiledRoute } from "../route/handler";
 import { AnyCompiledRoute } from "../route/handler/types";
-import { route } from "../../dist";
+import { createRoutes } from "./create-routes";
+export type * from "./format";
+export { NextJS } from "./formats/nextjs";
 
 type RouterMeta = {
   formattedPaths: (FSRouterFormattedRoute & {
@@ -16,56 +17,6 @@ type RouterMeta = {
 export type CreateFSRouterOptions = {
   format: FSRouterFormat;
   rootDir?: string;
-};
-
-const createRoutes = (
-  path: FSRouterFormattedRoute & { relativePath: string },
-  handlers: Record<string, unknown>
-): [string, ...RequestHandler[]][] => {
-  const { relativePath, methods, pathMatch, deriveParams } = path;
-
-  const routes: [string][] = [];
-
-  // Rules:
-  // - .methods() is always ignored, unless default export
-  // - When there is more than one handler, both are registered
-  for (const method in handlers) {
-    const handler = handlers[method];
-
-    if (handler == null) continue;
-
-    if (typeof handler !== "function") {
-      throw new Error(
-        `[${relativePath}] Invalid handler found for '${method}' method.`
-      );
-    }
-
-    if (isCompiledRoute(handler)) {
-      if (handler._def.path != null) {
-        console.warn(
-          `[${relativePath}] Handler for '${method}' method specifies a route path which will be ignored for the path derived from the file system.`
-        );
-      }
-
-      if (handler._def.methods && handler._def.methods.length > 0) {
-        if (method === "default") {
-          for (const specifiedMethod of handler._def.methods) {
-            if (handlers[specifiedMethod] != null) {
-              console.info(
-                `[${relativePath}] Both default and a named export will handle the ${specifiedMethod} method.`
-              );
-            }
-          }
-        } else {
-          console.warn(
-            `[${relativePath}] Handler for '${method}' method specifies .methods() which will be ignored in favour of '${method}'.`
-          );
-        }
-      }
-    }
-  }
-
-  return routes;
 };
 
 export const createFSRouter = ({
@@ -98,8 +49,10 @@ export const createFSRouter = ({
     });
   }
 
-  const collect = async (): Promise<RequestHandler[]> => {
-    const handlers = await Promise.all(
+  const collect = async (): Promise<AnyCompiledRoute[]> => {
+    const allRoutes: AnyCompiledRoute[] = [];
+
+    await Promise.all(
       meta.formattedPaths.map(async (path) => {
         const mod = await import(`${path.absolutePath}`);
 
@@ -114,23 +67,18 @@ export const createFSRouter = ({
           default: mod.default,
         };
 
-        createRoutes(path, handlers);
+        const asRoutes = createRoutes(path, handlers);
+        allRoutes.push(...asRoutes);
 
         return Object.values(handlers).filter((x) => x) as RequestHandler[];
       })
     );
 
-    const routes: RequestHandler[] = [];
-    for (const handlerList of handlers) {
-      routes.push(...handlerList);
-    }
-
-    return routes;
+    return allRoutes;
   };
 
   return {
     meta: () => meta,
     collect,
-    // match,
   };
 };

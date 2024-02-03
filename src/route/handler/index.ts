@@ -272,6 +272,8 @@ export function createBuilder<TConfig extends AnyRootConfig>(
         }
       };
 
+      _def.rawHandler = handler;
+
       // `_type` used for various JS type discrimination
       return Object.assign(_handler, {
         _def,

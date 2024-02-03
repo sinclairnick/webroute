@@ -54,6 +54,5 @@ describe("FS Router Format > NextJS", () => {
     expect(result).toBeDefined();
     expect(result?.pathMatch).toEqual(expected.pathMatch);
     expect(result?.methods).toEqual("*");
-    expect(result?.deriveParams?.(expected.url)).toEqual(expected.params);
   });
 });

@@ -56,6 +56,13 @@ export interface ParsedQs {
   [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
 }
 
+export type AnyRequestHandlerModified = RequestHandlerModified<
+  any,
+  any,
+  any,
+  any,
+  any
+>;
 export type RequestHandlerModified<
   P = Record<string, string>,
   ResBody = any,

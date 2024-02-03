@@ -39,11 +39,6 @@ export const NextJS = (opts?: NextJSFormatOptions): FSRouterFormat => {
 
     let catchAllType: "catch-all" | "optional" | undefined;
 
-    const paramParts: {
-      index: number;
-      key: string;
-      catchAll?: boolean;
-    }[] = [];
     const expressPathPart: string[] = [];
 
     for (const _idx in parts) {
@@ -57,7 +52,6 @@ export const NextJS = (opts?: NextJSFormatOptions): FSRouterFormat => {
       if (NextRegex.Slug.test(part)) {
         Log("Adding dynamic part", part);
         const paramName = part.replace(NextRegex.Slug, "$1");
-        paramParts.push({ index: idx, key: paramName });
         expressPathPart.push(`:${paramName}`);
         continue;
       }
@@ -78,7 +72,6 @@ export const NextJS = (opts?: NextJSFormatOptions): FSRouterFormat => {
 
         Log("Adding catch all part", part);
         const paramName = part.replace(NextRegex.CatchAll, "$1");
-        paramParts.push({ index: idx, catchAll: true, key: paramName });
         expressPathPart.push(`:${paramName}*`);
         catchAllType === "catch-all";
         continue;
@@ -101,7 +94,6 @@ export const NextJS = (opts?: NextJSFormatOptions): FSRouterFormat => {
 
         Log("Adding optional catch all part", part);
         const paramName = part.replace(NextRegex.OptionalCatchAll, "$1");
-        paramParts.push({ index: idx, catchAll: true, key: paramName });
         expressPathPart.push("*");
         catchAllType === "optional";
         continue;
@@ -111,23 +103,8 @@ export const NextJS = (opts?: NextJSFormatOptions): FSRouterFormat => {
       expressPathPart.push(part);
     }
 
-    const deriveParams: FSRouterFormattedRoute["deriveParams"] = (url) => {
-      const params: FSRouterFormattedParams = {};
-      const pathname = url.pathname;
-
-      const pathParts = getPathParts(pathname);
-
-      for (const part of paramParts) {
-        const value = pathParts.slice(part.index);
-
-        params[part.key] = part.catchAll ? value : value[0];
-      }
-
-      return params;
-    };
-
     const pathMatch = `/${expressPathPart.join("/")}`;
 
-    return { pathMatch, methods: "*", deriveParams };
+    return { pathMatch, methods: "*" };
   };
 };

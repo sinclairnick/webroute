@@ -3,6 +3,7 @@ import { createFSRouter } from "../src/fs-router";
 import { NextJS } from "../src/fs-router/formats/nextjs";
 import express from "express";
 import { registerRoutes } from "../dist";
+import supertest from "supertest";
 
 describe("FS Router", () => {
   test("Finds the correct routes", () => {
@@ -45,5 +46,20 @@ describe("FS Router", () => {
     const routes = await router.collect();
 
     registerRoutes(app, routes);
+  });
+
+  test("Enables express endpoint", async () => {
+    const app = express();
+    const router = createFSRouter({
+      format: NextJS(),
+      rootDir: "./__test__/fixture/routes",
+    });
+
+    const routes = await router.collect();
+
+    registerRoutes(app, routes);
+
+    const res = await supertest(app).get("/nested/static").expect(200);
+    expect(res.body).toBe("OK");
   });
 });

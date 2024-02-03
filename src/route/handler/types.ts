@@ -1,6 +1,11 @@
 import { RequestHandler, Response } from "express";
 import { Parser } from "../parser/types";
-import { AnyRootConfig, RequestHandlerModified, UnsetMarker } from "../../util";
+import {
+  AnyRequestHandlerModified,
+  AnyRootConfig,
+  RequestHandlerModified,
+  UnsetMarker,
+} from "../../util";
 import { ParseFn } from "../parser";
 
 export interface HandlerParams<
@@ -75,6 +80,7 @@ export interface HandlerDefinition<TParams extends HandlerParams> {
     schema: Parser;
   };
   meta?: TParams["_meta"];
+  rawHandler?: AnyRequestHandlerModified;
 }
 
 export type ResponseOrLiteral<T> = Response<T> | T | void;
