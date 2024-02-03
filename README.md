@@ -1,28 +1,144 @@
+<center>
+
+![Cover](./static/harissa-cover.jpg)
+
+</center>
+
 # Harissa
 
 > The 🌶️ spiciest DX for express
 
-Harissa is thin set of plug-and-play functions that modernise the DX of express. Picture express with async/await, validation, continuation-local-storage and type-safety.
+Express is a great web framework. It’s simple, easy to learn, and flexible…. But it hasn’t been updated in years, and every time I start a new express project I’m left wanting for better DX.
 
-**Why?**
+**On the other hand**, competing frameworks tend to be heavy, complicated, or not full of their own quirks not worth learning the hard way.
 
-Express boasts great simplicity, stability and community adoption – but also requires a bit of nudging to set it up beyond a basic "hello world" app.
+### Enter Harissa
 
-Harissa is a **set of utilities** that makes [`express`](https://github.com/expressjs/express) nicer to work with, and more production-ready. It is minimal and doesn't require learning new mental models or complicated framework architectures.
+🌶️ **Harissa** humbly bridges this gap by providing a selection of simple, opt-in utilities which make things like validation, OpenAPI support, type-safety etc. easier, without abstracting away too much or forcing new paradigms on you.
 
-Harissa brings 90% of the convenience of a heavy framework with 1% of the overhead.
+It's a slim toolkit extending or sitting atop vanilla express, providing common functionality that one might argue should be part of express itself.
+
+It was built to be:
+
+- 🤸‍♀️ Flexible
+- 🔍 Transparent
+- 🧩 Incrementally adoptable
+- 🤯 Full of options, not headaches
+- 🚶‍♀️ Low risk to adopt/switch away from
+- 🧙‍♂️ Non-magical
+
+# Example usage
+
+```tsx
+// E.g. using the `route` helper
+
+import { route } from "harissa";
+
+app.get(
+  "/user/:id",
+  route()
+    .params(z.object({ id: z.string() }))
+    .output(UserSchema)
+    .handle((req, res, next) => {
+      // `req.params` is correctly parsed/transformed and typed
+      const user = await findUser(req.params.id);
+
+      return user; // <- Type safe return
+
+      // Can also use res.json methods as per usual
+    })
+);
+```
 
 ### Roadmap (to 1.0)
 
+[x] FS Router
+
+    [x] NextJS format
+
+    [ ] Remix format
+
 [ ] OpenAPI Support
 
-## Reference
+    [ ] With zod
 
-The API aims to only provide the bare essentials with the biggest bang-for-your-buck.
+    [ ] With superstruct
 
-As a result, I think it provides a lovely DX, encourages secure practices (like validation) and ultimately speeds up development.
+    [ ] With valibot
 
-## `route()`
+    [ ] With yup
+
+    ...
+
+## API Reference
+
+The Harissa API is intentionally fairly minimal. It contains utilities ranging from higher to lower level, where higher level abstractions are slightly more abstracted yet powerful and lower levels ones are more primitive and simple.
+
+**High level**
+
+- [createFSRouter(...)](#createfsrouter)
+
+**Mid level**
+
+- [route(...)](#route)
+- [createStorage(...)](#createstorage)
+
+**Low level**
+
+- [middlewareHandler(..)](#middlewarehandler)
+- [routeHandler(...)](#routehandler)
+- [errorHandler(...)](#errorhandler)
+- [createHttpException(...)](#createHttpException)
+
+---
+
+## High Level
+
+### `createFSRouter()`
+
+Create a filesystem router, similar to NextJS or Remix, but exporting express endpoints. The fs router expects files to return
+
+```tsx
+import { createFSRouter, registerRoutes, NextJS } from "harissa";
+
+const fsRouter = createFSRouter({
+  format: NextJS(),
+  rootDir: "src/routes", // <- Optional
+});
+
+const initApp = async () => {
+  const routes = await fsRouter.collect();
+
+  registerRoutes(app, routes);
+};
+```
+
+Example route file:
+
+```tsx
+// ./src/routes/user/[id].tsx
+
+// GET /user/:id
+export const get = (req, res, next) => {
+  /**...*/
+};
+
+// POST /user/:id
+export const POST = (req, res, next) => {
+  //         ^ Names can be in 'POST' or 'post' form
+};
+
+// ALL /user/:id
+export default (req, res, next) => {
+  /**...*/
+};
+```
+
+> (Optionally) Using the below utilities further enhances fs router
+
+## Mid Level
+
+### `route()`
 
 `route` is a trpc-inspired utility which allows an entire route to be defined at once, including path pattern, validation, method and handler. The route handler is async-enabled and knows to automatically return data as json (unless its a request, or `next()` call).
 
@@ -48,13 +164,18 @@ registerRoutes(app, [
 ]);
 ```
 
-## `createStorage()`
+> Can happily be used in conjunction with fs router, where fs router config takes precedence over route() config in the case of conflicting information.
+
+### `createStorage()`
 
 A simple interface for asynchronous `continuation-local-storage` which allows you to correlate logs by ID, for example.
 
 ```ts
 // Init a store
-const storage = createStorage<{ userId: string; logId: string }>();
+const storage = createStorage<{
+  userId?: string;
+  logId?: string;
+}>();
 
 // Register middleware (before routes)
 app.use(storage.middleware());
@@ -80,7 +201,9 @@ app.use("/secret", (req, res) => {
 });
 ```
 
-## `HttpException` and `createHttpException`
+## Low level
+
+### `HttpException` and `createHttpException`
 
 A simple and non-opinionated error wrapper with helpful conversions between HTTP codes and names. Can easily be extended.
 
@@ -103,7 +226,7 @@ if (err instanceof HttpException) {
 }
 ```
 
-## `middlewareHandler()`
+### `middlewareHandler()`
 
 A simple wrapper for defining custom middleware, with async/await and type inference. For routes intended to return data, `routeHandler` might be more helpful.
 
@@ -115,7 +238,7 @@ middlewareHandler(async (req, res, next) => {
 });
 ```
 
-## `routeHandler()`
+### `routeHandler()`
 
 Route handlers provide basic async/await and auto-json functionality, allowing you to return data directly from the handler. Additionally, it infers the types instead of requiring explicit type signatures.
 
@@ -128,7 +251,7 @@ routeHandler(async (req, res, next) => {
 });
 ```
 
-## `errorHandler()`
+### `errorHandler()`
 
 SImilar to `routeHandler()`, but for error handling – takes the additional `error` argument.
 
