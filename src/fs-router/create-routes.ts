@@ -13,6 +13,8 @@ export const createRoutes = (
 ): AnyCompiledRoute[] => {
   const { relativePath, pathMatch } = path;
 
+  Log("Path", path.relativePath, `(${pathMatch})`);
+
   const handlers: Record<string, any> = {
     get: mod.GET ?? mod.get,
     post: mod.POST ?? mod.post,
@@ -32,12 +34,12 @@ export const createRoutes = (
   for (const method in handlers) {
     const handler = handlers[method];
 
-    Log("Handler:", method);
-
     if (handler == null) {
-      Log("Handler is null.");
       continue;
     }
+
+    Log("Method", method);
+
     if (typeof handler !== "function") {
       Log("Handler is function.");
       continue;
