@@ -8,6 +8,9 @@
 
 > The 🌶️ spiciest DX for express
 
+![GitHub License](https://img.shields.io/github/license/sinclairnick/harissa)
+![NPM Version](https://img.shields.io/npm/v/harissa)
+
 Express is a great web framework. It’s simple, easy to learn, and flexible…. But it hasn’t been updated in years, and every time I start a new express project I’m left wanting for better DX.
 
 **On the other hand**, competing frameworks tend to be heavy, complicated, or full of their own quirks not worth learning the hard way.
