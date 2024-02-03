@@ -19,6 +19,10 @@ Express is a great web framework. It’s simple, easy to learn, and flexible….
 
 🌶️ **Harissa** humbly bridges this gap by providing a selection of simple, opt-in utilities which make things like validation, OpenAPI support, type-safety etc. easier, without abstracting away too much or forcing new paradigms on you.
 
+```sh
+npm i harissa
+```
+
 It's a slim toolkit extending or sitting atop vanilla express, providing common functionality that one might argue should be part of express itself.
 
 It was built to be:
