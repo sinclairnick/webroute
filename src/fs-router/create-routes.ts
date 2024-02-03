@@ -2,10 +2,20 @@ import { FSRouterFormattedRoute } from "./format";
 import { isCompiledRoute } from "../route/handler";
 import { route } from "../../dist";
 import { AnyRequestHandlerModified } from "../util";
-import { AnyCompiledRoute } from "../route/handler/types";
+import { AnyCompiledRoute, HttpMethod } from "../route/handler/types";
 import { Log } from "../internal/logger";
 export type * from "./format";
 export { NextJS } from "./formats/nextjs";
+
+const AllMethods: HttpMethod[] = [
+  "delete",
+  "get",
+  "head",
+  "options",
+  "patch",
+  "post",
+  "put",
+];
 
 export const createRoutes = (
   path: FSRouterFormattedRoute & { relativePath: string },
@@ -15,16 +25,23 @@ export const createRoutes = (
   Log("Module", mod);
   Log("Path", path.relativePath, `(${pathMatch})`);
 
+  const _default = mod.default;
+
   const handlers: Record<string, any> = {
-    get: mod.GET ?? mod.get,
-    post: mod.POST ?? mod.post,
-    put: mod.PUT ?? mod.put,
-    delete: mod.DELETE ?? mod.delete,
-    patch: mod.PATCH ?? mod.patch,
-    head: mod.HEAD ?? mod.head,
-    options: mod.OPTIONS ?? mod.options,
     default: mod.default,
   };
+
+  for (const method of AllMethods) {
+    const methodUpper = method.toUpperCase();
+
+    // Precedence defined here.
+    // Using _default in case of synthetic default imports
+    handlers[method] =
+      mod[methodUpper] ??
+      mod[method] ??
+      _default?.[methodUpper] ??
+      _default?.[method];
+  }
 
   const routes: AnyCompiledRoute[] = [];
 
