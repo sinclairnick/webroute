@@ -52,23 +52,17 @@ app.get(
 
 ### Roadmap (to 1.0)
 
-[x] FS Router
+- [x] FS Router
 
-    [x] NextJS format
+  - [x] NextJS format
+  - [ ] Remix format
 
-    [ ] Remix format
-
-[ ] OpenAPI Support
-
-    [ ] With zod
-
-    [ ] With superstruct
-
-    [ ] With valibot
-
-    [ ] With yup
-
-    ...
+- [ ] OpenAPI Support
+  - [ ] With zod
+  - [ ] With superstruct
+  - [ ] With valibot
+  - [ ] With yup
+  - [ ] ... others
 
 ## API Reference
 
@@ -85,10 +79,10 @@ The Harissa API is intentionally fairly minimal. It contains utilities ranging f
 
 **Low level**
 
+- [createHttpException(...)](#createHttpException)
 - [middlewareHandler(..)](#middlewarehandler)
 - [routeHandler(...)](#routehandler)
 - [errorHandler(...)](#errorhandler)
-- [createHttpException(...)](#createHttpException)
 
 ---
 
