@@ -1,9 +1,5 @@
 import { Log } from "../../internal/logger";
-import {
-  FSRouterFormat,
-  FSRouterFormattedParams,
-  FSRouterFormattedRoute,
-} from "../format";
+import { FSRouterFormat } from "../format";
 
 export type NextJSFormatOptions = {
   fileExtensions?: string[];
@@ -27,7 +23,7 @@ export const NextJS = (opts?: NextJSFormatOptions): FSRouterFormat => {
 
   return (path) => {
     if (!fileExtensions.some((ext) => path.endsWith(`.${ext}`))) {
-      Log("File does not match extensions. Exiting.");
+      Log(`File ${path} does not match extensions. Exiting.`);
       return;
     }
 
@@ -93,13 +89,12 @@ export const NextJS = (opts?: NextJSFormatOptions): FSRouterFormat => {
         }
 
         Log("Adding optional catch all part", part);
-        const paramName = part.replace(NextRegex.OptionalCatchAll, "$1");
         expressPathPart.push("*");
         catchAllType === "optional";
         continue;
       }
 
-      Log("Adding statis part", part);
+      Log("Adding static part", part);
       expressPathPart.push(part);
     }
 

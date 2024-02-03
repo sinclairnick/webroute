@@ -1,3 +1,1 @@
-import { EmptyRoute } from "../util";
-
-export default EmptyRoute;
+export const post = () => {};

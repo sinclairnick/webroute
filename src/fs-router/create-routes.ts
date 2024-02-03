@@ -3,6 +3,7 @@ import { isCompiledRoute } from "../route/handler";
 import { route } from "../../dist";
 import { AnyRequestHandlerModified } from "../util";
 import { AnyCompiledRoute } from "../route/handler/types";
+import { Log } from "../internal/logger";
 export type * from "./format";
 export { NextJS } from "./formats/nextjs";
 
@@ -31,7 +32,16 @@ export const createRoutes = (
   for (const method in handlers) {
     const handler = handlers[method];
 
-    if (handler == null || typeof handler !== "function") continue;
+    Log("Handler:", method);
+
+    if (handler == null) {
+      Log("Handler is null.");
+      continue;
+    }
+    if (typeof handler !== "function") {
+      Log("Handler is function.");
+      continue;
+    }
 
     let compiled = route(pathMatch).method(
       method === "default" ? "all" : method
