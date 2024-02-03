@@ -25,6 +25,10 @@ export const createRoutes = (
   Log("Module", mod);
   Log("Path", path.relativePath, `(${pathMatch})`);
 
+  const isPathMethodless =
+    path.methods === "*" ||
+    (path.methods.length === 1 && path.methods[0] === "*");
+
   const _default = mod.default;
 
   const handlers: Record<string, any> = {
@@ -109,6 +113,16 @@ export const createRoutes = (
         } else {
           console.warn(
             `[${relativePath}] Handler for '${method}' method specifies .methods() which will be ignored in favour of '${method}'.`
+          );
+        }
+      }
+    }
+
+    if (!isPathMethodless) {
+      for (const method of compiled._def.methods ?? []) {
+        if (!path.methods.includes(method)) {
+          console.warn(
+            `[${relativePath}] Router format only expects methods including ${path.methods}, but method ${method} was provided.`
           );
         }
       }
