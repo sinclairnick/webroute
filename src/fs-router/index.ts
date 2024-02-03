@@ -56,21 +56,8 @@ export const createFSRouter = ({
       meta.formattedPaths.map(async (path) => {
         const mod = await import(`${path.absolutePath}`);
 
-        const handlers = {
-          get: mod.GET ?? mod.get,
-          post: mod.POST ?? mod.post,
-          put: mod.PUT ?? mod.put,
-          delete: mod.DELETE ?? mod.delete,
-          patch: mod.PATCH ?? mod.patch,
-          head: mod.HEAD ?? mod.head,
-          options: mod.OPTIONS ?? mod.options,
-          default: mod.default,
-        };
-
-        const asRoutes = createRoutes(path, handlers);
+        const asRoutes = createRoutes(path, mod);
         allRoutes.push(...asRoutes);
-
-        return Object.values(handlers).filter((x) => x) as RequestHandler[];
       })
     );
 

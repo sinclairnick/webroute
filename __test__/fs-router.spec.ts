@@ -17,6 +17,7 @@ describe("FS Router", () => {
 
     expect(pathMatches).includes("/");
     expect(pathMatches).includes("/static");
+    expect(pathMatches).includes("/get-route");
     expect(pathMatches).includes("/nested");
     expect(pathMatches).includes("/nested/static");
     expect(pathMatches).includes("/nested/:dynamic");

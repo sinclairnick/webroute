@@ -8,9 +8,20 @@ export { NextJS } from "./formats/nextjs";
 
 export const createRoutes = (
   path: FSRouterFormattedRoute & { relativePath: string },
-  handlers: Record<string, unknown>
+  mod: any
 ): AnyCompiledRoute[] => {
   const { relativePath, pathMatch } = path;
+
+  const handlers: Record<string, any> = {
+    get: mod.GET ?? mod.get,
+    post: mod.POST ?? mod.post,
+    put: mod.PUT ?? mod.put,
+    delete: mod.DELETE ?? mod.delete,
+    patch: mod.PATCH ?? mod.patch,
+    head: mod.HEAD ?? mod.head,
+    options: mod.OPTIONS ?? mod.options,
+    default: mod.default,
+  };
 
   const routes: AnyCompiledRoute[] = [];
 
@@ -20,13 +31,7 @@ export const createRoutes = (
   for (const method in handlers) {
     const handler = handlers[method];
 
-    if (handler == null) continue;
-
-    if (typeof handler !== "function") {
-      throw new Error(
-        `[${relativePath}] Invalid handler found for '${method}' method.`
-      );
-    }
+    if (handler == null || typeof handler !== "function") continue;
 
     let compiled = route(pathMatch).method(
       method === "default" ? "all" : method
