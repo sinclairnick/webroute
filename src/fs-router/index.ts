@@ -1,11 +1,12 @@
-import { RequestHandler } from "express";
 import { FSRouterFormat, FSRouterFormattedRoute } from "./format";
 import fs from "node:fs";
 import nodePath from "node:path";
 import { AnyCompiledRoute } from "../route/handler/types";
 import { createRoutes } from "./create-routes";
+
 export type * from "./format";
 export { NextJS } from "./formats/nextjs";
+export type * from "./formats/nextjs";
 
 type RouterMeta = {
   formattedPaths: (FSRouterFormattedRoute & {
