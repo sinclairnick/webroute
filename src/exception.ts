@@ -1,10 +1,11 @@
 import { ReasonPhrases, StatusCodes } from "http-status-codes";
 
-export class HttpException {
+export class HttpException extends Error {
   public name: string;
   public status: number;
 
   constructor(public code: keyof typeof StatusCodes) {
+    super();
     this.name = ReasonPhrases[code];
     this.status = StatusCodes[code];
   }
@@ -25,7 +26,7 @@ export class HttpException {
 export const createHttpException = (type: keyof typeof StatusCodes) => {
   return class extends HttpException {
     constructor(
-      public message?: string,
+      public message: string,
       public extra?: Record<PropertyKey, any>
     ) {
       super(type);
