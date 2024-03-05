@@ -25,11 +25,9 @@ export class HttpException extends Error {
 
 export const createHttpException = (type: keyof typeof StatusCodes) => {
   return class extends HttpException {
-    constructor(
-      public message: string,
-      public extra?: Record<PropertyKey, any>
-    ) {
+    constructor(message?: string, public extra?: Record<PropertyKey, any>) {
       super(type);
+      this.message = message ?? this.message;
     }
 
     toPlain() {
