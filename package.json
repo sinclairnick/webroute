@@ -8,7 +8,8 @@
   "scripts": {
     "test": "vitest",
     "build": "tsup",
-    "publish-pkg": "npm run build && npm publish"
+    "publish-pkg": "npm run build && npm publish",
+    "check": "tsc --noEmit"
   },
   "engines": {
     "node": "^20.0.0"
