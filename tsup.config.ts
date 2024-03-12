@@ -9,4 +9,5 @@ export default defineConfig({
   format: ["cjs", "esm"],
   outDir: "dist",
   sourcemap: true,
+  external: ["zod", "zod-to-json-schema"],
 });

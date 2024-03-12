@@ -1,4 +1,4 @@
-import { ZodSchema, ZodObject, z } from "zod";
+import { ZodSchema } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { ParseFn } from "../route/parser";
 import { Parser } from "../route/parser/types";
