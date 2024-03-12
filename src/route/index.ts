@@ -1,6 +1,6 @@
 import { createBuilder } from "./handler";
 export { registerRoutes } from "./register-routes";
-export { DiscoveredRoute, discoverRoutes } from "./discover-routes";
+export { type DiscoveredRoute, discoverRoutes } from "./discover-routes";
 
 // Export all types
 export type * from "./handler";
