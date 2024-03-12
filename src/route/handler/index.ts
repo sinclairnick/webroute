@@ -16,9 +16,8 @@ import {
   HandlerParams,
   HttpMethod,
 } from "./types";
-import { Request, RequestHandler } from "express";
+import { RequestHandler } from "express";
 import { Log } from "../../internal/logger";
-import { CompiledRouteSymbol } from "./util";
 
 export type AnyHandlerBuilder = HandlerBuilder<any>;
 
@@ -275,10 +274,9 @@ export function createBuilder<TConfig extends AnyRootConfig>(
 
       _def.rawHandler = handler;
 
-      // `_type` used for various JS type discrimination
       return Object.assign(_handler, {
         _def,
-        __harissaType: CompiledRouteSymbol,
+        __isCompiledRoute__: true as const,
       });
     },
   };

@@ -1,9 +1,9 @@
 import { FSRouterFormattedRoute } from "./format";
-import { route } from "../../dist";
 import { AnyRequestHandlerModified } from "../util";
 import { AnyCompiledRoute, HttpMethod } from "../route/handler/types";
 import { Log } from "../internal/logger";
 import { isCompiledRoute } from "../route/handler/util";
+import { route } from "../route";
 export type * from "./format";
 export { NextJS } from "./formats/nextjs";
 

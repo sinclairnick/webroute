@@ -101,4 +101,5 @@ export type AnyCompiledRoute = CompiledRoute<any>;
 
 export type CompiledRoute<TParams extends HandlerParams> = RequestHandler & {
   _def: HandlerDefinition<TParams>;
+  __isCompiledRoute__: true;
 };
