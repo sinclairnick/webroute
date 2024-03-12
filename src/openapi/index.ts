@@ -32,6 +32,8 @@ export const createOpenApiSpec = (app: Express) => {
       if (body) {
         const asJson = getJsonSchema(body);
         if (asJson) {
+          Debug.openapi("Adding request body.");
+
           config.requestBody = {
             required: true,
             content: {
@@ -46,6 +48,8 @@ export const createOpenApiSpec = (app: Express) => {
       if (output) {
         const asJson = getJsonSchema(output);
         if (asJson) {
+          Debug.openapi("Adding response type.");
+
           config.responses = {
             default: {
               description: "Success",
@@ -62,6 +66,8 @@ export const createOpenApiSpec = (app: Express) => {
       if (params) {
         const asJson = getJsonSchema(params);
         if (asJson) {
+          Debug.openapi("Adding path params.");
+
           config.parameters?.push({
             in: "path",
             name: "PathParams",
@@ -73,6 +79,8 @@ export const createOpenApiSpec = (app: Express) => {
       if (query) {
         const asJson = getJsonSchema(query);
         if (asJson) {
+          Debug.openapi("Adding query params.");
+
           config.parameters?.push({
             in: "query",
             name: "QueryParams",
