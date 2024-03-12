@@ -18,6 +18,7 @@ import {
 } from "./types";
 import { Request, RequestHandler } from "express";
 import { Log } from "../../internal/logger";
+import { CompiledRouteSymbol } from "./util";
 
 export type AnyHandlerBuilder = HandlerBuilder<any>;
 
@@ -282,13 +283,3 @@ export function createBuilder<TConfig extends AnyRootConfig>(
     },
   };
 }
-
-export const CompiledRouteSymbol = Symbol("compiled-route");
-
-export const isCompiledRoute = (x: unknown): x is CompiledRoute<any> => {
-  return (
-    x != null &&
-    typeof x === "function" &&
-    (x as any).__harissaType === CompiledRouteSymbol
-  );
-};

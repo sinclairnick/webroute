@@ -32,7 +32,9 @@
   },
   "dependencies": {
     "http-status-codes": "^2.3.0",
-    "supertest": "^6.3.4"
+    "openapi3-ts": "^4.2.2",
+    "supertest": "^6.3.4",
+    "zod-to-json-schema": "^3.22.4"
   },
   "optionalDependencies": {
     "zod": "^3.22.4"
