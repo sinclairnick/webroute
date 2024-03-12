@@ -18,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/debug": "^4.1.12",
     "@types/express": "^4.0.0",
     "@types/node": "^20.11.8",
     "@types/supertest": "^6.0.2",
@@ -32,6 +33,7 @@
     "express": "^4.0.0"
   },
   "dependencies": {
+    "debug": "^4.3.4",
     "http-status-codes": "^2.3.0",
     "openapi3-ts": "^4.2.2",
     "supertest": "^6.3.4",
