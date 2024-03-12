@@ -1,4 +1,4 @@
-import { ZodSchema } from "zod";
+import { ZodSchema, ZodObject, z } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
 import { ParseFn } from "../route/parser";
 import { Parser } from "../route/parser/types";
@@ -15,5 +15,5 @@ export const getJsonSchema = ({
     return zodToJsonSchema(schema);
   }
 
-  Debug.openapi("No json schema formatter found");
+  Debug.openapi(`No json schema formatter found for schema`, schema);
 };
