@@ -1,8 +1,8 @@
 import { ZodSchema } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { ParseFn } from "../route/parser";
 import { Parser } from "../route/parser/types";
 import { Debug } from "../debug";
+import { JsonSchema } from "./types";
 
 // Need to do this lame check because `instanceof` breaks once compiled
 // (for some reason)
@@ -22,12 +22,13 @@ const isZod = (schema: unknown): schema is ZodSchema => {
 export const getJsonSchema = ({
   schema,
 }: {
-  parser: ParseFn<unknown>;
   schema: Parser;
-}) => {
+}): JsonSchema | undefined => {
   if (isZod(schema)) {
     Debug.openapi("Is zod schema.");
-    return zodToJsonSchema(schema);
+    const result = zodToJsonSchema(schema);
+    delete result.$schema;
+    return result as any;
   }
 
   Debug.openapi(`No json schema formatter found for schema`, schema);
