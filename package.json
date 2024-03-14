@@ -1,6 +1,6 @@
 {
   "name": "harissa",
-  "version": "0.9.4",
+  "version": "0.9.7",
   "description": "",
   "main": "dist/index.js",
   "types": "./dist/index.d.ts",
@@ -39,7 +39,7 @@
     "supertest": "^6.3.4"
   },
   "optionalDependencies": {
-		"zod": "^3.22.4",
-		"zod-to-json-schema": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.22.4"
   }
 }
