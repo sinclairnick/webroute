@@ -10,11 +10,9 @@ export type * from "./parser/types";
 export type * from "./discover-routes";
 export type * from "./register-routes";
 
-export type RouteMeta = {};
-
 export type DefaultConfig = {
   $types: {
-    meta: RouteMeta;
+    meta: {};
     ctx: {};
   };
 };

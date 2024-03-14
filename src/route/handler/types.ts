@@ -7,6 +7,23 @@ import {
   UnsetMarker,
 } from "../../util";
 import { ParseFn } from "../parser";
+import { oas31 } from "openapi3-ts";
+
+export type RouteMeta = {
+  /**
+   * Route name used to identify the route.
+   * May be used for improved OpenAPI operation naming.
+   */
+  name?: string;
+  /**
+   * Customise this routes OpenAPI config.
+   * If an object is provided, it will be _shallow_ merged with the existing object.
+   * If a function is provided, the return value will be used as the config.
+   */
+  openApi?:
+    | oas31.OperationObject
+    | ((operation: oas31.OperationObject) => oas31.OperationObject);
+};
 
 export interface HandlerParams<
   TConfig extends AnyRootConfig = AnyRootConfig,
@@ -63,7 +80,6 @@ export type HttpMethod =
 export interface HandlerDefinition<TParams extends HandlerParams> {
   methods?: string[];
   path?: string;
-  name?: string;
   query?: {
     parser: ParseFn<unknown>;
     schema: Parser;
@@ -80,7 +96,9 @@ export interface HandlerDefinition<TParams extends HandlerParams> {
     parser: ParseFn<unknown>;
     schema: Parser;
   };
-  meta?: TParams["_meta"];
+  meta?: {
+    [TKey in keyof TParams["_meta"]]: TParams["_meta"][TKey];
+  } & RouteMeta;
   rawHandler?: AnyRequestHandlerModified;
 }
 

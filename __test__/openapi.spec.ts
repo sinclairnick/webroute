@@ -26,8 +26,6 @@ describe("Open API", () => {
 
     const spec = openapi.getSpec();
 
-    console.log(openapi.getSpecAsJson(undefined, 2));
-
     expect(spec.paths?.["/a/{params}"]).toBeDefined();
     expect(spec.paths?.["/a/{params}"].get).toBeDefined();
     expect(spec.paths?.["/a/{params}"].post).toBeUndefined();
@@ -42,5 +40,26 @@ describe("Open API", () => {
     expect(spec.paths?.["/b"].get).toBeUndefined();
     expect(spec.paths?.["/b"].post?.requestBody).toBeUndefined();
     expect(spec.paths?.["/b"].post?.parameters).toHaveLength(0);
+  });
+
+  test("Can overwrite config", () => {
+    const app = express();
+
+    const routes = [
+      route("/")
+        .method("get")
+        .meta({
+          openApi: (op) => ({}),
+        })
+        .handle(() => {}),
+    ];
+
+    registerRoutes(app, routes);
+
+    const openapi = createOpenApiSpec(app);
+    const spec = openapi.getSpec();
+
+    expect(spec.paths?.["/"].get).toBeDefined();
+    expect(spec.paths?.["/"].get).toEqual({});
   });
 });

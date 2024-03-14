@@ -23,7 +23,7 @@ export const createOpenApiSpec = (
   for (const route of routes) {
     Debug.openapi(`Adding route to spec:`, route.method, route.path);
 
-    const config: oas31.OperationObject = {
+    let config: oas31.OperationObject = {
       parameters: [],
       responses: {
         "200": {
@@ -36,7 +36,7 @@ export const createOpenApiSpec = (
     };
 
     if (isCompiledRoute(route.handler)) {
-      const routeName = route.handler._def.name;
+      const routeName = route.handler._def.meta?.name;
       config.operationId = deriveOperationId({
         method: route.method,
         path: route.path ?? "/",
@@ -120,6 +120,15 @@ export const createOpenApiSpec = (
               required: requiredSet.has(key),
             });
           }
+        }
+      }
+
+      const userOpenApiConfig = route.handler._def.meta?.openApi;
+      if (userOpenApiConfig != null) {
+        if (typeof userOpenApiConfig === "function") {
+          config = userOpenApiConfig(config);
+        } else {
+          config = { ...config, ...userOpenApiConfig };
         }
       }
     } else {

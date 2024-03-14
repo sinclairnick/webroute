@@ -41,12 +41,6 @@ describe("Handler", () => {
     expectTypeOf<QueryType>().toEqualTypeOf<{ a: number }>();
   });
 
-  test(".name() adds name", () => {
-    const result = createBuilder().name("Name");
-
-    expect(result._def.name).toBe("Name");
-  });
-
   test(".params() adds params", () => {
     const schema = z.object({ a: z.number() });
     const result = createBuilder().params(schema);
