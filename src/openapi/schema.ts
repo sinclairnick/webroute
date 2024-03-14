@@ -26,9 +26,8 @@ export const getJsonSchema = ({
 }): JsonSchema | undefined => {
   if (isZod(schema)) {
     Debug.openapi("Is zod schema.");
-    const result = zodToJsonSchema(schema);
-    delete result.$schema;
-    return result as any;
+    const { $schema, ...rest } = zodToJsonSchema(schema);
+    return rest as any; // The types from ^ are wrong
   }
 
   Debug.openapi(`No json schema formatter found for schema`, schema);

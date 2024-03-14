@@ -4,8 +4,18 @@ import { discoverRoutes } from "../route";
 import { getJsonSchema } from "./schema";
 import { isCompiledRoute } from "../route/handler/util";
 import { Debug } from "../debug";
+import * as Formatting from "./formatting";
 
-export const createOpenApiSpec = (app: Express) => {
+export type CreateOpenApiSpecOptions = {
+  deriveOperationId?: (input: Formatting.DeriveOperationIdInput) => string;
+};
+
+export const createOpenApiSpec = (
+  app: Express,
+  opts?: CreateOpenApiSpecOptions
+) => {
+  const { deriveOperationId = Formatting.deriveOperationId } = opts ?? {};
+
   let builder = new oas31.OpenApiBuilder();
 
   const routes = discoverRoutes(app);
@@ -16,14 +26,23 @@ export const createOpenApiSpec = (app: Express) => {
     const config: oas31.OperationObject = {
       parameters: [],
       responses: {
-        default: {
-          description: "Default response",
+        "200": {
+          description: "Success",
+          content: {
+            "application/json": {},
+          },
         },
       },
     };
 
     if (isCompiledRoute(route.handler)) {
-      Debug.openapi("Is compiled route.");
+      const routeName = route.handler._def.name;
+      config.operationId = deriveOperationId({
+        method: route.method,
+        path: route.path ?? "/",
+        name: routeName,
+      });
+      Debug.openapi("Is compiled route. Name=", routeName ?? "Undefined");
 
       const { body, output, params, query } = route.handler._def;
 
@@ -56,7 +75,7 @@ export const createOpenApiSpec = (app: Express) => {
           Debug.openapi("Adding response type.");
 
           config.responses = {
-            default: {
+            "200": {
               description: "Success",
               content: {
                 "application/json": {
@@ -73,11 +92,16 @@ export const createOpenApiSpec = (app: Express) => {
         if (asJson) {
           Debug.openapi("Adding path params.");
 
-          config.parameters?.push({
-            in: "path",
-            name: "PathParams",
-            schema: asJson,
-          });
+          const requiredSet = new Set(asJson.required);
+
+          for (const key in asJson.properties ?? {}) {
+            config.parameters?.push({
+              in: "path",
+              name: key,
+              schema: asJson.properties?.[key],
+              required: requiredSet.has(key),
+            });
+          }
         }
       }
 
@@ -86,18 +110,27 @@ export const createOpenApiSpec = (app: Express) => {
         if (asJson) {
           Debug.openapi("Adding query params.");
 
-          config.parameters?.push({
-            in: "query",
-            name: "QueryParams",
-            schema: asJson,
-          });
+          const requiredSet = new Set(asJson.required);
+
+          for (const key in asJson.properties ?? {}) {
+            config.parameters?.push({
+              in: "query",
+              name: key,
+              schema: asJson.properties?.[key],
+              required: requiredSet.has(key),
+            });
+          }
         }
       }
+    } else {
+      config.operationId = deriveOperationId({
+        method: route.method,
+        path: route.path ?? "/",
+      });
     }
 
-    builder.addPath(route.path ?? "", {
-      [route.method]: config,
-    });
+    const formattedPath = Formatting.formatPath(route.path ?? "/");
+    builder.addPath(formattedPath, { [route.method]: config });
   }
 
   return builder;

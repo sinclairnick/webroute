@@ -8,7 +8,7 @@ describe("Open API", () => {
     const app = express();
 
     const routes = [
-      route("/a")
+      route("/a/:params")
         .method("get")
         .query(z.object({ query: z.boolean() }))
         .params(z.object({ params: z.boolean() }))
@@ -26,20 +26,21 @@ describe("Open API", () => {
 
     const spec = openapi.getSpec();
 
-    expect(spec.paths?.["/a"]).toBeDefined();
-    expect(spec.paths?.["/a"].get).toBeDefined();
-    expect(spec.paths?.["/a"].post).toBeUndefined();
-    expect(spec.paths?.["/a"].get?.requestBody).toBeDefined();
-    expect(spec.paths?.["/a"].get?.responses).toBeDefined();
-    expect(spec.paths?.["/a"].get?.responses?.default).toBeDefined();
-    expect(spec.paths?.["/a"].get?.parameters).toBeDefined();
-    expect(spec.paths?.["/a"].get?.parameters).toHaveLength(2);
+    console.log(openapi.getSpecAsJson(undefined, 2));
+
+    expect(spec.paths?.["/a/{params}"]).toBeDefined();
+    expect(spec.paths?.["/a/{params}"].get).toBeDefined();
+    expect(spec.paths?.["/a/{params}"].post).toBeUndefined();
+    expect(spec.paths?.["/a/{params}"].get?.requestBody).toBeDefined();
+    expect(spec.paths?.["/a/{params}"].get?.responses).toBeDefined();
+    expect(spec.paths?.["/a/{params}"].get?.responses?.["200"]).toBeDefined();
+    expect(spec.paths?.["/a/{params}"].get?.parameters).toBeDefined();
+    expect(spec.paths?.["/a/{params}"].get?.parameters).toHaveLength(2);
 
     expect(spec.paths?.["/b"]).toBeDefined();
     expect(spec.paths?.["/b"].post).toBeDefined();
     expect(spec.paths?.["/b"].get).toBeUndefined();
     expect(spec.paths?.["/b"].post?.requestBody).toBeUndefined();
-    expect(spec.paths?.["/b"].post?.responses).toBeUndefined();
     expect(spec.paths?.["/b"].post?.parameters).toHaveLength(0);
   });
 });
