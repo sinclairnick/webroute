@@ -157,6 +157,8 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   handle(handler: HandlerFunction<TParams>): CompiledRoute<TParams>;
 
   method(method: HttpMethod | HttpMethod[]): HandlerBuilder<TParams>;
+
+  name(name: string): HandlerBuilder<TParams>;
 }
 
 function createNewBuilder(
@@ -224,6 +226,11 @@ export function createBuilder<TConfig extends AnyRootConfig>(
     method(method) {
       return createNewBuilder(_def, {
         methods: Array.isArray(method) ? method : [method],
+      }) as AnyHandlerBuilder;
+    },
+    name(name) {
+      return createNewBuilder(_def, {
+        name,
       }) as AnyHandlerBuilder;
     },
     handle(handler) {

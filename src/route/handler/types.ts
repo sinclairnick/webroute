@@ -63,6 +63,7 @@ export type HttpMethod =
 export interface HandlerDefinition<TParams extends HandlerParams> {
   methods?: string[];
   path?: string;
+  name?: string;
   query?: {
     parser: ParseFn<unknown>;
     schema: Parser;
