@@ -21,6 +21,7 @@ export const createOpenApiSpec = (
   const routes = discoverRoutes(app);
 
   const opIdBank = new Formatting.OperationIdBank();
+  const refs = new Formatting.SchemaRefMap();
 
   for (const route of routes) {
     Debug.openapi(`Adding route to spec:`, route.method, route.path);
@@ -66,7 +67,12 @@ export const createOpenApiSpec = (
             required: true,
             content: {
               "application/json": {
-                schema: asJson,
+                schema: {
+                  $ref: refs.registerSchema(
+                    Formatting.SchemaNaming.forBody(config.operationId),
+                    asJson
+                  ),
+                },
               },
             },
           };
@@ -83,7 +89,12 @@ export const createOpenApiSpec = (
               description: "Success",
               content: {
                 "application/json": {
-                  schema: asJson,
+                  schema: {
+                    $ref: refs.registerSchema(
+                      Formatting.SchemaNaming.forResult(config.operationId),
+                      asJson
+                    ),
+                  },
                 },
               },
             },
@@ -96,15 +107,22 @@ export const createOpenApiSpec = (
         if (asJson) {
           Debug.openapi("Adding path params.");
 
-          const requiredSet = new Set(asJson.required);
+          if (asJson.properties) {
+            const requiredSet = new Set(asJson.required);
 
-          for (const key in asJson.properties ?? {}) {
-            config.parameters?.push({
-              in: "path",
-              name: key,
-              schema: asJson.properties?.[key],
-              required: requiredSet.has(key),
-            });
+            for (const key in asJson.properties) {
+              config.parameters?.push({
+                in: "path",
+                name: key,
+                schema: {
+                  $ref: refs.registerSchema(
+                    Formatting.SchemaNaming.forParam(config.operationId, key),
+                    asJson.properties[key] as oas31.SchemaObject
+                  ),
+                },
+                required: requiredSet.has(key),
+              });
+            }
           }
         }
       }
@@ -114,15 +132,22 @@ export const createOpenApiSpec = (
         if (asJson) {
           Debug.openapi("Adding query params.");
 
-          const requiredSet = new Set(asJson.required);
+          if (asJson.properties) {
+            const requiredSet = new Set(asJson.required);
 
-          for (const key in asJson.properties ?? {}) {
-            config.parameters?.push({
-              in: "query",
-              name: key,
-              schema: asJson.properties?.[key],
-              required: requiredSet.has(key),
-            });
+            for (const key in asJson.properties) {
+              config.parameters?.push({
+                in: "query",
+                name: key,
+                schema: {
+                  $ref: refs.registerSchema(
+                    Formatting.SchemaNaming.forParam(config.operationId, key),
+                    asJson.properties[key] as oas31.SchemaObject
+                  ),
+                },
+                required: requiredSet.has(key),
+              });
+            }
           }
         }
       }
@@ -147,6 +172,8 @@ export const createOpenApiSpec = (
     const formattedPath = Formatting.formatPath(route.path ?? "/");
     builder.addPath(formattedPath, { [route.method]: config });
   }
+
+  refs.bindSchemas(builder);
 
   return builder;
 };

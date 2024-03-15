@@ -8,12 +8,12 @@ describe("Open API", () => {
     const app = express();
 
     const routes = [
-      route("/a/:params")
+      route("/a/:id")
         .method("get")
-        .query(z.object({ query: z.boolean() }))
-        .params(z.object({ params: z.boolean() }))
-        .body(z.object({ body: z.boolean() }))
-        .output(z.object({ output: z.boolean() }))
+        .query(z.object({ sort: z.boolean() }))
+        .params(z.object({ id: z.boolean() }))
+        .body(z.object({ name: z.boolean() }))
+        .output(z.object({ count: z.number() }))
         .handle(() => {}),
       route("/b")
         .method("post")
@@ -26,20 +26,22 @@ describe("Open API", () => {
 
     const spec = openapi.getSpec();
 
-    expect(spec.paths?.["/a/{params}"]).toBeDefined();
-    expect(spec.paths?.["/a/{params}"].get).toBeDefined();
-    expect(spec.paths?.["/a/{params}"].post).toBeUndefined();
-    expect(spec.paths?.["/a/{params}"].get?.requestBody).toBeDefined();
-    expect(spec.paths?.["/a/{params}"].get?.responses).toBeDefined();
-    expect(spec.paths?.["/a/{params}"].get?.responses?.["200"]).toBeDefined();
-    expect(spec.paths?.["/a/{params}"].get?.parameters).toBeDefined();
-    expect(spec.paths?.["/a/{params}"].get?.parameters).toHaveLength(2);
+    expect(spec.paths?.["/a/{id}"]).toBeDefined();
+    expect(spec.paths?.["/a/{id}"].get).toBeDefined();
+    expect(spec.paths?.["/a/{id}"].post).toBeUndefined();
+    expect(spec.paths?.["/a/{id}"].get?.requestBody).toBeDefined();
+    expect(spec.paths?.["/a/{id}"].get?.responses).toBeDefined();
+    expect(spec.paths?.["/a/{id}"].get?.responses?.["200"]).toBeDefined();
+    expect(spec.paths?.["/a/{id}"].get?.parameters).toBeDefined();
+    expect(spec.paths?.["/a/{id}"].get?.parameters).toHaveLength(2);
 
     expect(spec.paths?.["/b"]).toBeDefined();
     expect(spec.paths?.["/b"].post).toBeDefined();
     expect(spec.paths?.["/b"].get).toBeUndefined();
     expect(spec.paths?.["/b"].post?.requestBody).toBeUndefined();
     expect(spec.paths?.["/b"].post?.parameters).toHaveLength(0);
+
+    expect(spec.components?.schemas).toBeDefined();
   });
 
   test("Can overwrite config", () => {
