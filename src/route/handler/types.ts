@@ -37,7 +37,7 @@ export interface HandlerParams<
   TBodyOut = unknown,
   TOutputIn = unknown,
   TOutputOut = unknown,
-  TMeta = unknown
+  TMeta = TConfig["$types"]["meta"]
 > {
   /** @internal */
   _config: TConfig;
@@ -96,9 +96,7 @@ export interface HandlerDefinition<TParams extends HandlerParams> {
     parser: ParseFn<unknown>;
     schema: Parser;
   };
-  meta?: {
-    [TKey in keyof TParams["_meta"]]: TParams["_meta"][TKey];
-  } & RouteMeta;
+  meta?: TParams["_meta"];
   rawHandler?: AnyRequestHandlerModified;
 }
 

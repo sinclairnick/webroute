@@ -48,3 +48,15 @@ export type DeriveOperationIdInput = {
 export const formatPath = (path: string) => {
   return path.replace(PathParamRegex, "/{$1}");
 };
+
+export class OperationIdBank {
+  private ids: Record<string, number> = {};
+
+  getUniqueId(id: string) {
+    const existingCount = this.ids[id] ?? 0;
+    // Increment count of operation name
+    this.ids[id] = existingCount + 1;
+
+    return `${id}${existingCount === 0 ? "" : existingCount}`;
+  }
+}

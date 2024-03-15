@@ -20,6 +20,8 @@ export const createOpenApiSpec = (
 
   const routes = discoverRoutes(app);
 
+  const opIdBank = new Formatting.OperationIdBank();
+
   for (const route of routes) {
     Debug.openapi(`Adding route to spec:`, route.method, route.path);
 
@@ -37,11 +39,13 @@ export const createOpenApiSpec = (
 
     if (isCompiledRoute(route.handler)) {
       const routeName = route.handler._def.meta?.name;
-      config.operationId = deriveOperationId({
-        method: route.method,
-        path: route.path ?? "/",
-        name: routeName,
-      });
+      config.operationId = opIdBank.getUniqueId(
+        deriveOperationId({
+          method: route.method,
+          path: route.path ?? "/",
+          name: routeName,
+        })
+      );
       Debug.openapi("Is compiled route. Name=", routeName ?? "Undefined");
 
       const { body, output, params, query } = route.handler._def;
@@ -132,10 +136,12 @@ export const createOpenApiSpec = (
         }
       }
     } else {
-      config.operationId = deriveOperationId({
-        method: route.method,
-        path: route.path ?? "/",
-      });
+      config.operationId = opIdBank.getUniqueId(
+        deriveOperationId({
+          method: route.method,
+          path: route.path ?? "/",
+        })
+      );
     }
 
     const formattedPath = Formatting.formatPath(route.path ?? "/");

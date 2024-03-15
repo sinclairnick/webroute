@@ -1,4 +1,5 @@
 import { createBuilder } from "./handler";
+import { RouteMeta } from "./handler/types";
 export { registerRoutes } from "./register-routes";
 export { type DiscoveredRoute, discoverRoutes } from "./discover-routes";
 
@@ -12,7 +13,7 @@ export type * from "./register-routes";
 
 export type DefaultConfig = {
   $types: {
-    meta: {};
+    meta: RouteMeta;
     ctx: {};
   };
 };

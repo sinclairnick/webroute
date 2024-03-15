@@ -62,4 +62,75 @@ describe("Open API", () => {
     expect(spec.paths?.["/"].get).toBeDefined();
     expect(spec.paths?.["/"].get).toEqual({});
   });
+
+  test("Utilises route name meta", () => {
+    const app = express();
+
+    const routes = [
+      route("/some-pathname")
+        .meta({ name: "MyCustomName" })
+        .method("get")
+        .handle(() => {}),
+    ];
+
+    registerRoutes(app, routes);
+
+    const openApi = createOpenApiSpec(app);
+
+    const spec = openApi.getSpec();
+
+    expect(spec.paths?.["/some-pathname"]).toBeDefined();
+    expect(spec.paths?.["/some-pathname"].get).toBeDefined();
+    expect(spec.paths?.["/some-pathname"].get?.operationId).toBe(
+      "MyCustomName"
+    );
+  });
+
+  test("Handles param ids in name", () => {
+    const app = express();
+
+    const routes = [
+      route("/posts/:id/name")
+        .method("get")
+        .handle(() => {}),
+    ];
+
+    registerRoutes(app, routes);
+
+    const openApi = createOpenApiSpec(app);
+
+    const spec = openApi.getSpec();
+
+    expect(spec.paths?.["/posts/{id}/name"]).toBeDefined();
+    expect(spec.paths?.["/posts/{id}/name"].get).toBeDefined();
+    expect(spec.paths?.["/posts/{id}/name"].get?.operationId).toBe(
+      "GetPostsName"
+    );
+  });
+
+  test("Handles op id uniqueness", () => {
+    const app = express();
+
+    const routes = [
+      route("/a")
+        .method("get")
+        .meta({ name: "DuplicateName" })
+        .handle(() => {}),
+      route("/b")
+        .meta({ name: "DuplicateName" })
+        .method("get")
+        .handle(() => {}),
+    ];
+
+    registerRoutes(app, routes);
+
+    const openApi = createOpenApiSpec(app);
+
+    const spec = openApi.getSpec();
+
+    expect(spec.paths?.["/a"].get).toBeDefined();
+    expect(spec.paths?.["/a"].get?.operationId).toBe("DuplicateName");
+    expect(spec.paths?.["/b"].get).toBeDefined();
+    expect(spec.paths?.["/b"].get?.operationId).toBe("DuplicateName1");
+  });
 });
