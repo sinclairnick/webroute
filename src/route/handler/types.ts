@@ -27,7 +27,7 @@ export type RouteMeta = {
 
 export interface HandlerParams<
   TConfig extends AnyRootConfig = AnyRootConfig,
-  TPath extends string | UnsetMarker = UnsetMarker,
+  TPath = unknown,
   TContext = unknown,
   TQueryIn = unknown,
   TQueryOut = unknown,
@@ -37,7 +37,8 @@ export interface HandlerParams<
   TBodyOut = unknown,
   TOutputIn = unknown,
   TOutputOut = unknown,
-  TMeta = TConfig["$types"]["meta"]
+  TMeta = TConfig["$types"]["meta"],
+  TMethods = HttpMethod
 > {
   /** @internal */
   _config: TConfig;
@@ -47,6 +48,8 @@ export interface HandlerParams<
   _ctx: TContext;
   /** @internal */
   _meta: TMeta;
+  /** @internal */
+  _methods: TMethods;
   /** @internal */
   _query_in: TQueryIn;
   /** @internal */
@@ -78,8 +81,8 @@ export type HttpMethod =
   | (string & {});
 
 export interface HandlerDefinition<TParams extends HandlerParams> {
-  methods?: string[];
-  path?: string;
+  methods?: TParams["_methods"][];
+  path?: TParams["_path"];
   query?: {
     parser: ParseFn<unknown>;
     schema: Parser;

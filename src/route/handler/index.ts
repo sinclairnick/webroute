@@ -55,6 +55,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _body_out: TParams["_body_out"];
     _output_in: TParams["_output_in"];
     _output_out: TParams["_output_out"];
+    _methods: TParams["_methods"];
   }>;
 
   /**
@@ -85,6 +86,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _body_out: TParams["_body_out"];
     _output_in: TParams["_output_in"];
     _output_out: TParams["_output_out"];
+    _methods: TParams["_methods"];
   }>;
 
   /**
@@ -115,6 +117,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _body_out: inferParser<$Parser>["out"];
     _output_in: TParams["_output_in"];
     _output_out: TParams["_output_out"];
+    _methods: TParams["_methods"];
   }>;
 
   // TODO: Add headers parser?
@@ -147,6 +150,25 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _body_out: TParams["_body_out"];
     _output_in: inferParser<$Parser>["in"];
     _output_out: inferParser<$Parser>["out"];
+    _methods: TParams["_methods"];
+  }>;
+
+  method<TMethod extends HttpMethod | HttpMethod[]>(
+    method: TMethod
+  ): HandlerBuilder<{
+    _config: TParams["_config"];
+    _path: TParams["_path"];
+    _ctx: TParams["_ctx"];
+    _meta: TParams["_meta"];
+    _query_in: TParams["_query_in"];
+    _query_out: TParams["_query_out"];
+    _params_in: TParams["_params_in"];
+    _params_out: TParams["_params_out"];
+    _body_in: TParams["_body_in"];
+    _body_out: TParams["_body_out"];
+    _output_in: TParams["_output_in"];
+    _output_out: TParams["_output_out"];
+    _methods: TMethod extends HttpMethod ? TMethod : TMethod[number];
   }>;
 
   /**
@@ -155,8 +177,6 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   meta(meta: TParams["_meta"]): HandlerBuilder<TParams>;
 
   handle(handler: HandlerFunction<TParams>): CompiledRoute<TParams>;
-
-  method(method: HttpMethod | HttpMethod[]): HandlerBuilder<TParams>;
 }
 
 function createNewBuilder(
@@ -166,11 +186,14 @@ function createNewBuilder(
   return createBuilder({ ...configA, ...configB });
 }
 
-export function createBuilder<TConfig extends AnyRootConfig>(
+export function createBuilder<
+  TConfig extends AnyRootConfig,
+  TPath extends string
+>(
   initDef: Partial<AnyHandlerDefinition> = {}
 ): HandlerBuilder<{
   _config: TConfig;
-  _path: UnsetMarker;
+  _path: TPath;
   _ctx: TConfig["$types"]["ctx"];
   _meta: TConfig["$types"]["meta"];
   _query_in: UnsetMarker;
@@ -181,8 +204,9 @@ export function createBuilder<TConfig extends AnyRootConfig>(
   _body_out: UnsetMarker;
   _output_in: UnsetMarker;
   _output_out: UnsetMarker;
+  _methods: string;
 }> {
-  const _def: AnyHandlerDefinition = {
+  const _def = {
     ...initDef,
   };
 

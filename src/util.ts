@@ -1,8 +1,6 @@
-import express, { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
-export type Simplify<TType> = TType extends any[] | Date
-  ? TType
-  : { [K in keyof TType]: TType[K] };
+export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & {};
 
 export type ErrorMessage<TMessage extends string> = TMessage;
 
@@ -14,6 +12,8 @@ export const unsetMarker = Symbol("unsetMarker");
  * @internal
  */
 export type UnsetMarker = typeof unsetMarker;
+
+export type UnsetMarkerToNever<T> = T extends UnsetMarker ? never : T;
 
 export type RootConfig<TContext, TMeta extends Record<PropertyKey, any>> = {
   $types: {
