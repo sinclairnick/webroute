@@ -89,3 +89,7 @@ export const NextUtil = {
     };
   },
 };
+
+export const isArray = (
+  arg: ReadonlyArray<any> | any
+): arg is ReadonlyArray<any> => Array.isArray(arg);

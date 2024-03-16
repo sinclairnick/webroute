@@ -1,6 +1,7 @@
 import express from "express";
 import { Log } from "../internal/logger";
 import { AnyCompiledRoute } from "./handler/types";
+import { isArray } from "../util";
 
 /**
  * Iterates over the routes, registering each route to their specified
@@ -8,9 +9,12 @@ import { AnyCompiledRoute } from "./handler/types";
  */
 export const registerRoutes = (
   app: express.Express,
-  routes: AnyCompiledRoute | AnyCompiledRoute[]
+  routes:
+    | AnyCompiledRoute
+    | AnyCompiledRoute[]
+    | ReadonlyArray<AnyCompiledRoute>
 ) => {
-  const _routes = Array.isArray(routes) ? routes : [routes];
+  const _routes = isArray(routes) ? routes : [routes];
 
   for (const route of _routes) {
     const { _def } = route;
