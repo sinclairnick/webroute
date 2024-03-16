@@ -4,7 +4,6 @@ import {
   AnyRequestHandlerModified,
   AnyRootConfig,
   RequestHandlerModified,
-  UnsetMarker,
 } from "../../util";
 import { ParseFn } from "../parser";
 import { oas31 } from "openapi3-ts";
@@ -107,14 +106,10 @@ export type ResponseOrLiteral<T> = Response<T> | T | void;
 
 export type HandlerFunction<TParams extends HandlerParams> =
   RequestHandlerModified<
-    TParams["_params_out"] extends UnsetMarker
-      ? unknown
-      : TParams["_params_out"],
-    TParams["_output_in"] extends UnsetMarker ? unknown : TParams["_output_in"],
-    TParams["_body_out"] extends UnsetMarker ? undefined : TParams["_body_out"],
-    TParams["_query_out"] extends UnsetMarker
-      ? undefined
-      : TParams["_query_out"]
+    TParams["_params_out"],
+    TParams["_output_in"],
+    TParams["_body_out"],
+    TParams["_query_out"]
   >;
 
 export type AnyCompiledRoute = CompiledRoute<any>;

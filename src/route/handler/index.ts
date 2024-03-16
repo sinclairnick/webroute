@@ -5,7 +5,6 @@ import {
   ErrorMessage,
   NextUtil,
   ResponseUtil,
-  UnsetMarker,
   nextFnSymbol,
 } from "../../util";
 import {
@@ -31,17 +30,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
    * Add parser for req.query
    */
   query<$Parser extends Parser>(
-    schema: TParams["_query_out"] extends UnsetMarker
-      ? $Parser
-      : inferParser<$Parser>["out"] extends Record<string, unknown> | undefined
-      ? TParams["_query_out"] extends Record<string, unknown> | undefined
-        ? undefined extends inferParser<$Parser>["out"] // if current is optional the previous must be too
-          ? undefined extends TParams["_query_out"]
-            ? $Parser
-            : ErrorMessage<"Cannot chain an optional parser to a required parser">
-          : $Parser
-        : ErrorMessage<"All input parsers did not resolve to an object">
-      : ErrorMessage<"All input parsers did not resolve to an object">
+    schema: $Parser
   ): HandlerBuilder<{
     _config: TParams["_config"];
     _path: TParams["_path"];
@@ -62,17 +51,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
    * Add parser for req.params
    */
   params<$Parser extends Parser>(
-    schema: TParams["_params_out"] extends UnsetMarker
-      ? $Parser
-      : inferParser<$Parser>["out"] extends Record<string, unknown> | undefined
-      ? TParams["_params_out"] extends Record<string, unknown> | undefined
-        ? undefined extends inferParser<$Parser>["out"] // if current is optional the previous must be too
-          ? undefined extends TParams["_params_out"]
-            ? $Parser
-            : ErrorMessage<"Cannot chain an optional parser to a required parser">
-          : $Parser
-        : ErrorMessage<"All input parsers did not resolve to an object">
-      : ErrorMessage<"All input parsers did not resolve to an object">
+    schema: $Parser
   ): HandlerBuilder<{
     _config: TParams["_config"];
     _ctx: TParams["_ctx"];
@@ -93,17 +72,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
    * Add parser for req.body
    */
   body<$Parser extends Parser>(
-    schema: TParams["_body_out"] extends UnsetMarker
-      ? $Parser
-      : inferParser<$Parser>["out"] extends Record<string, unknown> | undefined
-      ? TParams["_body_out"] extends Record<string, unknown> | undefined
-        ? undefined extends inferParser<$Parser>["out"] // if current is optional the previous must be too
-          ? undefined extends TParams["_body_out"]
-            ? $Parser
-            : ErrorMessage<"Cannot chain an optional parser to a required parser">
-          : $Parser
-        : ErrorMessage<"All input parsers did not resolve to an object">
-      : ErrorMessage<"All input parsers did not resolve to an object">
+    schema: $Parser
   ): HandlerBuilder<{
     _config: TParams["_config"];
     _path: TParams["_path"];
@@ -126,17 +95,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
    * Add parser for res.body
    */
   output<$Parser extends Parser>(
-    schema: TParams["_output_out"] extends UnsetMarker
-      ? $Parser
-      : inferParser<$Parser>["out"] extends Record<string, unknown> | undefined
-      ? TParams["_output_out"] extends Record<string, unknown> | undefined
-        ? undefined extends inferParser<$Parser>["out"] // if current is optional the previous must be too
-          ? undefined extends TParams["_output_out"]
-            ? $Parser
-            : ErrorMessage<"Cannot chain an optional parser to a required parser">
-          : $Parser
-        : ErrorMessage<"All input parsers did not resolve to an object">
-      : ErrorMessage<"All input parsers did not resolve to an object">
+    schema: $Parser
   ): HandlerBuilder<{
     _config: TParams["_config"];
     _path: TParams["_path"];
@@ -196,14 +155,14 @@ export function createBuilder<
   _path: TPath;
   _ctx: TConfig["$types"]["ctx"];
   _meta: TConfig["$types"]["meta"];
-  _query_in: UnsetMarker;
-  _query_out: UnsetMarker;
-  _params_in: UnsetMarker;
-  _params_out: UnsetMarker;
-  _body_in: UnsetMarker;
-  _body_out: UnsetMarker;
-  _output_in: UnsetMarker;
-  _output_out: UnsetMarker;
+  _query_in: unknown;
+  _query_out: unknown;
+  _params_in: unknown;
+  _params_out: unknown;
+  _body_in: unknown;
+  _body_out: unknown;
+  _output_in: unknown;
+  _output_out: unknown;
   _methods: string;
 }> {
   const _def = {

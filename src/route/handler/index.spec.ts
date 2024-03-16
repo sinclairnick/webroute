@@ -1,7 +1,6 @@
 import { describe, expect, expectTypeOf, test, vi } from "vitest";
 import { HandlerBuilder, createBuilder } from ".";
 import { z } from "zod";
-import { UnsetMarker } from "../../util";
 
 describe("Handler", () => {
   test("Initially has no type info", () => {
@@ -11,10 +10,10 @@ describe("Handler", () => {
       ? TParams
       : never;
 
-    expectTypeOf<TParams["_query_out"]>().toEqualTypeOf<UnsetMarker>();
-    expectTypeOf<TParams["_params_out"]>().toEqualTypeOf<UnsetMarker>();
-    expectTypeOf<TParams["_body_out"]>().toEqualTypeOf<UnsetMarker>();
-    expectTypeOf<TParams["_output_out"]>().toEqualTypeOf<UnsetMarker>();
+    expectTypeOf<TParams["_query_out"]>().toEqualTypeOf<unknown>();
+    expectTypeOf<TParams["_params_out"]>().toEqualTypeOf<unknown>();
+    expectTypeOf<TParams["_body_out"]>().toEqualTypeOf<unknown>();
+    expectTypeOf<TParams["_output_out"]>().toEqualTypeOf<unknown>();
   });
 
   test("Initially has no schema info", () => {

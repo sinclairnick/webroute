@@ -52,18 +52,18 @@ describe("Infer", () => {
   test("Infers using `endpoint` helper", () => {
     type HelloEndpoint = H.Endpoint<App, "/hello", "get">;
 
-    expectTypeOf<HelloEndpoint["body"]>().toBeNever();
-    expectTypeOf<HelloEndpoint["output"]>().toBeNever();
-    expectTypeOf<HelloEndpoint["params"]>().toBeNever();
+    expectTypeOf<HelloEndpoint["body"]>().toBeUnknown();
+    expectTypeOf<HelloEndpoint["output"]>().toBeUnknown();
+    expectTypeOf<HelloEndpoint["params"]>().toBeUnknown();
     expectTypeOf<HelloEndpoint["query"]>().toEqualTypeOf<{ hi: number }>();
 
     type HelloEndpointPost = H.Endpoint<App, "/hello", "post">;
     expectTypeOf<HelloEndpointPost["body"]>().toEqualTypeOf<{
       notHi: number;
     }>();
-    expectTypeOf<HelloEndpointPost["output"]>().toBeNever();
-    expectTypeOf<HelloEndpointPost["params"]>().toBeNever();
-    expectTypeOf<HelloEndpointPost["query"]>().toBeNever();
+    expectTypeOf<HelloEndpointPost["output"]>().toBeUnknown();
+    expectTypeOf<HelloEndpointPost["params"]>().toBeUnknown();
+    expectTypeOf<HelloEndpointPost["query"]>().toBeUnknown();
   });
 
   test("Handles multiple routes overloading path", () => {

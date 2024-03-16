@@ -1,4 +1,3 @@
-import { UnsetMarkerToNever } from "../util";
 import { createBuilder } from "./handler";
 import {
   AnyCompiledRoute,
@@ -31,9 +30,7 @@ export namespace route {
   export type InferPart<
     TRoute extends AnyCompiledRoute,
     TPart extends keyof HandlerParams
-  > = TRoute extends CompiledRoute<infer TParams>
-    ? UnsetMarkerToNever<TParams[TPart]>
-    : never;
+  > = TRoute extends CompiledRoute<infer TParams> ? TParams[TPart] : never;
 
   export type InferBodyIn<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,

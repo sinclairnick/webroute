@@ -4,17 +4,6 @@ export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & {};
 
 export type ErrorMessage<TMessage extends string> = TMessage;
 
-/**
- * @internal
- */
-export const unsetMarker = Symbol("unsetMarker");
-/**
- * @internal
- */
-export type UnsetMarker = typeof unsetMarker;
-
-export type UnsetMarkerToNever<T> = T extends UnsetMarker ? never : T;
-
 export type RootConfig<TContext, TMeta extends Record<PropertyKey, any>> = {
   $types: {
     ctx: TContext;
