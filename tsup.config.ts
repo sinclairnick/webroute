@@ -1,11 +1,16 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: [
+    "src/index.ts",
+    "src/openapi/index.ts",
+    "src/fs-router/index.ts",
+    "src/client/index.ts",
+  ],
   clean: true,
   dts: true,
   format: ["cjs", "esm"],
   outDir: "dist",
-  sourcemap: true,
+  sourcemap: false,
   external: ["zod", "zod-to-json-schema"],
 });

@@ -82,4 +82,21 @@ export namespace route {
     TRoute,
     "_methods"
   >;
+
+  export interface DefinedRouteDef<TParams extends HandlerParams> {
+    paramsIn: TParams["_params_in"];
+    paramsOut: TParams["_params_out"];
+    bodyIn: TParams["_body_in"];
+    bodyOut: TParams["_body_out"];
+    queryIn: TParams["_query_in"];
+    queryOut: TParams["_query_out"];
+    outputIn: TParams["_output_in"];
+    outputOut: TParams["_output_out"];
+    path: TParams["_path"];
+  }
+
+  export type InferRouteDef<TRoute extends AnyCompiledRoute> =
+    TRoute extends CompiledRoute<infer TParams>
+      ? DefinedRouteDef<TParams>
+      : never;
 }

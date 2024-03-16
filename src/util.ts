@@ -82,3 +82,11 @@ export const NextUtil = {
 export const isArray = (
   arg: ReadonlyArray<any> | any
 ): arg is ReadonlyArray<any> => Array.isArray(arg);
+
+export type MakeUnknownOptional<T extends Record<any, any>> = Simplify<
+  {
+    [TKey in keyof T as unknown extends T[TKey] ? never : TKey]: T[TKey];
+  } & {
+    [TKey in keyof T as unknown extends T[TKey] ? TKey : never]?: T[TKey];
+  }
+>;

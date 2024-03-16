@@ -1,24 +1,11 @@
 import { describe } from "vitest";
 import { test } from "vitest";
-import { route } from "../route";
 import { H } from ".";
 import { expectTypeOf } from "vitest";
-import { z } from "zod";
+import { generateTestRoutes } from "../internal/test-util";
 
 describe("Infer", () => {
-  const routes = [
-    route("/hello")
-      .method("get")
-      .query(z.object({ hi: z.number() }))
-      .handle(() => {}),
-    route("/hello")
-      .method("post")
-      .body(z.object({ notHi: z.number() }))
-      .handle(() => {}),
-    route("/bye")
-      .params(z.object({ bye: z.number() }))
-      .handle(() => {}),
-  ] as const;
+  const routes = generateTestRoutes();
   type App = H.Infer<typeof routes>;
 
   test("Infers app paths", () => {
@@ -53,7 +40,9 @@ describe("Infer", () => {
     type HelloEndpoint = H.Endpoint<App, "/hello", "get">;
 
     expectTypeOf<HelloEndpoint["body"]>().toBeUnknown();
-    expectTypeOf<HelloEndpoint["output"]>().toBeUnknown();
+    expectTypeOf<HelloEndpoint["output"]>().toEqualTypeOf<{
+      result: boolean;
+    }>();
     expectTypeOf<HelloEndpoint["params"]>().toBeUnknown();
     expectTypeOf<HelloEndpoint["query"]>().toEqualTypeOf<{ hi: number }>();
 
