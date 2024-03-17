@@ -1,12 +1,14 @@
 import { H } from "../infer";
 import { MakeUnknownOptional } from "../util";
 
-export type FetcherReturn<TResult, TFetcherRes> = TFetcherRes extends Record<
-  any,
-  any
->
-  ? { data: TResult } & Omit<TFetcherRes, "data">
-  : { data: TResult };
+// Not entirely sure why, but using `Omit` doesn't seem to achieve
+// the desired result. Have had to resort to dynamically mapping the data
+// property to avoid type union from obliterating the data type itself.
+export type FetcherReturn<TResult, TFetcherRes> = {
+  [TKey in keyof TFetcherRes]: TKey extends "data"
+    ? TResult
+    : TFetcherRes[TKey];
+};
 
 export type Fetcher<TOpts = unknown, TResponse = unknown> = (
   config: {
@@ -18,20 +20,6 @@ export type Fetcher<TOpts = unknown, TResponse = unknown> = (
   },
   opts: TOpts
 ) => Promise<FetcherReturn<unknown, TResponse>>;
-
-export type InferFetcherResponse<TFetcher> = TFetcher extends Fetcher<
-  any,
-  infer TResponse
->
-  ? Awaited<TResponse>
-  : unknown;
-
-export type InferFetcherOpts<TFetcher> = TFetcher extends Fetcher<
-  infer TOpts,
-  any
->
-  ? TOpts
-  : undefined;
 
 export type CreateTypedClientOpts<TOpts, TResponse> = {
   fetcher: Fetcher<TOpts, TResponse>;
@@ -49,7 +37,7 @@ export type TypedClient<
     TMethod
   > extends infer TEndpoint
     ? TEndpoint extends H.DefinedEndpoint<any>
-      ? InferFetcherOpts<TFetcher> extends infer TOpts
+      ? TFetcher extends Fetcher<infer TOpts, infer TResponse>
         ? (
             ...args: undefined extends TOpts
               ? [
@@ -63,9 +51,7 @@ export type TypedClient<
                   >,
                   opts: TOpts
                 ]
-          ) => Promise<
-            FetcherReturn<TEndpoint["output"], InferFetcherResponse<TFetcher>>
-          >
+          ) => Promise<FetcherReturn<TEndpoint["output"], TResponse>>
         : never
       : never
     : never;

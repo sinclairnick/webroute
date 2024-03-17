@@ -66,6 +66,19 @@ describe("Client", () => {
     expectTypeOf<Actual>().toEqualTypeOf<Expectation>();
   });
 
+  test("Creates correct return type with additional context", () => {
+    const client = createTypedClient<App>()({
+      fetcher: async (config) => {
+        return { data: {}, b: 2 };
+      },
+    });
+    const getHello = client("/hello").get;
+
+    type Expectation = { data: { result: boolean }; b: number };
+    type Actual = Awaited<ReturnType<typeof getHello>>;
+    expectTypeOf<Actual>().toEqualTypeOf<Expectation>();
+  });
+
   test("Creates correct options type", () => {
     const client = createTypedClient<App>()({
       fetcher: async (config, options: { a: number }) => {
