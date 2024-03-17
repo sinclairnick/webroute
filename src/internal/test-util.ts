@@ -16,6 +16,9 @@ export const generateTestRoutes = () => {
       .method("get")
       .params(z.object({ bye: z.number() }))
       .handle(() => {}),
+    route("/with/{paramName}")
+      .method("get")
+      .handle(() => {}),
   ] as const;
 
   return routes;

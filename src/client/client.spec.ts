@@ -1,24 +1,32 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { generateTestRoutes } from "../internal/test-util";
-import { TypedClient, createTypedClient } from ".";
+import { createTypedClient } from ".";
 import { H } from "../infer";
 
 describe("Client", () => {
   const routes = generateTestRoutes();
   type App = H.Infer<typeof routes>;
 
-  test("Computes correct types", async () => {
-    const client = createTypedClient<App>({
-      fetcher: (path, method, config) => {
-        return { path, method, config };
+  test("Creates correct path param", () => {
+    const client = createTypedClient<App>()({
+      fetcher: async (config) => {
+        return { data: {} };
       },
     });
 
     expectTypeOf<Parameters<typeof client>[0]>().toEqualTypeOf<
-      "/hello" | "/bye"
+      "/hello" | "/bye" | "/with/{paramName}"
     >();
+  });
 
+  test("Creates correct param types", () => {
+    const client = createTypedClient<App>()({
+      fetcher: async (config) => {
+        return { data: {} };
+      },
+    });
     const getHello = client("/hello").get;
+
     expectTypeOf<Parameters<typeof getHello>[0]>().toEqualTypeOf<{
       query: {
         hi: number;
@@ -26,9 +34,14 @@ describe("Client", () => {
       params?: unknown;
       body?: unknown;
     }>();
-    expectTypeOf<ReturnType<typeof getHello>>().toEqualTypeOf<
-      Promise<{ result: boolean }>
-    >();
+  });
+
+  test("Creates correct body type", () => {
+    const client = createTypedClient<App>()({
+      fetcher: async (config) => {
+        return { data: {} };
+      },
+    });
 
     const postHello = client("/hello").post;
     expectTypeOf<Parameters<typeof postHello>[0]>().toEqualTypeOf<{
@@ -38,5 +51,48 @@ describe("Client", () => {
       params?: unknown;
       query?: unknown;
     }>();
+  });
+
+  test("Creates correct return type", () => {
+    const client = createTypedClient<App>()({
+      fetcher: async (config) => {
+        return { data: {} };
+      },
+    });
+    const getHello = client("/hello").get;
+
+    type Expectation = { data: { result: boolean } };
+    type Actual = Awaited<ReturnType<typeof getHello>>;
+    expectTypeOf<Actual>().toEqualTypeOf<Expectation>();
+  });
+
+  test("Creates correct options type", () => {
+    const client = createTypedClient<App>()({
+      fetcher: async (config, options: { a: number }) => {
+        return { data: {} };
+      },
+    });
+
+    const getHello = client("/hello").get;
+    expectTypeOf<Parameters<typeof getHello>[1]>().toEqualTypeOf<{
+      a: number;
+    }>();
+  });
+
+  test("Runs fetcher correctly", async () => {
+    const client = createTypedClient<App>()({
+      fetcher: async (config) => {
+        const res = { a: 2 };
+
+        return { data: 1, ...res };
+      },
+    });
+
+    const result = await client("/hello").get({
+      query: { hi: 2 },
+    });
+
+    expect(result.data).toBe(1);
+    expect(result.data).toBe(1);
   });
 });
