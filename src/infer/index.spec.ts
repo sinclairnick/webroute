@@ -33,7 +33,9 @@ describe("Infer", () => {
   test("Infers app path union", () => {
     type Paths = H.InferPaths<App>;
 
-    expectTypeOf<Paths>().toEqualTypeOf<"/hello" | "/bye">;
+    expectTypeOf<Paths>().toEqualTypeOf<
+      "/hello" | "/bye" | "/with/{paramName}"
+    >;
   });
 
   test("Infers using `endpoint` helper", () => {

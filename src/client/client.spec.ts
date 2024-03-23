@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { generateTestRoutes } from "../internal/test-util";
-import { createTypedClient } from ".";
+import { createTypedClient } from "./client";
 import { H } from "../infer";
 
 describe("Client", () => {
