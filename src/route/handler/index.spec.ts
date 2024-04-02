@@ -1,6 +1,7 @@
 import { describe, expect, expectTypeOf, test, vi } from "vitest";
 import { HandlerBuilder, createBuilder } from ".";
 import { z } from "zod";
+import { ParsedQs } from "qs";
 
 describe("Handler", () => {
   test("Initially has no type info", () => {
@@ -185,5 +186,17 @@ describe("Handler", () => {
 
     expect(body).toBeDefined();
     expect(body.a).toEqual("1_transformed");
+  });
+
+  test("handle() uses more relaxed handler type", () => {
+    const route = createBuilder().params(z.object({ a: z.number() }));
+
+    type HandlerFn = Parameters<(typeof route)["handle"]>[0];
+    type ReqParam = Parameters<HandlerFn>[0];
+
+    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<{ a: number }>();
+    expectTypeOf<ReqParam["query"]>().toEqualTypeOf<ParsedQs>();
+    expectTypeOf<ReqParam["body"]>().toEqualTypeOf<any>();
+    expectTypeOf<ReqParam["body"]>().toEqualTypeOf<any>();
   });
 });

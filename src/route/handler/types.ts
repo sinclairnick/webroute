@@ -1,8 +1,9 @@
-import { RequestHandler, Response } from "express";
+import express, { RequestHandler, Response } from "express";
 import { Parser } from "../parser/types";
 import {
   AnyRequestHandlerModified,
   AnyRootConfig,
+  DefaultUnknownTo,
   RequestHandlerModified,
 } from "../../util";
 import { ParseFn } from "../parser";
@@ -106,10 +107,10 @@ export type ResponseOrLiteral<T> = Response<T> | T | void;
 
 export type HandlerFunction<TParams extends HandlerParams> =
   RequestHandlerModified<
-    TParams["_params_out"],
-    TParams["_output_in"],
-    TParams["_body_out"],
-    TParams["_query_out"]
+    DefaultUnknownTo<TParams["_params_out"], express.Request["params"]>,
+    DefaultUnknownTo<TParams["_output_in"], any>,
+    DefaultUnknownTo<TParams["_body_out"], express.Request["body"]>,
+    DefaultUnknownTo<TParams["_query_out"], express.Request["query"]>
   >;
 
 export type AnyCompiledRoute = CompiledRoute<any>;

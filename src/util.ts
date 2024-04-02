@@ -90,3 +90,5 @@ export type MakeUnknownOptional<T extends Record<any, any>> = Simplify<
     [TKey in keyof T as unknown extends T[TKey] ? TKey : never]?: T[TKey];
   }
 >;
+
+export type DefaultUnknownTo<T, D> = unknown extends T ? D : T;
