@@ -1,17 +1,16 @@
 import { NextFunction, Request, Response } from "express";
+import { IncomingHttpHeaders } from "http";
 
 export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & {};
 
-export type ErrorMessage<TMessage extends string> = TMessage;
-
-export type RootConfig<TContext, TMeta extends Record<PropertyKey, any>> = {
+export interface RootConfig<TContext, TMeta extends Record<PropertyKey, any>> {
   $types: {
     ctx: TContext;
     meta: TMeta;
   };
-};
+}
 
-export type AnyRootConfig = RootConfig<any, any>;
+export interface AnyRootConfig extends RootConfig<any, any> {}
 
 export const nextFnSymbol = Symbol("next");
 export type NextFnSymbol = typeof nextFnSymbol;
@@ -45,30 +44,30 @@ export interface ParsedQs {
   [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
 }
 
-export type AnyRequestHandlerModified = RequestHandlerModified<
-  any,
-  any,
-  any,
-  any,
-  any
->;
-export type RequestHandlerModified<
+export interface AnyRequestHandlerModified
+  extends RequestHandlerModified<any, any, any, any, any> {}
+export interface RequestHandlerModified<
   P = Record<string, string>,
   ResBody = any,
   ReqBody = any,
   ReqQuery = ParsedQs,
-  LocalsObj extends Record<string, any> = Record<string, any>
-> = (
-  req: Request<P, ResBody, ReqBody, ReqQuery, LocalsObj>,
-  res: Response<ResBody, LocalsObj>,
-  next: NextFunctionWithReturn
-) =>
-  | Response<ResBody, LocalsObj>
-  | void
-  | undefined
-  | NextFnSymbol
-  | ResBody
-  | Promise<ResBody>;
+  LocalsObj extends Record<string, any> = Record<string, any>,
+  Headers = {}
+> {
+  (
+    req: Omit<Request<P, ResBody, ReqBody, ReqQuery, LocalsObj>, "headers"> & {
+      headers: MergeObjectsShallow<IncomingHttpHeaders, Headers>;
+    },
+    res: Response<ResBody, LocalsObj>,
+    next: NextFunctionWithReturn
+  ):
+    | Response<ResBody, LocalsObj>
+    | void
+    | undefined
+    | NextFnSymbol
+    | ResBody
+    | Promise<ResBody>;
+}
 
 export const NextUtil = {
   wrap: (next: NextFunction): NextFunctionWithReturn => {

@@ -46,6 +46,8 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _output_in: TParams["_output_in"];
     _output_out: TParams["_output_out"];
     _methods: TParams["_methods"];
+    _headers_req_in: TParams["_headers_req_in"];
+    _headers_req_out: TParams["_headers_req_out"];
   }>;
 
   /**
@@ -68,6 +70,8 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _output_in: TParams["_output_in"];
     _output_out: TParams["_output_out"];
     _methods: TParams["_methods"];
+    _headers_req_in: TParams["_headers_req_in"];
+    _headers_req_out: TParams["_headers_req_out"];
   }>;
 
   /**
@@ -90,9 +94,30 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _output_in: TParams["_output_in"];
     _output_out: TParams["_output_out"];
     _methods: TParams["_methods"];
+    _headers_req_in: TParams["_headers_req_in"];
+    _headers_req_out: TParams["_headers_req_out"];
   }>;
 
-  // TODO: Add headers parser?
+  headers<$Parser extends Parser>(
+    schema: $Parser
+  ): HandlerBuilder<{
+    _config: TParams["_config"];
+    _path: TParams["_path"];
+    _inferredParams: TParams["_inferredParams"];
+    _ctx: TParams["_ctx"];
+    _meta: TParams["_meta"];
+    _query_in: TParams["_query_in"];
+    _query_out: TParams["_query_out"];
+    _params_in: TParams["_params_in"];
+    _params_out: TParams["_params_out"];
+    _body_in: TParams["_body_in"];
+    _body_out: TParams["_body_out"];
+    _output_in: inferParser<$Parser>["in"];
+    _output_out: inferParser<$Parser>["out"];
+    _methods: TParams["_methods"];
+    _headers_req_in: inferParser<$Parser>["in"];
+    _headers_req_out: inferParser<$Parser>["out"];
+  }>;
 
   /**
    * Add parser for res.body
@@ -114,6 +139,8 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _output_in: inferParser<$Parser>["in"];
     _output_out: inferParser<$Parser>["out"];
     _methods: TParams["_methods"];
+    _headers_req_in: TParams["_headers_req_in"];
+    _headers_req_out: TParams["_headers_req_out"];
   }>;
 
   method<TMethod extends HttpMethod | HttpMethod[]>(
@@ -133,6 +160,8 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _output_in: TParams["_output_in"];
     _output_out: TParams["_output_out"];
     _methods: TMethod extends HttpMethod ? TMethod : TMethod[number];
+    _headers_req_in: TParams["_headers_req_in"];
+    _headers_req_out: TParams["_headers_req_out"];
   }>;
 
   /**
@@ -170,6 +199,8 @@ export function createBuilder<
   _output_in: unknown;
   _output_out: unknown;
   _methods: string;
+  _headers_req_in: unknown;
+  _headers_req_out: unknown;
 }> {
   const _def = {
     ...initDef,
@@ -215,6 +246,14 @@ export function createBuilder<
         methods: Array.isArray(method) ? method : [method],
       }) as AnyHandlerBuilder;
     },
+    headers(schema) {
+      return createNewBuilder(_def, {
+        headersReq: {
+          parser: getParseFn(schema),
+          schema,
+        },
+      }) as AnyHandlerBuilder;
+    },
     handle(handler) {
       const _handler: RequestHandler = async (req, res, next) => {
         if (res.headersSent) {
@@ -236,6 +275,11 @@ export function createBuilder<
           let body: any = req.body;
           if (_def.body) {
             req.body = await _def.body.parser(body);
+          }
+
+          let headers: any = req.headers;
+          if (_def.headersReq) {
+            req.headers = (await _def.headersReq.parser(headers)) as any;
           }
 
           const result = await handler(req as any, res, NextUtil.wrap(next));

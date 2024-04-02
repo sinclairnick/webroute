@@ -11,7 +11,7 @@ import {
 import { ParseFn } from "../parser";
 import { oas31 } from "openapi3-ts";
 
-export type RouteMeta = {
+export interface RouteMeta {
   /**
    * Route name used to identify the route.
    * May be used for improved OpenAPI operation naming.
@@ -25,7 +25,7 @@ export type RouteMeta = {
   openApi?:
     | oas31.OperationObject
     | ((operation: oas31.OperationObject) => oas31.OperationObject);
-};
+}
 
 export interface HandlerParams<
   TConfig extends AnyRootConfig = AnyRootConfig,
@@ -39,6 +39,8 @@ export interface HandlerParams<
   TBodyOut = unknown,
   TOutputIn = unknown,
   TOutputOut = unknown,
+  TReqHeadersIn = unknown,
+  TReqHeadersOut = unknown,
   TMeta = TConfig["$types"]["meta"],
   TMethods = HttpMethod,
   TInferredParams = unknown
@@ -71,9 +73,13 @@ export interface HandlerParams<
   _output_in: TOutputIn;
   /** @internal */
   _output_out: TOutputOut;
+  /** @internal */
+  _headers_req_in: TReqHeadersIn;
+  /** @internal */
+  _headers_req_out: TReqHeadersOut;
 }
 
-export type AnyHandlerDefinition = HandlerDefinition<any>;
+export interface AnyHandlerDefinition extends HandlerDefinition<any> {}
 
 export type HttpMethod =
   | "get"
@@ -104,14 +110,18 @@ export interface HandlerDefinition<TParams extends HandlerParams> {
     parser: ParseFn<unknown>;
     schema: Parser;
   };
+  headersReq?: {
+    parser: ParseFn<unknown>;
+    schema: Parser;
+  };
   meta?: TParams["_meta"];
   rawHandler?: AnyRequestHandlerModified;
 }
 
 export type ResponseOrLiteral<T> = Response<T> | T | void;
 
-export type HandlerFunction<TParams extends HandlerParams> =
-  RequestHandlerModified<
+export interface HandlerFunction<TParams extends HandlerParams>
+  extends RequestHandlerModified<
     TParams["_inferredParams"] extends never
       ? DefaultUnknownTo<TParams["_params_out"], express.Request["params"]>
       : DefaultUnknownTo<
@@ -123,10 +133,12 @@ export type HandlerFunction<TParams extends HandlerParams> =
         >,
     DefaultUnknownTo<TParams["_output_in"], any>,
     DefaultUnknownTo<TParams["_body_out"], express.Request["body"]>,
-    DefaultUnknownTo<TParams["_query_out"], express.Request["query"]>
-  >;
+    DefaultUnknownTo<TParams["_query_out"], express.Request["query"]>,
+    Record<string, any>,
+    TParams["_headers_req_out"]
+  > {}
 
-export type AnyCompiledRoute = CompiledRoute<any>;
+export interface AnyCompiledRoute extends CompiledRoute<any> {}
 
 export type CompiledRoute<TParams extends HandlerParams> = RequestHandler & {
   _def: HandlerDefinition<TParams>;

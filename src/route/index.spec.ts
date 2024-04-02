@@ -232,4 +232,36 @@ describe("Handler", () => {
       id: number;
     }>();
   });
+
+  test("Works with .headers", () => {
+    const _route = route().headers(z.object({ auth: z.boolean() }));
+
+    type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
+    type ReqParam = Parameters<HandlerFn>[0];
+
+    expectTypeOf<ReqParam["headers"]>().toMatchTypeOf<{ auth: boolean }>();
+    // Keeps original headers
+    expectTypeOf<ReqParam["headers"]>().toMatchTypeOf<{
+      authorization?: string;
+    }>();
+  });
+
+  test("Parses incoming headers", async () => {
+    const schema = z.object({
+      a: z.string().transform((x) => `${x}_transformed`),
+    });
+
+    let headers: any;
+    const _route = route()
+      .headers(schema)
+      .handle((req, res, next) => {
+        headers = req.headers;
+      });
+
+    const res = { json: vi.fn() };
+    const req = { headers: { a: "a" } };
+    await _route(req as any, res as any, () => {});
+
+    expect(headers.a).toBe("a_transformed");
+  });
 });
