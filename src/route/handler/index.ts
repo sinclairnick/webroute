@@ -195,17 +195,19 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _req_mutations: TParams["_req_mutations"];
   }>;
 
-  use<TMutations extends Record<PropertyKey, any>>(
+  use<TMutations extends Record<PropertyKey, any> = {}>(
     ...handlers: HandlerFunction<
-      MergeObjectsShallow<
-        TParams,
-        {
-          _req_mutations: MergeObjectsShallow<
-            TParams["_req_mutations"],
-            Partial<TMutations>
-          >;
-        }
-      >
+      {} extends TMutations
+        ? TParams
+        : MergeObjectsShallow<
+            TParams,
+            {
+              _req_mutations: MergeObjectsShallow<
+                TParams["_req_mutations"],
+                Partial<TMutations>
+              >;
+            }
+          >
     >[]
   ): HandlerBuilder<{
     _config: TParams["_config"];

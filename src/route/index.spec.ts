@@ -3,6 +3,7 @@ import { HandlerBuilder } from "./handler";
 import { z } from "zod";
 import { ParsedQs } from "qs";
 import { route } from ".";
+import multer from "multer";
 
 describe("Handler", () => {
   test("Initially has no type info", () => {
@@ -281,6 +282,13 @@ describe("Handler", () => {
     await _route(req as any, res as any, () => {});
 
     expect(user).toEqual({ id: "123" });
+  });
+
+  test("Retains compat type signature when empty", async () => {
+    const upload = multer();
+
+    // This file used to type error
+    const useFn = route().use(upload.single(""));
   });
 
   test("Handles chained middleware", async () => {
