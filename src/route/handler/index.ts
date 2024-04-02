@@ -2,6 +2,7 @@ import { getParseFn } from "../parser";
 import { Parser, inferParser } from "../parser/types";
 import {
   AnyRootConfig,
+  MergeObjectsShallow,
   NextUtil,
   ResponseUtil,
   nextFnSymbol,
@@ -48,6 +49,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _methods: TParams["_methods"];
     _headers_req_in: TParams["_headers_req_in"];
     _headers_req_out: TParams["_headers_req_out"];
+    _req_mutations: TParams["_req_mutations"];
   }>;
 
   /**
@@ -72,6 +74,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _methods: TParams["_methods"];
     _headers_req_in: TParams["_headers_req_in"];
     _headers_req_out: TParams["_headers_req_out"];
+    _req_mutations: TParams["_req_mutations"];
   }>;
 
   /**
@@ -96,6 +99,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _methods: TParams["_methods"];
     _headers_req_in: TParams["_headers_req_in"];
     _headers_req_out: TParams["_headers_req_out"];
+    _req_mutations: TParams["_req_mutations"];
   }>;
 
   headers<$Parser extends Parser>(
@@ -117,6 +121,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _methods: TParams["_methods"];
     _headers_req_in: inferParser<$Parser>["in"];
     _headers_req_out: inferParser<$Parser>["out"];
+    _req_mutations: TParams["_req_mutations"];
   }>;
 
   /**
@@ -141,6 +146,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _methods: TParams["_methods"];
     _headers_req_in: TParams["_headers_req_in"];
     _headers_req_out: TParams["_headers_req_out"];
+    _req_mutations: TParams["_req_mutations"];
   }>;
 
   method<TMethod extends HttpMethod | HttpMethod[]>(
@@ -162,6 +168,39 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     _methods: TMethod extends HttpMethod ? TMethod : TMethod[number];
     _headers_req_in: TParams["_headers_req_in"];
     _headers_req_out: TParams["_headers_req_out"];
+    _req_mutations: TParams["_req_mutations"];
+  }>;
+
+  use<TMutations extends Record<PropertyKey, any>>(
+    ...handlers: HandlerFunction<
+      MergeObjectsShallow<
+        TParams,
+        {
+          _req_mutations: MergeObjectsShallow<
+            TParams["_req_mutations"],
+            Partial<TMutations>
+          >;
+        }
+      >
+    >[]
+  ): HandlerBuilder<{
+    _config: TParams["_config"];
+    _path: TParams["_path"];
+    _inferredParams: TParams["_inferredParams"];
+    _ctx: TParams["_ctx"];
+    _meta: TParams["_meta"];
+    _query_in: TParams["_query_in"];
+    _query_out: TParams["_query_out"];
+    _params_in: TParams["_params_in"];
+    _params_out: TParams["_params_out"];
+    _body_in: TParams["_body_in"];
+    _body_out: TParams["_body_out"];
+    _output_in: TParams["_output_in"];
+    _output_out: TParams["_output_out"];
+    _methods: TParams["_methods"];
+    _headers_req_in: TParams["_headers_req_in"];
+    _headers_req_out: TParams["_headers_req_out"];
+    _req_mutations: MergeObjectsShallow<TParams["_req_mutations"], TMutations>;
   }>;
 
   /**
@@ -201,6 +240,7 @@ export function createBuilder<
   _methods: string;
   _headers_req_in: unknown;
   _headers_req_out: unknown;
+  _req_mutations: {};
 }> {
   const _def = {
     ...initDef,
@@ -254,8 +294,28 @@ export function createBuilder<
         },
       }) as AnyHandlerBuilder;
     },
+    use(...handlers) {
+      return createNewBuilder(_def, {
+        middleware: [...(_def.middleware ?? []), ...(handlers as any[])],
+      }) as AnyHandlerBuilder;
+    },
     handle(handler) {
       const _handler: RequestHandler = async (req, res, next) => {
+        if (_def.middleware) {
+          for (const middleware of _def.middleware) {
+            try {
+              await new Promise(async (resolve, reject) => {
+                await middleware(req, res, (err) => {
+                  if (err) reject(err);
+                  else resolve(null);
+                });
+              });
+            } catch (e) {
+              return next(e);
+            }
+          }
+        }
+
         if (res.headersSent) {
           return next();
         }

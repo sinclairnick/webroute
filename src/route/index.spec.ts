@@ -264,4 +264,65 @@ describe("Handler", () => {
 
     expect(headers.a).toBe("a_transformed");
   });
+
+  test("Handles middleware", async () => {
+    let user: any;
+    const _route = route()
+      .use<{ user: { id: string } }>((req, res, next) => {
+        (req as any).user = { id: "123" };
+        next();
+      })
+      .handle((req, res, next) => {
+        user = req.user;
+      });
+
+    const res = { json: vi.fn() };
+    const req = {};
+    await _route(req as any, res as any, () => {});
+
+    expect(user).toEqual({ id: "123" });
+  });
+
+  test("Handles chained middleware", async () => {
+    let user: any;
+    const _route = route()
+      .use<{ user: { id: string } }>((req, res, next) => {
+        req.user = { id: "123" };
+        next();
+      })
+      .use<{ user: { id: string } }>((req, res, next) => {
+        req.user = { id: "456" };
+        next();
+      })
+      .handle((req, res, next) => {
+        user = req.user;
+      });
+
+    const res = { json: vi.fn() };
+    const req = {};
+    await _route(req as any, res as any, () => {});
+
+    expect(user).toEqual({ id: "456" });
+  });
+
+  test("Handles next'd middleware", async () => {
+    let user: any;
+    const _route = route()
+      .use<{ user: { id: string } }>((req, res, next) => {
+        next(new Error());
+      })
+      .use<{ user: { id: string } }>((req, res, next) => {
+        req.user = { id: "123" };
+        next();
+      })
+      .handle((req, res, next) => {
+        user = req.user;
+      });
+
+    const res = { json: vi.fn() };
+    const req = {};
+    await _route(req as any, res as any, () => {});
+
+    expect(user).toEqual(undefined);
+  });
 });

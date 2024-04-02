@@ -43,7 +43,8 @@ export interface HandlerParams<
   TReqHeadersOut = unknown,
   TMeta = TConfig["$types"]["meta"],
   TMethods = HttpMethod,
-  TInferredParams = unknown
+  TInferredParams = unknown,
+  TReqMutations = {}
 > {
   /** @internal */
   _config: TConfig;
@@ -77,6 +78,8 @@ export interface HandlerParams<
   _headers_req_in: TReqHeadersIn;
   /** @internal */
   _headers_req_out: TReqHeadersOut;
+  /** @internal */
+  _req_mutations: TReqMutations;
 }
 
 export interface AnyHandlerDefinition extends HandlerDefinition<any> {}
@@ -114,6 +117,7 @@ export interface HandlerDefinition<TParams extends HandlerParams> {
     parser: ParseFn<unknown>;
     schema: Parser;
   };
+  middleware?: RequestHandler[];
   meta?: TParams["_meta"];
   rawHandler?: AnyRequestHandlerModified;
 }
@@ -135,7 +139,8 @@ export interface HandlerFunction<TParams extends HandlerParams>
     DefaultUnknownTo<TParams["_body_out"], express.Request["body"]>,
     DefaultUnknownTo<TParams["_query_out"], express.Request["query"]>,
     Record<string, any>,
-    TParams["_headers_req_out"]
+    TParams["_headers_req_out"],
+    TParams["_req_mutations"]
   > {}
 
 export interface AnyCompiledRoute extends CompiledRoute<any> {}

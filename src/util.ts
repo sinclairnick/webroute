@@ -52,12 +52,16 @@ export interface RequestHandlerModified<
   ReqBody = any,
   ReqQuery = ParsedQs,
   LocalsObj extends Record<string, any> = Record<string, any>,
-  Headers = {}
+  Headers = {},
+  ReqMutations = {}
 > {
   (
-    req: Omit<Request<P, ResBody, ReqBody, ReqQuery, LocalsObj>, "headers"> & {
-      headers: MergeObjectsShallow<IncomingHttpHeaders, Headers>;
-    },
+    req: MergeObjectsShallow<
+      Omit<Request<P, ResBody, ReqBody, ReqQuery, LocalsObj>, "headers"> & {
+        headers: MergeObjectsShallow<IncomingHttpHeaders, Headers>;
+      },
+      ReqMutations
+    >,
     res: Response<ResBody, LocalsObj>,
     next: NextFunctionWithReturn
   ):
