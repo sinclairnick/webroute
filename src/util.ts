@@ -92,3 +92,10 @@ export type MakeUnknownOptional<T extends Record<any, any>> = Simplify<
 >;
 
 export type DefaultUnknownTo<T, D> = unknown extends T ? D : T;
+
+/** B keys take precedence over A */
+export type MergeObjectsShallow<A, B> = Simplify<
+  {
+    [K in keyof A]: K extends keyof B ? B[K] : A[K];
+  } & B
+>;

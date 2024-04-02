@@ -4,7 +4,9 @@ import {
   AnyRequestHandlerModified,
   AnyRootConfig,
   DefaultUnknownTo,
+  MergeObjectsShallow,
   RequestHandlerModified,
+  Simplify,
 } from "../../util";
 import { ParseFn } from "../parser";
 import { oas31 } from "openapi3-ts";
@@ -38,12 +40,15 @@ export interface HandlerParams<
   TOutputIn = unknown,
   TOutputOut = unknown,
   TMeta = TConfig["$types"]["meta"],
-  TMethods = HttpMethod
+  TMethods = HttpMethod,
+  TInferredParams = unknown
 > {
   /** @internal */
   _config: TConfig;
   /** @internal */
   _path: TPath;
+  /** @internal */
+  _inferredParams: TInferredParams;
   /** @internal */
   _ctx: TContext;
   /** @internal */
@@ -107,7 +112,15 @@ export type ResponseOrLiteral<T> = Response<T> | T | void;
 
 export type HandlerFunction<TParams extends HandlerParams> =
   RequestHandlerModified<
-    DefaultUnknownTo<TParams["_params_out"], express.Request["params"]>,
+    TParams["_inferredParams"] extends never
+      ? DefaultUnknownTo<TParams["_params_out"], express.Request["params"]>
+      : DefaultUnknownTo<
+          MergeObjectsShallow<
+            TParams["_inferredParams"],
+            TParams["_params_out"]
+          >,
+          express.Request["params"]
+        >,
     DefaultUnknownTo<TParams["_output_in"], any>,
     DefaultUnknownTo<TParams["_body_out"], express.Request["body"]>,
     DefaultUnknownTo<TParams["_query_out"], express.Request["query"]>
@@ -119,3 +132,10 @@ export type CompiledRoute<TParams extends HandlerParams> = RequestHandler & {
   _def: HandlerDefinition<TParams>;
   __isCompiledRoute__: true;
 };
+
+export type InferParamsFromPath<T extends string> =
+  T extends `${string}:${infer P}/${infer R}`
+    ? Simplify<{ [K in P]: string } & InferParamsFromPath<R>>
+    : T extends `${string}:${infer P}`
+    ? { [K in P]: string }
+    : never;

@@ -2,7 +2,6 @@ import { getParseFn } from "../parser";
 import { Parser, inferParser } from "../parser/types";
 import {
   AnyRootConfig,
-  ErrorMessage,
   NextUtil,
   ResponseUtil,
   nextFnSymbol,
@@ -14,6 +13,7 @@ import {
   HandlerFunction,
   HandlerParams,
   HttpMethod,
+  InferParamsFromPath,
 } from "./types";
 import { RequestHandler } from "express";
 import { Log } from "../../internal/logger";
@@ -34,6 +34,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   ): HandlerBuilder<{
     _config: TParams["_config"];
     _path: TParams["_path"];
+    _inferredParams: TParams["_inferredParams"];
     _ctx: TParams["_ctx"];
     _meta: TParams["_meta"];
     _query_in: inferParser<$Parser>["in"];
@@ -54,13 +55,14 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     schema: $Parser
   ): HandlerBuilder<{
     _config: TParams["_config"];
+    _path: TParams["_path"];
+    _inferredParams: TParams["_inferredParams"];
     _ctx: TParams["_ctx"];
     _meta: TParams["_meta"];
     _query_in: TParams["_query_in"];
     _query_out: TParams["_query_out"];
     _params_in: inferParser<$Parser>["in"];
     _params_out: inferParser<$Parser>["out"];
-    _path: TParams["_path"];
     _body_in: TParams["_body_in"];
     _body_out: TParams["_body_out"];
     _output_in: TParams["_output_in"];
@@ -76,6 +78,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   ): HandlerBuilder<{
     _config: TParams["_config"];
     _path: TParams["_path"];
+    _inferredParams: TParams["_inferredParams"];
     _ctx: TParams["_ctx"];
     _meta: TParams["_meta"];
     _query_in: TParams["_query_in"];
@@ -99,6 +102,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   ): HandlerBuilder<{
     _config: TParams["_config"];
     _path: TParams["_path"];
+    _inferredParams: TParams["_inferredParams"];
     _ctx: TParams["_ctx"];
     _meta: TParams["_meta"];
     _query_in: TParams["_query_in"];
@@ -117,6 +121,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   ): HandlerBuilder<{
     _config: TParams["_config"];
     _path: TParams["_path"];
+    _inferredParams: TParams["_inferredParams"];
     _ctx: TParams["_ctx"];
     _meta: TParams["_meta"];
     _query_in: TParams["_query_in"];
@@ -153,6 +158,7 @@ export function createBuilder<
 ): HandlerBuilder<{
   _config: TConfig;
   _path: TPath;
+  _inferredParams: InferParamsFromPath<TPath>;
   _ctx: TConfig["$types"]["ctx"];
   _meta: TConfig["$types"]["meta"];
   _query_in: unknown;
