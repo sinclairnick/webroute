@@ -1,7 +1,8 @@
 import express from "express";
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
-import { route, registerRoutes, createOpenApiSpec } from "../dist";
+import { route, registerRoutes } from "../dist";
+import { createOpenApiSpec } from "../dist/openapi";
 
 describe("Open API", () => {
   test("Works with zod", () => {
