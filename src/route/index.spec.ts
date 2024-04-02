@@ -325,4 +325,30 @@ describe("Handler", () => {
 
     expect(user).toEqual(undefined);
   });
+
+  test("Handles recursively updating path", () => {
+    const r1 = route("/user/:id");
+    const r2 = r1.path("/posts/:postId");
+    const r3 = r2.path("/articles/:articleId");
+
+    const path = "/user/:id/posts/:postId/articles/:articleId";
+
+    type R1Path = typeof r1 extends HandlerBuilder<infer TParams>
+      ? TParams["_path"]
+      : never;
+    type R2Path = typeof r2 extends HandlerBuilder<infer TParams>
+      ? TParams["_path"]
+      : never;
+    type R3Path = typeof r3 extends HandlerBuilder<infer TParams>
+      ? TParams["_path"]
+      : never;
+
+    expectTypeOf<R1Path>().toEqualTypeOf<"/user/:id">();
+    expectTypeOf<R2Path>().toEqualTypeOf<"/user/:id/posts/:postId">();
+    expectTypeOf<R3Path>().toEqualTypeOf<typeof path>();
+
+    expect(r1._def.path).toEqual("/user/:id");
+    expect(r2._def.path).toEqual("/user/:id/posts/:postId");
+    expect(r3._def.path).toEqual(path);
+  });
 });

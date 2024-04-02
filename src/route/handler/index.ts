@@ -27,6 +27,30 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
    */
   _def: HandlerDefinition<TParams>;
 
+  path<TPath extends string>(
+    path: TPath
+  ): HandlerBuilder<{
+    _config: TParams["_config"];
+    _path: TParams["_path"] extends string
+      ? `${TParams["_path"]}${TPath}`
+      : TPath;
+    _inferredParams: TParams["_inferredParams"];
+    _ctx: TParams["_ctx"];
+    _meta: TParams["_meta"];
+    _query_in: TParams["_query_in"];
+    _query_out: TParams["_query_out"];
+    _params_in: TParams["_params_in"];
+    _params_out: TParams["_params_out"];
+    _body_in: TParams["_body_in"];
+    _body_out: TParams["_body_out"];
+    _output_in: TParams["_output_in"];
+    _output_out: TParams["_output_out"];
+    _methods: TParams["_methods"];
+    _headers_req_in: TParams["_headers_req_in"];
+    _headers_req_out: TParams["_headers_req_out"];
+    _req_mutations: TParams["_req_mutations"];
+  }>;
+
   /**
    * Add parser for req.query
    */
@@ -248,6 +272,11 @@ export function createBuilder<
 
   return {
     _def,
+    path(path) {
+      return createNewBuilder(_def, {
+        path: _def.path ? `${_def.path}${path}` : path,
+      }) as AnyHandlerBuilder;
+    },
     query(schema) {
       const parser = getParseFn(schema);
 
