@@ -6,266 +6,229 @@
 
 # Harissa
 
-> The 🌶️ spiciest DX for express
-
 ![GitHub License](https://img.shields.io/github/license/sinclairnick/harissa)
 ![NPM Version](https://img.shields.io/npm/v/harissa)
 
-Express is a great web framework. It’s simple, easy to learn, and flexible…. But it hasn’t been updated in years, and every time I start a new express project I’m left wanting for better DX.
+> The modern toolkit for type-safe express apps
 
-**On the other hand**, competing frameworks tend to be heavy, complicated, or full of their own quirks not worth learning the hard way.
+Harissa provides a set of helpers to make working with `express.js` in <current year> more enjoyable, secure, and rapid.
 
-### Enter Harissa
-
-🌶️ **Harissa** humbly bridges this gap by providing a selection of simple, opt-in utilities which make things like validation, OpenAPI support, type-safety etc. easier, without abstracting away too much or forcing new paradigms on you.
+Harissa is explicitly not a framework. It merely provides a handful of tools to make common tasks like validation, type-safety and async first-class citizens with express.
 
 ```sh
 npm i harissa
 ```
 
-It's a slim toolkit extending or sitting atop vanilla express, providing common functionality that one might argue should be part of express itself.
+The goal of harissa is to provide a slim – but powerful – set of express utilities, and nothing more.
 
-It was built to be:
+<details>
+<summary>
+    Table of contents
+</summary>
 
-- 🤸‍♀️ Flexible
-- 🔍 Transparent
-- 🧩 Incrementally adoptable
-- 🤯 Full of options, not headaches
-- 🚶‍♀️ Low risk to adopt/switch away from
-- 🧙‍♂️ Non-magical
+1. [Route](./route)
+2. [Composability](./composablity)
+3. [Client](./client)
+4. [Primitives](./primitives)
+5. [OpenAPI](./openapi)
 
-# Example usage
+</details>
 
-```tsx
-// E.g. using the `route` helper
+> [!IMPORTANT]  
+> Harissa is used internally in production, but is not yet considered entirely stable (yet)
 
-import { route } from "harissa";
+## Route
 
-app.get(
+The `route` is the centerpiece of harissa. It provides a simple, chainable trpc-like interface for defining endpoints in a more declarative fashion. Consequently, routes are easily composed and API contracts, like OpenAPI, can be inferred without any additional effort.
+
+```ts
+const userRoute = route("/user/:id")
+  // <Optional>
+  .use(...middleware)
+  .method("post")
+  .params(ParamSchema)
+  .body(BodySchema)
+  .output(OutputSchema)
+  .headers(HeaderSchema)
+  // </Optional>
+  .handle(async (req) => req.user);
+```
+
+> [!TIP]
+> Most popular validation libraries are supported by Harissa
+
+The result is a regular express route handler/middleware, which can be assigned as per normal:
+
+```ts
+app.route(
   "/user/:id",
-  route()
-    .params(z.object({ id: z.string() }))
-    .output(UserSchema)
-    .handle((req, res, next) => {
-      // `req.params` is correctly parsed/transformed and typed
-      const user = await findUser(req.params.id);
-
-      return user; // <- Type safe return
-
-      // Can also use res.json methods as per usual
-    })
+  route().handle(async (req) => {})
 );
 ```
 
-### Roadmap (to 1.0)
-
-- [x] FS Router
-
-  - [x] NextJS format
-  - [ ] Remix format
-
-- [ ] OpenAPI Support
-  - [ ] With zod
-  - [ ] With superstruct
-  - [ ] With valibot
-  - [ ] With yup
-  - [ ] ... others
-
-## API Reference
-
-The Harissa API is intentionally fairly minimal. It contains utilities ranging from higher to lower level, where higher level abstractions are slightly more abstracted yet powerful and lower levels ones are more primitive and simple.
-
-**High level**
-
-- [createFSRouter(...)](#createfsrouter)
-
-**Mid level**
-
-- [route(...)](#route)
-- [createStorage(...)](#createstorage)
-
-**Low level**
-
-- [createHttpException(...)](#createHttpException)
-- [middlewareHandler(..)](#middlewarehandler)
-- [routeHandler(...)](#routehandler)
-- [errorHandler(...)](#errorhandler)
-
----
-
-## High Level
-
-### `createFSRouter()`
-
-Create a filesystem router, similar to NextJS or Remix, but exporting express endpoints. The fs router expects files to return
-
-```tsx
-import { createFSRouter, registerRoutes, NextJS } from "harissa";
-
-const fsRouter = createFSRouter({
-  format: NextJS(),
-  rootDir: "src/routes", // <- Optional
-});
-
-const initApp = async () => {
-  const routes = await fsRouter.collect();
-
-  registerRoutes(app, routes);
-};
-```
-
-Example route file:
-
-```tsx
-// ./src/routes/user/[id].tsx
-
-// GET /user/:id
-export const get = (req, res, next) => {
-  /**...*/
-};
-
-// POST /user/:id
-export const POST = (req, res, next) => {
-  //         ^ Names can be in 'POST' or 'post' form
-};
-
-// ALL /user/:id
-export default (req, res, next) => {
-  /**...*/
-};
-```
-
-> (Optionally) Using the below utilities further enhances fs router
-
-## Mid Level
-
-### `route()`
-
-`route` is a trpc-inspired utility which allows an entire route to be defined at once, including path pattern, validation, method and handler. The route handler is async-enabled and knows to automatically return data as json (unless its a request, or `next()` call).
+Or many routes can be registered at once:
 
 ```ts
-route("/article")
-  // Use zod/yup/valibot/superstruct etc.
-  .body(CreateArticleInput) // and .query(), .params()
-  .output(CreateArticleResult) // Validate res.body
-  .method("post") // Or a list of methods
-  .handle(async (req, res) => {
-    // `req` and `res` are now fully parsed and typed
-    return createArticle(req.body);
-  });
+const appRoutes = [userRoute, postsRoute, authRoute];
 
-// Add to express manually
-app.post("/article", createArticleRoute);
-
-// Or auto-register many at once
-registerRoutes(app, [
-  createArticleRoute,
-  getArticleRoute,
-  /** ...etc. */
-]);
+registerRoutes(app, appRoutes);
 ```
 
-> Can happily be used in conjunction with fs router, where fs router config takes precedence over route() config in the case of conflicting information.
+## Composability
 
-### `createStorage()`
-
-A simple interface for asynchronous `continuation-local-storage` which allows you to correlate logs by ID, for example.
+Routes can also be chained for composability:
 
 ```ts
-// Init a store
-const storage = createStorage<{
-  userId?: string;
-  logId?: string;
-}>();
+const authedRoute = route().use<{ userId: string }>(hasUserMiddleware);
 
-// Register middleware (before routes)
-app.use(storage.middleware());
-
-// You can now set and get per-request-specific data
-app.use((req, res, next) => {
-  const jwt = req.headers[AUTH_HEADER];
-  const user = getUser(jwt);
-
-  // Update store (shallow property overwrite)
-  storage.set({ userId: user.id });
-});
-
-app.use("/secret", (req, res) => {
-  // Retrieve
-  const store = storage.get();
-
-  if (store.userId == null) {
-    throw new UnauthorizedException("Log in bro");
-  }
-
-  return next();
-});
+const getUserRoute = authedUserRoute
+  .path("/user/me")
+  .method("get")
+  .handle((req) => typeof req.userId === "string"); // -> true
 ```
 
-## Low level
-
-### `HttpException` and `createHttpException`
-
-A simple and non-opinionated error wrapper with helpful conversions between HTTP codes and names. Can easily be extended.
+Paths and middleware can be appended:
 
 ```ts
-// Here, "NOT_FOUND" is strongly typed/hinted
+// Paths
+const postRoute = route("/post");
+
+const getAllPostsRoute = postRoute.path("/all").method("get");
+const deletePostRoute = postRoute.path("/:postId").method("delete");
+
+// Middleware
+const withFoo = (x: any) =(req, res, next) => {
+    console.log(x)
+    req.foo = x
+    next()
+}
+
+route()
+  .use<{ foo: string }>(withFoo("foo"))
+  .use<{ foo: number }>(withFoo(1))
+  .use<{ foo: boolean }>(withFoo(true))
+  .handle((req) => typeof req.foo === "boolean"); // -> true
+
+// Log: foo
+// Log: 1
+// Log: true
+```
+
+Whereas schema override eachother:
+
+```ts
+route().body(CreateUserBody).body(CreatePostBody); // <- This one wins
+```
+
+## Client
+
+On the client side, Harissa provides a slim, unopinionated utility for type-safe API calls, if you're into that sort of thing.
+
+```ts
+// backend.ts
+import { H } from "harissa";
+const AppRoutes = [userRoute, authRoute, ...otherRoutes];
+export type App = H.Infer<typeof AppRoutes>;
+
+// client.ts
+import { createTypedClient } from "harissa/client";
+
+export const api = createTypedClient<App>({
+  fetcher: ({ path, method, body, params, query }, opts?: MyCustomOptions) => {
+    // TODO: Call your API with axios, fetch, etc.
+  },
+});
+
+// Below is entirely type-safe
+api("/user/:id").get(
+  { params: { id: "..." }, ...etc }, // Config derived from API
+  { ...myOptions } // Options derived from `MyCustomOptions`
+);
+```
+
+You can also infer specific endpoint information, fairly egonomically.
+
+```ts
+type GetUserEndpoint = H.Endpoint<App, "/user/:id", "get">;
+
+type GetUserParams = GetUserEndpoint["params"];
+type GetUserResponse = GetUserEndpoint["output"];
+
+export const getUser = (
+  params: GetUserEndpoint["params"]
+): Promise<GetUserEndpoint["output"]> => api("/user/:id").get({ params });
+```
+
+## Primitives
+
+Several lower-level primitives are exposed too.
+
+### Exceptions
+
+`createHttpException` can be used to create common HTTP exceptions.
+
+```ts
 export class NotFoundException extends createHttpException("NOT_FOUND") {}
 
-// Can now be thrown in application code
-throw new NotFoundException("Thing not found", {
-  /** extra */
-});
-
-// And easily handled in an error handler
-if (err instanceof HttpException) {
-  if (err.code === "NOT_FOUND") {
-    return { message: "Couldn't find it, mate – sorry" };
-  }
-
-  return { message: "Something secret went wrong." };
-}
+throw new NotFoundException("User not found");
+// status = 404, name = "NOT_FOUND", message = "User not found"
 ```
 
-### `middlewareHandler()`
+### Handlers
 
-A simple wrapper for defining custom middleware, with async/await and type inference. For routes intended to return data, `routeHandler` might be more helpful.
+Less feature-full handler primitives are exposed, providing `async` and raw return functionality.
 
 ```ts
-middlewareHandler(async (req, res, next) => {
-  return { foo: "bar" }; // Warn: This would not do anything
+import {
+    middlewareHandler,
+    routeHandler,
+    errorHandler
+} from "harissa"
 
-  // In `middlewareHandler` you must explicitly run `res.send()` and the like
-});
+app.use(
+  middlewareHandler((req, res, next) => {
+    req.foo = "bar";
+    return next();
+  })
+);
+
+app.get(
+  "/",
+  routeHandler((req, res, next) => {
+    return "Some data";
+  })
+);
+
+app.use(errorHandler(err, req, res, next) => {
+    console.error(err)
+
+    res.status(500)
+
+    return err
+})
 ```
 
-### `routeHandler()`
+## OpenAPI
 
-Route handlers provide basic async/await and auto-json functionality, allowing you to return data directly from the handler. Additionally, it infers the types instead of requiring explicit type signatures.
+> [!WARNING]  
+> OpenAPI support is currently experimental and also varies according to validation library
+
+We can create OpenAPI routes given our express app. While harissa `route`s with schema information are encouraged, any express route can be included in our api spec.
 
 ```ts
-routeHandler(async (req, res, next) => {
-  // This would be caught and passed to the express exception handler
-  const res = await Promise.reject();
+const spec = createOpenApiSpec(app, {
+  /** Options */
+});
 
-  return { foo: "bar" }; // This would be sent as JSON
+// Optionally: Add/remove/modify spec if you wish
+
+app.get("/openapi.json", (req, res) => {
+  res.json(spec.asJson());
 });
 ```
 
-### `errorHandler()`
+Currently supported schema:
 
-SImilar to `routeHandler()`, but for error handling – takes the additional `error` argument.
+- ✅ Zod
 
-```ts
-errorHandler(async (err, req, res, next) => {
-  // This would be caught and passed to the express exception handler
-  const res = await Promise.reject();
-
-  // Useful with HttpException (documented above)
-  if (err instanceof HttpException) {
-    // Do something...
-  }
-
-  return { message: "Internal server error" };
-});
-```
+> If you'd like support for your validation library added, please create a new [issue](./issues).
