@@ -1,15 +1,13 @@
 <center>
 
-![Cover](./static/harissa-cover.jpg)
+# Harissa
+
+> The modern toolkit for type-safe express apps
 
 </center>
 
-# Harissa
-
 ![GitHub License](https://img.shields.io/github/license/sinclairnick/harissa)
 ![NPM Version](https://img.shields.io/npm/v/harissa)
-
-> The modern toolkit for type-safe express apps
 
 Harissa provides a set of helpers to make working with `express.js` in <current year> more enjoyable, secure, and rapid.
 
