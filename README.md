@@ -35,29 +35,38 @@ The goal of harissa is to provide a slim – but powerful – set of express uti
 </details>
 
 > [!IMPORTANT]  
-> Harissa is used internally in production, but is not yet considered entirely stable (yet)
+> Harissa is currently used in production internally, but is not recommended for large scale projects just yet - expect some API tweaks
 
 ## Route
 
-The `route` is the centerpiece of harissa. It provides a simple, chainable trpc-like interface for defining endpoints in a more declarative fashion. Consequently, routes are easily composed and API contracts, like OpenAPI, can be inferred without any additional effort.
+**The `route` utility is the centerpiece of harissa.** It provides a simple, chainable trpc-like interface for defining endpoints in a more declarative fashion. Consequently, routes are easily composed and highly declarative, enabling the out-of-the-box schema definitions (OpenAPI and typescript).
+
+A simple example might look like:
 
 ```ts
 const userRoute = route("/user/:id")
-  // <Optional>
+  .method("post")
+  .body(z.object({ field: z.string() }))
+  .handle((req, res, next) => req.body.field);
+```
+
+Or a more complete example:
+
+```ts
+const userRoute = route("/user/:id")
   .use(...middleware)
   .method("post")
   .params(ParamSchema)
   .body(BodySchema)
   .output(OutputSchema)
   .headers(HeaderSchema)
-  // </Optional>
   .handle(async (req) => req.user);
 ```
 
 > [!TIP]
 > Most popular validation libraries are supported by Harissa
 
-The result is a regular express route handler/middleware, which can be assigned as per normal:
+This returns a regular express route handler/middleware, designed to be used as per normal:
 
 ```ts
 app.route(
@@ -76,7 +85,7 @@ registerRoutes(app, appRoutes);
 
 ## Composability
 
-Routes can also be chained for composability:
+Routes can be chained for better composability:
 
 ```ts
 const authedRoute = route().use<{ userId: string }>(hasUserMiddleware);
@@ -89,14 +98,18 @@ const getUserRoute = authedUserRoute
 
 Paths and middleware can be appended:
 
+_Paths:_
+
 ```ts
-// Paths
 const postRoute = route("/post");
 
 const getAllPostsRoute = postRoute.path("/all").method("get");
 const deletePostRoute = postRoute.path("/:postId").method("delete");
+```
 
-// Middleware
+_Middleware:_
+
+```ts
 const withFoo = (x: any) =(req, res, next) => {
     console.log(x)
     req.foo = x
@@ -109,6 +122,7 @@ route()
   .use<{ foo: boolean }>(withFoo(true))
   .handle((req) => typeof req.foo === "boolean"); // -> true
 
+// 3x middleware are called:
 // Log: foo
 // Log: 1
 // Log: true
@@ -117,7 +131,9 @@ route()
 Whereas schema override eachother:
 
 ```ts
-route().body(CreateUserBody).body(CreatePostBody); // <- This one wins
+route()
+  .body(CreateUserBody) // <- This one is overridden
+  .body(CreatePostBody);
 ```
 
 ## Client
@@ -129,20 +145,24 @@ On the client side, Harissa provides a slim, unopinionated utility for type-safe
 import { H } from "harissa";
 const AppRoutes = [userRoute, authRoute, ...otherRoutes];
 export type App = H.Infer<typeof AppRoutes>;
+```
 
+```ts
 // client.ts
 import { createTypedClient } from "harissa/client";
 
 export const api = createTypedClient<App>({
-  fetcher: ({ path, method, body, params, query }, opts?: MyCustomOptions) => {
+  fetcher: (
+    { path, method, body, params, query },
+    opts?: AxiosOptions // Any arbitrary type
+  ) => {
     // TODO: Call your API with axios, fetch, etc.
   },
 });
 
-// Below is entirely type-safe
 api("/user/:id").get(
-  { params: { id: "..." }, ...etc }, // Config derived from API
-  { ...myOptions } // Options derived from `MyCustomOptions`
+  { params: { id: "..." }, ...etc }, // Config derived from API schema
+  { ...myOptions } // Type inferred from `opts` above
 );
 ```
 
@@ -161,7 +181,7 @@ export const getUser = (
 
 ## Primitives
 
-Several lower-level primitives are exposed too.
+Several lower-level primitives are exposed.
 
 ### Exceptions
 
@@ -227,8 +247,9 @@ app.get("/openapi.json", (req, res) => {
 });
 ```
 
-Currently supported schema:
+Currently supported schema with OpenAPI schema generation:
 
 - ✅ Zod
 
+> [!TIP]
 > If you'd like support for your validation library added, please create a new [issue](./issues).
