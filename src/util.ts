@@ -19,7 +19,9 @@ const RES_KEY = "__isResponse";
 
 export const ResponseUtil = {
   brand: (res: Response) => {
-    (res as any)[RES_KEY] = true;
+    if (res && typeof res === "object") {
+      (res as any)[RES_KEY] = true;
+    }
   },
   isResponse: (res: unknown): res is Response => {
     return typeof res === "object" && Boolean((res as any)[RES_KEY]);
