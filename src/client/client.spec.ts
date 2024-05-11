@@ -14,8 +14,10 @@ describe("Client", () => {
       },
     });
 
+    type Paths = Parameters<typeof client>[0];
+
     expectTypeOf<Parameters<typeof client>[0]>().toEqualTypeOf<
-      "/hello" | "/bye" | "/with/{paramName}"
+      "GET /hello" | "GET /bye" | "GET /with/{paramName}" | "POST /hello"
     >();
   });
 
@@ -25,7 +27,7 @@ describe("Client", () => {
         return { data: {} };
       },
     });
-    const getHello = client("/hello").get;
+    const getHello = client("GET /hello");
 
     expectTypeOf<Parameters<typeof getHello>[0]>().toEqualTypeOf<{
       query: {
@@ -43,7 +45,7 @@ describe("Client", () => {
       },
     });
 
-    const postHello = client("/hello").post;
+    const postHello = client("POST /hello");
     expectTypeOf<Parameters<typeof postHello>[0]>().toEqualTypeOf<{
       body: {
         notHi: number;
@@ -59,7 +61,7 @@ describe("Client", () => {
         return { data: {} };
       },
     });
-    const getHello = client("/hello").get;
+    const getHello = client("GET /hello");
 
     type Expectation = { data: { result: boolean } };
     type Actual = Awaited<ReturnType<typeof getHello>>;
@@ -72,7 +74,7 @@ describe("Client", () => {
         return { data: {}, b: 2 };
       },
     });
-    const getHello = client("/hello").get;
+    const getHello = client("GET /hello");
 
     type Expectation = { data: { result: boolean }; b: number };
     type Actual = Awaited<ReturnType<typeof getHello>>;
@@ -86,7 +88,7 @@ describe("Client", () => {
       },
     });
 
-    const getHello = client("/hello").get;
+    const getHello = client("GET /hello");
     expectTypeOf<Parameters<typeof getHello>[1]>().toEqualTypeOf<{
       a: number;
     }>();
@@ -101,7 +103,9 @@ describe("Client", () => {
       },
     });
 
-    const result = await client("/hello").get({
+    const getHello = client("GET /hello");
+
+    const result = await getHello({
       query: { hi: 2 },
     });
 

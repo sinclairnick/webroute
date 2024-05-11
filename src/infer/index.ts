@@ -13,23 +13,16 @@ export namespace H {
   };
 
   export interface AnyAppDef extends Infer<any> {}
-  export type Infer<TRoutes extends readonly AnyCompiledRoute[]> = Simplify<
-    TRoutes extends readonly [infer TLast, ...infer TRest]
-      ? TLast extends AnyCompiledRoute
-        ? TRest extends readonly AnyCompiledRoute[]
-          ? Infer<TRest> extends infer TInferRest
-            ? {
-                [TPath in route.InferPath<TLast>]: Simplify<
-                  EndpointDef<TLast> & TInferRest[TPath]
-                >;
-              } & TInferRest
-            : {}
-          : {}
-        : {}
-      : {}
-  >;
 
-  export type InferPaths<TApp extends AnyAppDef> = keyof TApp;
+  export type Infer<TRoutes extends Record<string, AnyCompiledRoute>> =
+    Simplify<{
+      [Key in keyof TRoutes as `${Uppercase<
+        route.InferMethods<TRoutes[Key]>
+      >} ${route.InferPath<TRoutes[Key]>}`]: RouteDef<TRoutes[Key]>;
+    }>;
+
+  export type InferPaths<TApp extends AnyAppDef> =
+    keyof TApp extends `${string} ${infer TPath}` ? TPath : never;
 
   export type DefinedEndpoint<TRoute extends AnyRouteDef> = {
     query: TRoute["queryIn"];
@@ -41,9 +34,8 @@ export namespace H {
 
   export type Endpoint<
     TApp extends Infer<any>,
-    TPath extends keyof TApp,
-    TMethod extends keyof TApp[TPath]
-  > = TApp[TPath][TMethod] extends infer TRoute
+    TPath extends keyof TApp
+  > = TApp[TPath] extends infer TRoute
     ? TRoute extends AnyRouteDef
       ? DefinedEndpoint<TRoute>
       : never

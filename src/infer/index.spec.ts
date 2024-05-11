@@ -9,23 +9,23 @@ describe("Infer", () => {
   type App = H.Infer<typeof routes>;
 
   test("Infers app paths", () => {
-    expectTypeOf<App["/hello"]>().toBeObject();
-    expectTypeOf<App["/bye"]>().toBeObject();
+    expectTypeOf<App["GET /hello"]>().toBeObject();
+    expectTypeOf<App["GET /bye"]>().toBeObject();
   });
 
   test("Infers method", () => {
-    expectTypeOf<App["/hello"]["get"]>().toBeObject();
-    expectTypeOf<App["/hello"]["post"]>().toBeObject();
+    expectTypeOf<App["GET /hello"]>().toBeObject();
+    expectTypeOf<App["POST /hello"]>().toBeObject();
   });
 
   test("Infers query types", () => {
-    expectTypeOf<App["/hello"]["get"]["queryIn"]>().toEqualTypeOf<{
+    expectTypeOf<App["GET /hello"]["queryIn"]>().toEqualTypeOf<{
       hi: number;
     }>();
   });
 
   test("Infers param types", () => {
-    expectTypeOf<App["/hello"]["post"]["bodyIn"]>().toEqualTypeOf<{
+    expectTypeOf<App["POST /hello"]["bodyIn"]>().toEqualTypeOf<{
       notHi: number;
     }>();
   });
@@ -39,7 +39,7 @@ describe("Infer", () => {
   });
 
   test("Infers using `endpoint` helper", () => {
-    type HelloEndpoint = H.Endpoint<App, "/hello", "get">;
+    type HelloEndpoint = H.Endpoint<App, "GET /hello">;
 
     expectTypeOf<HelloEndpoint["body"]>().toBeUnknown();
     expectTypeOf<HelloEndpoint["output"]>().toEqualTypeOf<{
@@ -48,7 +48,7 @@ describe("Infer", () => {
     expectTypeOf<HelloEndpoint["params"]>().toBeUnknown();
     expectTypeOf<HelloEndpoint["query"]>().toEqualTypeOf<{ hi: number }>();
 
-    type HelloEndpointPost = H.Endpoint<App, "/hello", "post">;
+    type HelloEndpointPost = H.Endpoint<App, "POST /hello">;
     expectTypeOf<HelloEndpointPost["body"]>().toEqualTypeOf<{
       notHi: number;
     }>();
@@ -58,9 +58,9 @@ describe("Infer", () => {
   });
 
   test("Handles multiple routes overloading path", () => {
-    expectTypeOf<App["/hello"]>().toHaveProperty("get");
-    expectTypeOf<App["/hello"]>().toHaveProperty("post");
-    expectTypeOf<App["/hello"]>().not.toHaveProperty("put");
-    expectTypeOf<App["/hello"]>().not.toHaveProperty("delete");
+    expectTypeOf<Extract<keyof App, "GET /hello">>().toBeString();
+    expectTypeOf<Extract<keyof App, "POST /hello">>().toBeString();
+    expectTypeOf<Extract<keyof App, "PUT /hello">>().toBeNever();
+    expectTypeOf<Extract<keyof App, "DELET /hello">>().toBeNever();
   });
 });

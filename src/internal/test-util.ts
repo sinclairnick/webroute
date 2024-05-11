@@ -2,24 +2,24 @@ import { z } from "zod";
 import { route } from "../route";
 
 export const generateTestRoutes = () => {
-  const routes = [
-    route("/hello")
+  const routes = {
+    a: route("/hello")
       .method("get")
       .query(z.object({ hi: z.number() }))
       .output(z.object({ result: z.boolean() }))
       .handle(() => {}),
-    route("/hello")
+    b: route("/hello")
       .method("post")
       .body(z.object({ notHi: z.number() }))
       .handle(() => {}),
-    route("/bye")
+    c: route("/bye")
       .method("get")
       .params(z.object({ bye: z.number() }))
       .handle(() => {}),
-    route("/with/{paramName}")
+    d: route("/with/{paramName}")
       .method("get")
       .handle(() => {}),
-  ] as const;
+  };
 
   return routes;
 };
