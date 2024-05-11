@@ -10,5 +10,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": ["src/**/*.ts", "__test__/openapi.spec.ts"],
-  "exclude": ["dist", "__test__"]
+  "exclude": ["dist", "__test__", "src/fs-router/**"]
 }

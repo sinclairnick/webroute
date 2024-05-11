@@ -1,241 +1,13 @@
 import { getParseFn } from "../parser";
-import { Parser, inferParser } from "../parser/types";
-import {
-  AnyRootConfig,
-  MergeObjectsShallow,
-  NextUtil,
-  ResponseUtil,
-  nextFnSymbol,
-} from "../../util";
+import { AnyRootConfig, cached } from "../../util";
 import {
   AnyHandlerDefinition,
-  CompiledRoute,
-  HandlerDefinition,
-  HandlerFunction,
-  HandlerParams,
-  HttpMethod,
+  LazyValidator,
   InferParamsFromPath,
+  HandlerDefinition,
 } from "./types";
-import { RequestHandler } from "express";
 import { Log } from "../../internal/logger";
-
-export type AnyHandlerBuilder = HandlerBuilder<any>;
-
-export interface HandlerBuilder<TParams extends HandlerParams> {
-  /**
-   * @internal
-   */
-  _def: HandlerDefinition<TParams>;
-
-  path<TPath extends string>(
-    path: TPath
-  ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"] extends string
-      ? `${TParams["_path"]}${TPath}`
-      : TPath;
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _req_mutations: TParams["_req_mutations"];
-  }>;
-
-  /**
-   * Add parser for req.query
-   */
-  query<$Parser extends Parser>(
-    schema: $Parser
-  ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: inferParser<$Parser>["in"];
-    _query_out: inferParser<$Parser>["out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _req_mutations: TParams["_req_mutations"];
-  }>;
-
-  /**
-   * Add parser for req.params
-   */
-  params<$Parser extends Parser>(
-    schema: $Parser
-  ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: inferParser<$Parser>["in"];
-    _params_out: inferParser<$Parser>["out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _req_mutations: TParams["_req_mutations"];
-  }>;
-
-  /**
-   * Add parser for req.body
-   */
-  body<$Parser extends Parser>(
-    schema: $Parser
-  ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: inferParser<$Parser>["in"];
-    _body_out: inferParser<$Parser>["out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _req_mutations: TParams["_req_mutations"];
-  }>;
-
-  headers<$Parser extends Parser>(
-    schema: $Parser
-  ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: inferParser<$Parser>["in"];
-    _output_out: inferParser<$Parser>["out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: inferParser<$Parser>["in"];
-    _headers_req_out: inferParser<$Parser>["out"];
-    _req_mutations: TParams["_req_mutations"];
-  }>;
-
-  /**
-   * Add parser for res.body
-   */
-  output<$Parser extends Parser>(
-    schema: $Parser
-  ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: inferParser<$Parser>["in"];
-    _output_out: inferParser<$Parser>["out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _req_mutations: TParams["_req_mutations"];
-  }>;
-
-  method<TMethod extends HttpMethod | HttpMethod[]>(
-    method: TMethod
-  ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TMethod extends HttpMethod ? TMethod : TMethod[number];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _req_mutations: TParams["_req_mutations"];
-  }>;
-
-  use<TMutations extends Record<PropertyKey, any> = {}>(
-    ...handlers: HandlerFunction<
-      {} extends TMutations
-        ? TParams
-        : MergeObjectsShallow<
-            TParams,
-            {
-              _req_mutations: MergeObjectsShallow<
-                TParams["_req_mutations"],
-                Partial<TMutations>
-              >;
-            }
-          >
-    >[]
-  ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _req_mutations: MergeObjectsShallow<TParams["_req_mutations"], TMutations>;
-  }>;
-
-  /**
-   * Add a meta data to the procedure.
-   */
-  meta(meta: TParams["_meta"]): HandlerBuilder<TParams>;
-
-  handle(handler: HandlerFunction<TParams>): CompiledRoute<TParams>;
-}
+import { AnyHandlerBuilder, HandlerBuilder } from "./builder";
 
 function createNewBuilder(
   configA: AnyHandlerDefinition,
@@ -266,7 +38,7 @@ export function createBuilder<
   _methods: string;
   _headers_req_in: unknown;
   _headers_req_out: unknown;
-  _req_mutations: {};
+  _state: {};
 }> {
   const _def = {
     ...initDef,
@@ -331,77 +103,107 @@ export function createBuilder<
       }) as AnyHandlerBuilder;
     },
     handle(handler) {
-      const _handler: RequestHandler = async (req, res, next) => {
+      const _handler = async (req: Request) => {
+        const validators = createLazyValidators(req, _def);
+
+        const ctx = { ...validators, req, state: {} };
+
+        // Run middleware in sequence, recursively updating state
         if (_def.middleware) {
           for (const middleware of _def.middleware) {
-            try {
-              await new Promise(async (resolve, reject) => {
-                await middleware(req, res, (err) => {
-                  if (err) reject(err);
-                  else resolve(null);
-                });
-              });
-            } catch (e) {
-              return next(e);
+            const result = await middleware(ctx);
+
+            // If early exit, return response
+            if (result instanceof Response) {
+              return result;
+            }
+
+            if (typeof result === "object") {
+              // Otherwise modify state
+              ctx.state = { ...ctx.state, ...result };
             }
           }
         }
 
-        if (res.headersSent) {
-          return next();
+        const result = await handler(ctx as any);
+
+        if (result instanceof Response) {
+          Log("Is response. Next");
+          return result;
         }
 
-        ResponseUtil.brand(res);
+        Log("Parsing result.");
+        const parsed = _def.output ? await _def.output?.parser(result) : result;
 
-        try {
-          if (_def.query) {
-            req.query = (await _def.query.parser(req.query)) as any;
-          }
-
-          let params: any = req.params;
-          if (_def.params) {
-            req.params = (await _def.params.parser(params)) as any;
-          }
-
-          let body: any = req.body;
-          if (_def.body) {
-            req.body = await _def.body.parser(body);
-          }
-
-          let headers: any = req.headers;
-          if (_def.headersReq) {
-            req.headers = (await _def.headersReq.parser(headers)) as any;
-          }
-
-          const result = await handler(req as any, res, NextUtil.wrap(next));
-
-          if (result === nextFnSymbol) {
-            Log("Next");
-            return;
-          }
-
-          if (ResponseUtil.isResponse(result)) {
-            Log("Is response. Next");
-            return next();
-          }
-
-          Log("Parsing result.");
-          const parsed = _def.output
-            ? await _def.output?.parser(result)
-            : result;
-          Log("Sending parsed result as JSON");
-          return res.json(parsed);
-        } catch (e) {
-          return next(e);
-        }
+        Log("Sending parsed result as JSON");
+        return Response.json(parsed);
       };
-
-      _def.rawHandler = handler;
 
       return Object.assign(_handler, {
         _def,
         __isCompiledRoute__: true as const,
-      });
+      }) as any;
     },
   };
 }
+
+const createLazyValidators = (req: Request, _def: HandlerDefinition<any>) => {
+  let query: LazyValidator<any> | undefined;
+  let params: LazyValidator<any> | undefined;
+  let body: LazyValidator<any> | undefined;
+  let headers: LazyValidator<any> | undefined;
+
+  const url = new URL(req.url);
+
+  if (_def.query) {
+    query = cached(async () => {
+      const map: Record<string, any> = {};
+      for (const [key, value] of url.searchParams.entries()) {
+        map[key] = value;
+      }
+
+      return _def.query?.parser(map);
+    });
+  }
+
+  if (_def.params) {
+    params = cached(async () => {
+      const patternParts = _def.path.split("/");
+      const pathParts = url.pathname.split("/");
+
+      const map: Record<string, any> = {};
+      for (let i = 0; i <= patternParts.length; i++) {
+        const pattern: string | undefined = patternParts[i];
+        const path: string | undefined = pathParts[i];
+
+        if (pattern == null || path == null) break;
+
+        if (pattern.startsWith(":")) {
+          map[pattern.slice(1)] = path;
+        }
+      }
+
+      return _def.params?.parser(map);
+    });
+  }
+
+  if (_def.body) {
+    body = cached(async () => {
+      const data = await req.json();
+      return _def.body?.parser(data);
+    });
+  }
+
+  if (_def.headersReq) {
+    headers = cached(async () => {
+      const map: Record<string, any> = {};
+      for (const [key, value] of req.headers.entries()) {
+        map[key] = value;
+      }
+
+      return _def.headersReq?.parser(map);
+    });
+  }
+
+  return { query, params, body, headers };
+};

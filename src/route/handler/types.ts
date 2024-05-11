@@ -1,11 +1,8 @@
-import express, { RequestHandler, Response } from "express";
 import { Parser } from "../parser/types";
 import {
-  AnyRequestHandlerModified,
   AnyRootConfig,
-  DefaultUnknownTo,
   MergeObjectsShallow,
-  RequestHandlerModified,
+  RemoveNeverKeys,
   Simplify,
 } from "../../util";
 import { ParseFn } from "../parser";
@@ -44,7 +41,7 @@ export interface HandlerParams<
   TMeta = TConfig["$types"]["meta"],
   TMethods = HttpMethod,
   TInferredParams = unknown,
-  TReqMutations = {}
+  TState = {}
 > {
   /** @internal */
   _config: TConfig;
@@ -79,7 +76,7 @@ export interface HandlerParams<
   /** @internal */
   _headers_req_out: TReqHeadersOut;
   /** @internal */
-  _req_mutations: TReqMutations;
+  _state: TState;
 }
 
 export interface AnyHandlerDefinition extends HandlerDefinition<any> {}
@@ -117,42 +114,106 @@ export interface HandlerDefinition<TParams extends HandlerParams> {
     parser: ParseFn<unknown>;
     schema: Parser;
   };
-  middleware?: RequestHandler[];
+  middleware?: DecoratedRequestHandler[];
   meta?: TParams["_meta"];
-  rawHandler?: AnyRequestHandlerModified;
 }
 
-export type ResponseOrLiteral<T> = Response<T> | T | void;
+export type ResponseOrLiteral<T> =
+  | Promise<Response>
+  | Response
+  | T
+  | Promise<T>;
 
 export interface HandlerFunction<TParams extends HandlerParams>
-  extends RequestHandlerModified<
+  extends DecoratedRequestHandler<
+    // Params
     TParams["_inferredParams"] extends never
-      ? DefaultUnknownTo<TParams["_params_out"], express.Request["params"]>
-      : DefaultUnknownTo<
-          MergeObjectsShallow<
-            TParams["_inferredParams"],
-            TParams["_params_out"]
-          >,
-          express.Request["params"]
-        >,
-    DefaultUnknownTo<TParams["_output_in"], any>,
-    DefaultUnknownTo<TParams["_body_out"], express.Request["body"]>,
-    DefaultUnknownTo<TParams["_query_out"], express.Request["query"]>,
-    Record<string, any>,
+      ? TParams["_params_out"]
+      : MergeObjectsShallow<TParams["_inferredParams"], TParams["_params_out"]>,
+    // Query
+    TParams["_query_out"],
+    // Body
+    TParams["_body_out"],
+    // Headers
     TParams["_headers_req_out"],
-    TParams["_req_mutations"]
+    // Output
+    TParams["_output_in"],
+    // Mods
+    TParams["_state"]
+  > {}
+
+export interface HandlerFunction<TParams extends HandlerParams>
+  extends DecoratedRequestHandler<
+    // Params
+    TParams["_inferredParams"] extends never
+      ? TParams["_params_out"]
+      : MergeObjectsShallow<TParams["_inferredParams"], TParams["_params_out"]>,
+    // Query
+    TParams["_query_out"],
+    // Body
+    TParams["_body_out"],
+    // Headers
+    TParams["_headers_req_out"],
+    // Output
+    TParams["_output_in"],
+    // Mods
+    TParams["_state"]
+  > {}
+
+export interface MiddlewareFunction<
+  TParams extends HandlerParams,
+  TMutations extends Record<PropertyKey, any> = {}
+> extends DecoratedRequestHandler<
+    // Params
+    TParams["_inferredParams"] extends never
+      ? TParams["_params_out"]
+      : MergeObjectsShallow<TParams["_inferredParams"], TParams["_params_out"]>,
+    // Query
+    TParams["_query_out"],
+    // Body
+    TParams["_body_out"],
+    // Headers
+    TParams["_headers_req_out"],
+    // Output
+    TMutations,
+    // Mods
+    TParams["_state"]
   > {}
 
 export interface AnyCompiledRoute extends CompiledRoute<any> {}
 
-export type CompiledRoute<TParams extends HandlerParams> = RequestHandler & {
+export type CompiledRoute<TParams extends HandlerParams> = WebRequestHandler & {
   _def: HandlerDefinition<TParams>;
   __isCompiledRoute__: true;
 };
 
-export type InferParamsFromPath<T extends string> =
-  T extends `${string}:${infer P}/${infer R}`
-    ? Simplify<{ [K in P]: string } & InferParamsFromPath<R>>
-    : T extends `${string}:${infer P}`
-    ? { [K in P]: string }
-    : never;
+export type WebRequestHandler = (
+  request: Request
+) => Response | Promise<Response>;
+
+export type InferParamsFromPath<T> = T extends `${string}:${infer P}/${infer R}`
+  ? Simplify<{ [K in P]: string } & InferParamsFromPath<R>>
+  : T extends `${string}:${infer P}`
+  ? { [K in P]: string }
+  : never;
+
+export interface LazyValidator<T> {
+  (): Promise<T>;
+}
+
+export type DecoratedRequestHandler<
+  TParams = unknown,
+  TQuery = unknown,
+  TBody = unknown,
+  THeaders = unknown,
+  TOutput = unknown,
+  TState = {}
+> = (
+  ctx: { req: Request } & RemoveNeverKeys<{
+    params: unknown extends TParams ? never : LazyValidator<TParams>;
+    query: unknown extends TQuery ? never : LazyValidator<TQuery>;
+    body: unknown extends TBody ? never : LazyValidator<TBody>;
+    headers: unknown extends THeaders ? never : LazyValidator<THeaders>;
+    state: TState;
+  }>
+) => ResponseOrLiteral<TOutput>;

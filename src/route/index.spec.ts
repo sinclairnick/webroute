@@ -1,9 +1,7 @@
-import { describe, expect, expectTypeOf, test, vi } from "vitest";
-import { HandlerBuilder } from "./handler";
+import { describe, expect, expectTypeOf, test } from "vitest";
 import { z } from "zod";
-import { ParsedQs } from "qs";
-import { route } from ".";
-import multer from "multer";
+import { LazyValidator, route } from ".";
+import { HandlerBuilder } from "./handler/builder";
 
 describe("Handler", () => {
   test("Initially has no type info", () => {
@@ -95,34 +93,32 @@ describe("Handler", () => {
   });
 
   test("handle() returns data as json", async () => {
-    const _route = route().handle(async (req, res, next) => {
+    const _route = route().handle(async (req) => {
       return { data: true };
     });
 
-    const res = { json: vi.fn() };
+    const req = new Request("https://google.com");
 
-    await _route({} as any, res as any, () => {});
+    const result = await _route(req);
 
-    expect(res.json).toHaveBeenCalled();
-    const call = res.json.mock.calls[0][0];
-    expect(call).toEqual({ data: true });
+    expect(await result.json()).toEqual({ data: true });
   });
 
   test("handle() parses query", async () => {
     const schema = z.object({
-      a: z.number().transform((x) => `${x}_transformed`),
+      a: z.number({ coerce: true }).transform((x) => `${x}_transformed`),
     });
 
     let query: any;
     const _route = route()
       .query(schema)
-      .handle(async (req, res, next) => {
-        query = req.query;
+      .handle(async (c) => {
+        query = await c.query();
+        return null;
       });
 
-    const res = { json: vi.fn() };
-    const req = { query: { a: 1 } };
-    await _route(req as any, res as any, () => {});
+    const req = new Request("https://google.com?a=1");
+    await _route(req);
 
     expect(query).toBeDefined();
     expect(query.a).toEqual("1_transformed");
@@ -130,22 +126,21 @@ describe("Handler", () => {
 
   test("handle() parses params", async () => {
     const schema = z.object({
-      a: z.number().transform((x) => `${x}_transformed`),
+      a: z.number({ coerce: true }).transform((x) => `${x}_transformed`),
     });
 
-    let params: any;
-    const _route = route()
+    const _route = route("/:a")
       .params(schema)
-      .handle(async (req, res, next) => {
-        params = req.params;
+      .handle(async (c) => {
+        return c.params();
       });
 
-    const res = { json: vi.fn() };
-    const req = { params: { a: 1 } };
-    await _route(req as any, res as any, () => {});
+    const req = new Request("https://google.com/1");
+    const res = await _route(req);
+    const data = await res.json();
 
-    expect(params).toBeDefined();
-    expect(params.a).toEqual("1_transformed");
+    expect(data).toBeDefined();
+    expect(data.a).toEqual("1_transformed");
   });
 
   test("handle() parses body", async () => {
@@ -153,19 +148,21 @@ describe("Handler", () => {
       a: z.number().transform((x) => `${x}_transformed`),
     });
 
-    let body: any;
     const _route = route()
       .body(schema)
-      .handle(async (req, res, next) => {
-        body = req.body;
+      .handle(async (c) => {
+        return c.body();
       });
 
-    const res = { json: vi.fn() };
-    const req = { body: { a: 1 } };
-    await _route(req as any, res as any, () => {});
+    const req = new Request("https://google.com", {
+      body: JSON.stringify({ a: 1 }),
+      method: "POST",
+    });
+    const res = await _route(req);
+    const data = await res.json();
 
-    expect(body).toBeDefined();
-    expect(body.a).toEqual("1_transformed");
+    expect(data).toBeDefined();
+    expect(data.a).toEqual("1_transformed");
   });
 
   test("handle() parses output", async () => {
@@ -175,31 +172,16 @@ describe("Handler", () => {
 
     const _route = route()
       .output(schema)
-      .handle(async (req, res, next) => {
+      .handle(async () => {
         return { a: 1 };
       });
 
-    const res = { json: vi.fn() };
-    const req = {};
-    await _route(req as any, res as any, () => {});
+    const req = new Request("https://google.com");
+    const res = await _route(req);
+    const data = await res.json();
 
-    expect(res.json).toHaveBeenCalled();
-    const body = res.json.mock.calls[0][0];
-
-    expect(body).toBeDefined();
-    expect(body.a).toEqual("1_transformed");
-  });
-
-  test("handle() uses more relaxed handler type", () => {
-    const _route = route().params(z.object({ a: z.number() }));
-
-    type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
-    type ReqParam = Parameters<HandlerFn>[0];
-
-    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<{ a: number }>();
-    expectTypeOf<ReqParam["query"]>().toEqualTypeOf<ParsedQs>();
-    expectTypeOf<ReqParam["body"]>().toEqualTypeOf<any>();
-    expectTypeOf<ReqParam["body"]>().toEqualTypeOf<any>();
+    expect(data).toBeDefined();
+    expect(data.a).toEqual("1_transformed");
   });
 
   test("route path string aids inference with req.params", () => {
@@ -208,7 +190,9 @@ describe("Handler", () => {
     type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
     type ReqParam = Parameters<HandlerFn>[0];
 
-    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<{ id: string }>();
+    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<
+      LazyValidator<{ id: string }>
+    >();
   });
 
   test("route path string inference params is concat w schema", () => {
@@ -217,10 +201,9 @@ describe("Handler", () => {
     type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
     type ReqParam = Parameters<HandlerFn>[0];
 
-    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<{
-      id: string;
-      another: number;
-    }>();
+    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<
+      LazyValidator<{ id: string; another: number }>
+    >();
   });
 
   test("route path string inference prefers schema type", () => {
@@ -229,9 +212,9 @@ describe("Handler", () => {
     type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
     type ReqParam = Parameters<HandlerFn>[0];
 
-    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<{
-      id: number;
-    }>();
+    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<
+      LazyValidator<{ id: number }>
+    >();
   });
 
   test("Works with .headers", () => {
@@ -240,11 +223,9 @@ describe("Handler", () => {
     type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
     type ReqParam = Parameters<HandlerFn>[0];
 
-    expectTypeOf<ReqParam["headers"]>().toMatchTypeOf<{ auth: boolean }>();
-    // Keeps original headers
-    expectTypeOf<ReqParam["headers"]>().toMatchTypeOf<{
-      authorization?: string;
-    }>();
+    expectTypeOf<ReqParam["headers"]>().toMatchTypeOf<
+      LazyValidator<{ auth: boolean }>
+    >();
   });
 
   test("Parses incoming headers", async () => {
@@ -252,86 +233,57 @@ describe("Handler", () => {
       a: z.string().transform((x) => `${x}_transformed`),
     });
 
-    let headers: any;
     const _route = route()
       .headers(schema)
-      .handle((req, res, next) => {
-        headers = req.headers;
+      .handle((c) => {
+        return c.headers();
       });
 
-    const res = { json: vi.fn() };
-    const req = { headers: { a: "a" } };
-    await _route(req as any, res as any, () => {});
+    const headers = new Headers();
+    headers.set("a", "a");
+    const req = new Request("https://google.com", {
+      headers,
+    });
+    const res = await _route(req);
+    const data = await res.json();
 
-    expect(headers.a).toBe("a_transformed");
+    expect(data.a).toBe("a_transformed");
   });
 
   test("Handles middleware", async () => {
-    let user: any;
     const _route = route()
-      .use<{ user: { id: string } }>((req, res, next) => {
-        (req as any).user = { id: "123" };
-        next();
+      .use((req) => {
+        return { id: "123" };
       })
-      .handle((req, res, next) => {
-        user = req.user;
+      .handle(({ req, state }) => {
+        return state.id;
       });
 
-    const res = { json: vi.fn() };
-    const req = {};
-    await _route(req as any, res as any, () => {});
+    const req = new Request("https://google.com");
+    const res = await _route(req);
+    const data = await res.json();
 
-    expect(user).toEqual({ id: "123" });
-  });
-
-  test("Retains compat type signature when empty", async () => {
-    const upload = multer();
-
-    // This file used to type error
-    const useFn = route().use(upload.single(""));
+    expect(data).toEqual("123");
   });
 
   test("Handles chained middleware", async () => {
-    let user: any;
     const _route = route()
-      .use<{ user: { id: string } }>((req, res, next) => {
-        req.user = { id: "123" };
-        next();
+      .use(() => {
+        return { id: "123" };
       })
-      .use<{ user: { id: string } }>((req, res, next) => {
-        req.user = { id: "456" };
-        next();
+      .use(({ state }) => {
+        expectTypeOf<typeof state>().toEqualTypeOf<{ id: string }>();
+        return { id: "456" };
       })
-      .handle((req, res, next) => {
-        user = req.user;
+      .handle(({ state }) => {
+        return state;
       });
 
-    const res = { json: vi.fn() };
-    const req = {};
-    await _route(req as any, res as any, () => {});
+    const req = new Request("https://google.com");
+    const res = await _route(req);
+    const data = await res.json();
 
-    expect(user).toEqual({ id: "456" });
-  });
-
-  test("Handles next'd middleware", async () => {
-    let user: any;
-    const _route = route()
-      .use<{ user: { id: string } }>((req, res, next) => {
-        next(new Error());
-      })
-      .use<{ user: { id: string } }>((req, res, next) => {
-        req.user = { id: "123" };
-        next();
-      })
-      .handle((req, res, next) => {
-        user = req.user;
-      });
-
-    const res = { json: vi.fn() };
-    const req = {};
-    await _route(req as any, res as any, () => {});
-
-    expect(user).toEqual(undefined);
+    expect(data).toEqual({ id: "456" });
   });
 
   test("Handles recursively updating path", () => {

@@ -1,6 +1,3 @@
-import { NextFunction, Request, Response } from "express";
-import { IncomingHttpHeaders } from "http";
-
 export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & {};
 
 export interface RootConfig<TContext, TMeta extends Record<PropertyKey, any>> {
@@ -11,82 +8,6 @@ export interface RootConfig<TContext, TMeta extends Record<PropertyKey, any>> {
 }
 
 export interface AnyRootConfig extends RootConfig<any, any> {}
-
-export const nextFnSymbol = Symbol("next");
-export type NextFnSymbol = typeof nextFnSymbol;
-
-const RES_KEY = "__isResponse";
-
-export const ResponseUtil = {
-  brand: (res: Response) => {
-    if (res != null && typeof res === "object") {
-      (res as any)[RES_KEY] = true;
-    }
-  },
-  isResponse: (res: unknown): res is Response => {
-    if (res != null && typeof res === "object") {
-      return Boolean((res as any)[RES_KEY]);
-    }
-
-    return false;
-  },
-};
-
-export interface NextFunctionWithReturn {
-  (err?: any): Symbol;
-  /**
-   * "Break-out" of a router by calling {next('router')};
-   * @see {https://expressjs.com/en/guide/using-middleware.html#middleware.router}
-   */
-  (deferToNext: "router"): Symbol;
-  /**
-   * "Break-out" of a route by calling {next('route')};
-   * @see {https://expressjs.com/en/guide/using-middleware.html#middleware.application}
-   */
-  (deferToNext: "route"): Symbol;
-}
-
-export interface ParsedQs {
-  [key: string]: undefined | string | string[] | ParsedQs | ParsedQs[];
-}
-
-export interface AnyRequestHandlerModified
-  extends RequestHandlerModified<any, any, any, any, any> {}
-export interface RequestHandlerModified<
-  P = Record<string, string>,
-  ResBody = any,
-  ReqBody = any,
-  ReqQuery = ParsedQs,
-  LocalsObj extends Record<string, any> = Record<string, any>,
-  Headers = {},
-  ReqMutations = {}
-> {
-  (
-    req: MergeObjectsShallow<
-      Omit<Request<P, ResBody, ReqBody, ReqQuery, LocalsObj>, "headers"> & {
-        headers: MergeObjectsShallow<IncomingHttpHeaders, Headers>;
-      },
-      ReqMutations
-    >,
-    res: Response<ResBody, LocalsObj>,
-    next: NextFunctionWithReturn
-  ):
-    | Response<ResBody, LocalsObj>
-    | void
-    | undefined
-    | NextFnSymbol
-    | ResBody
-    | Promise<ResBody>;
-}
-
-export const NextUtil = {
-  wrap: (next: NextFunction): NextFunctionWithReturn => {
-    return (...args) => {
-      next(...args);
-      return nextFnSymbol;
-    };
-  },
-};
 
 export const isArray = (
   arg: ReadonlyArray<any> | any
@@ -100,6 +21,10 @@ export type MakeUnknownOptional<T extends Record<any, any>> = Simplify<
   }
 >;
 
+export type RemoveNeverKeys<T> = {
+  [Key in keyof T as [T[Key]] extends [never] ? never : Key]: T[Key];
+};
+
 export type DefaultUnknownTo<T, D> = unknown extends T ? D : T;
 
 /** B keys take precedence over A */
@@ -108,3 +33,13 @@ export type MergeObjectsShallow<A, B> = Simplify<
     [K in keyof A]: K extends keyof B ? B[K] : A[K];
   } & B
 >;
+
+export const cached = <T extends () => any>(fn: T) => {
+  let result: ReturnType<T>;
+
+  return async () => {
+    if (result) return result;
+    result = await fn();
+    return result;
+  };
+};

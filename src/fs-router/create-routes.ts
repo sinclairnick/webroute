@@ -1,5 +1,4 @@
 import { FSRouterFormattedRoute } from "./format";
-import { AnyRequestHandlerModified } from "../util";
 import { AnyCompiledRoute, HttpMethod } from "../route/handler/types";
 import { Log } from "../internal/logger";
 import { isCompiledRoute } from "../route/handler/util";
@@ -69,7 +68,7 @@ export const createRoutes = (
     let compiled = route(pathMatch).method(
       method === "default" ? "all" : method
     );
-    let handlerFn = handler as AnyRequestHandlerModified;
+    let handlerFn = handler as any;
 
     if (isCompiledRoute(handler)) {
       // Copy existing fields over
@@ -87,9 +86,6 @@ export const createRoutes = (
       }
       if (handler._def.output) {
         compiled = compiled.output(handler._def.output.schema);
-      }
-      if (handler._def.rawHandler) {
-        handlerFn = handler._def.rawHandler;
       }
       if (method === "default" && handler._def.methods) {
         compiled = compiled.method(handler._def.methods);

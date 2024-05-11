@@ -7,7 +7,9 @@ export const generateTestRoutes = () => {
       .method("get")
       .query(z.object({ hi: z.number() }))
       .output(z.object({ result: z.boolean() }))
-      .handle(() => {}),
+      .handle(() => {
+        return { result: true };
+      }),
     b: route("/hello")
       .method("post")
       .body(z.object({ notHi: z.number() }))
