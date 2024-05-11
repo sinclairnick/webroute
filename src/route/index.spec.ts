@@ -4,92 +4,115 @@ import { LazyValidator, route } from ".";
 import { HandlerBuilder } from "./handler/builder";
 
 describe("Handler", () => {
-  test("Initially has no type info", () => {
-    const result = route();
+  describe("Schema", () => {
+    test("Initially has no type info", () => {
+      const result = route();
 
-    type TParams = typeof result extends HandlerBuilder<infer TParams>
-      ? TParams
-      : never;
+      type TParams = typeof result extends HandlerBuilder<infer TParams>
+        ? TParams
+        : never;
 
-    expectTypeOf<TParams["_query_out"]>().toEqualTypeOf<unknown>();
-    expectTypeOf<TParams["_params_out"]>().toEqualTypeOf<unknown>();
-    expectTypeOf<TParams["_body_out"]>().toEqualTypeOf<unknown>();
-    expectTypeOf<TParams["_output_out"]>().toEqualTypeOf<unknown>();
-  });
+      expectTypeOf<TParams["_query_out"]>().toEqualTypeOf<unknown>();
+      expectTypeOf<TParams["_params_out"]>().toEqualTypeOf<unknown>();
+      expectTypeOf<TParams["_body_out"]>().toEqualTypeOf<unknown>();
+      expectTypeOf<TParams["_output_out"]>().toEqualTypeOf<unknown>();
+    });
 
-  test("Initially has no schema info", () => {
-    const result = route();
+    test("Initially has no schema info", () => {
+      const result = route();
 
-    expect(result._def.query).toBeUndefined();
-    expect(result._def.params).toBeUndefined();
-    expect(result._def.body).toBeUndefined();
-    expect(result._def.output).toBeUndefined();
-  });
+      expect(result._def.query).toBeUndefined();
+      expect(result._def.params).toBeUndefined();
+      expect(result._def.body).toBeUndefined();
+      expect(result._def.output).toBeUndefined();
+    });
 
-  test(".query() adds query param", () => {
-    const schema = z.object({ a: z.number() });
-    const result = route().query(schema);
+    test(".query() adds query param", () => {
+      const schema = z.object({ a: z.number() });
+      const result = route().query(schema);
 
-    expect(result._def.query).toBeDefined();
-    expect(result._def.query?.schema).toEqual(schema);
-    expect(result._def.query?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
-    expect(() => result._def.query?.parser({ a: "1" })).rejects.toThrow();
+      expect(result._def.query).toBeDefined();
+      expect(result._def.query?.schema).toEqual(schema);
+      expect(result._def.query?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
+      expect(() => result._def.query?.parser({ a: "1" })).rejects.toThrow();
 
-    type QueryType = typeof result extends HandlerBuilder<infer TParams>
-      ? TParams["_query_out"]
-      : never;
-    expectTypeOf<QueryType>().toEqualTypeOf<{ a: number }>();
-  });
+      type QueryType = typeof result extends HandlerBuilder<infer TParams>
+        ? TParams["_query_out"]
+        : never;
+      expectTypeOf<QueryType>().toEqualTypeOf<{ a: number }>();
+    });
 
-  test(".params() adds params", () => {
-    const schema = z.object({ a: z.number() });
-    const result = route().params(schema);
+    test(".params() adds params", () => {
+      const schema = z.object({ a: z.number() });
+      const result = route().params(schema);
 
-    expect(result._def.params).toBeDefined();
-    expect(result._def.params?.schema).toEqual(schema);
-    expect(result._def.params?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
-    expect(() => result._def.params?.parser({ a: "1" })).rejects.toThrow();
+      expect(result._def.params).toBeDefined();
+      expect(result._def.params?.schema).toEqual(schema);
+      expect(result._def.params?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
+      expect(() => result._def.params?.parser({ a: "1" })).rejects.toThrow();
 
-    type ParamType = typeof result extends HandlerBuilder<infer TParams>
-      ? TParams["_params_out"]
-      : never;
+      type ParamType = typeof result extends HandlerBuilder<infer TParams>
+        ? TParams["_params_out"]
+        : never;
 
-    expectTypeOf<ParamType>().toEqualTypeOf<{ a: number }>();
-  });
+      expectTypeOf<ParamType>().toEqualTypeOf<{ a: number }>();
+    });
 
-  test(".body() adds body", () => {
-    const schema = z.object({ a: z.number() });
-    const result = route().body(schema);
+    test(".body() adds body", () => {
+      const schema = z.object({ a: z.number() });
+      const result = route().body(schema);
 
-    expect(result._def.body).toBeDefined();
-    expect(result._def.body?.schema).toEqual(schema);
-    expect(result._def.body?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
-    expect(() => result._def.body?.parser({ a: "1" })).rejects.toThrow();
+      expect(result._def.body).toBeDefined();
+      expect(result._def.body?.schema).toEqual(schema);
+      expect(result._def.body?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
+      expect(() => result._def.body?.parser({ a: "1" })).rejects.toThrow();
 
-    type BodyType = typeof result extends HandlerBuilder<infer TParams>
-      ? TParams["_body_out"]
-      : never;
-    expectTypeOf<BodyType>().toEqualTypeOf<{ a: number }>();
-  });
+      type BodyType = typeof result extends HandlerBuilder<infer TParams>
+        ? TParams["_body_out"]
+        : never;
+      expectTypeOf<BodyType>().toEqualTypeOf<{ a: number }>();
+    });
 
-  test(".output() adds output", () => {
-    const schema = z.object({ a: z.number().transform((x) => "one") });
-    const result = route().output(schema);
+    test(".headers() adds header", () => {
+      const schema = z.object({ a: z.number() });
+      const result = route().headers(schema);
 
-    expect(result._def.output).toBeDefined();
-    expect(result._def.output?.schema).toEqual(schema);
-    expect(result._def.output?.parser({ a: 1 })).resolves.toEqual({ a: "one" });
-    expect(() => result._def.output?.parser({ a: "1" })).rejects.toThrow();
+      expect(result._def.headersReq).toBeDefined();
+      expect(result._def.headersReq?.schema).toEqual(schema);
+      expect(result._def.headersReq?.parser({ a: 1 })).resolves.toEqual({
+        a: 1,
+      });
+      expect(() =>
+        result._def.headersReq?.parser({ a: "1" })
+      ).rejects.toThrow();
 
-    type OutputType = typeof result extends HandlerBuilder<infer TParams>
-      ? TParams["_output_in"]
-      : never;
-    type OutputTypeOut = typeof result extends HandlerBuilder<infer TParams>
-      ? TParams["_output_out"]
-      : never;
+      type BodyType = typeof result extends HandlerBuilder<infer TParams>
+        ? TParams["_headers_req_out"]
+        : never;
+      expectTypeOf<BodyType>().toEqualTypeOf<{ a: number }>();
+    });
 
-    expectTypeOf<OutputType>().toEqualTypeOf<{ a: number }>();
-    expectTypeOf<OutputTypeOut>().not.toEqualTypeOf<{ a: number }>();
+    test(".output() adds output", () => {
+      const schema = z.object({ a: z.number().transform((x) => "one") });
+      const result = route().output(schema);
+
+      expect(result._def.output).toBeDefined();
+      expect(result._def.output?.schema).toEqual(schema);
+      expect(result._def.output?.parser({ a: 1 })).resolves.toEqual({
+        a: "one",
+      });
+      expect(() => result._def.output?.parser({ a: "1" })).rejects.toThrow();
+
+      type OutputType = typeof result extends HandlerBuilder<infer TParams>
+        ? TParams["_output_in"]
+        : never;
+      type OutputTypeOut = typeof result extends HandlerBuilder<infer TParams>
+        ? TParams["_output_out"]
+        : never;
+
+      expectTypeOf<OutputType>().toEqualTypeOf<{ a: number }>();
+      expectTypeOf<OutputTypeOut>().not.toEqualTypeOf<{ a: number }>();
+    });
   });
 
   test("handle() returns data as json", async () => {
