@@ -35,11 +35,13 @@ export type MergeObjectsShallow<A, B> = Simplify<
 >;
 
 export const cached = <T extends () => any>(fn: T) => {
+  let called = false;
   let result: ReturnType<T>;
 
   return async () => {
-    if (result) return result;
+    if (called) return result;
     result = await fn();
+    called = true;
     return result;
   };
 };
