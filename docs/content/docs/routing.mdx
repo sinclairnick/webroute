@@ -1,0 +1,87 @@
+---
+title: Routing
+description: Your first document
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
+import Diagram from "../../public/diagram.png"
+
+## Routing
+
+Since `webroute` is just a small utility, it is not opinionated about if or how you manage routing – by design.
+
+Typically, web frameworks bundle together core functionality with routing, tightly coupling the two. However this causes routing unnecessarily coupled. As we will see, routing need not be tightly coupled with `webroute`.
+
+<Callout>
+
+The issues with tightly-coupled routing become more obvious when using filesystem routing, for example.
+
+</Callout>
+
+### No Routing
+
+It's completely valid to export a single route and call it a day.
+
+```ts
+Bun.serve({
+  fetch: myRoute(req)
+});
+```
+
+### Simple Routing
+
+Alternatively, `webroute`s have a very basic matching utility which can be used to implement a router in one LOC.
+
+```ts
+Bun.serve({
+	fetch: (req) => {
+		const match = routes.find(route => route.match(req))
+
+		return match?.(req)
+	}
+})
+```
+
+<Callout>
+
+In smaller projects this approach is sufficient. However, as the number of routes or path complexity increases, you may want to consider using a more sophisticated router for better performance.
+
+</Callout>
+
+
+### Third Party routers
+
+#### Individually
+
+Routes can be added to external routers one-by-one by simply assigning the route information to the external router.
+
+```ts
+app.get(myRoute.getPath(), myRoute)
+```
+
+
+
+#### Many at Once
+
+We can easily map every route to an external router by just iterating over every route and assigning the method-path combinations to their respective route handlers.
+
+```ts title="hono-example.ts"
+const app = new Hono()
+
+routes.forEach(route => {
+	// For every route, map each method to the route handler
+	for(const method of route.getMethods()) {
+		app[method](route.getPath(), c => route(c.req))
+	}
+})
+
+export default app
+```
+
+
+<Callout>
+
+Bear in mind most external routers care about route registration order.
+
+</Callout>
