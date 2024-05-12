@@ -1,4 +1,110 @@
 ---
 title: Quick Start
-description: Your first document
+icon: Album
 ---
+
+import { Tab, Tabs } from "fumadocs-ui/components/tabs";
+import { Step, Steps } from 'fumadocs-ui/components/steps';
+import { Callout } from 'fumadocs-ui/components/callout';
+
+## Install
+
+<Tabs items={["npm", "pnpm", "yarn", "bun"]} defaultIndex={0}>
+  <Tab value="npm">
+		```
+		npm install @webroute/core
+		```
+	</Tab>
+  <Tab value="pnpm">
+		```
+		pnpm install @webroute/core
+		```
+	</Tab>
+  <Tab value="yarn">
+		```
+		yarn add @webroute/core
+		```
+	</Tab>
+  <Tab value="bun">
+		```
+		bun add @webroute/core
+		```
+	</Tab>
+</Tabs>
+
+
+## Define Your First Route
+
+In this example, we will create a `GET /posts/:id` endpoint which validates and parses path params, and automatically serialises the response as json.
+
+```ts twoslash
+import { route } from "@webroute/core"
+// ---cut-start---
+import { z } from "zod"
+// ---cut-end---
+
+// ---cut-start---
+type Post = { id:number, name:string, authorId:number }
+const getPostFromDb = async (id:number): Promise<Post> => {
+	return { id: 1, name: "", authorId: 2 }
+}
+// ---cut-end---
+
+const PostRoute = route("/posts/:id")
+
+					// Specify path param `id` is number
+					.params(z.object({ id: z.number() }))
+
+					// Handle the incoming request
+					.handle(async ({ req, params }) => {
+
+						// Lazily validate and parse, minimising overhead
+						const { id } = await params()
+						//      ^^
+
+						const post = await getPostFromDb(id)
+
+						return post
+					})
+
+```
+
+The resulting route is a standard web request handler and works in any web-standard environment.
+
+```ts
+const response = await PostRoute(new Request("https://google.com"))
+const data = await response.json()
+```
+
+<Callout title="Where can I use webroutes?">
+Webroutes are very lightweight and are built on [web standards](https://common-min-api.proposal.wintercg.org/), meaning they are fully compatible with:
+
+<div className="flex flex-row">
+
+<div className="flex-1">
+**Frameworks**
+- NextJS
+- Remix
+- SolidStart
+- Express
+</div>
+
+<div className="flex-1">
+**Runtimes**
+- Bun
+- Deno
+- Node (w/ adapters)
+- Cloudflare workers
+- Vercel Edge
+</div>
+
+</div>
+
+</Callout>
+
+
+## Next Steps
+
+Now that you've defined a route, you need to wire it up to something. Exactly how to do this depends on how you decide to run your app.
+
+Find out more about how `webroute`s integrate with frameworks and runtimes in [Deployment](./deployment).

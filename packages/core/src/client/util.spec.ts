@@ -79,9 +79,9 @@ describe("Util", () => {
   test("Handles absolute url", () => {
     const result = createUrl({
       method: "get",
-      path: "https://harissa.dev/user",
+      path: "https://webroute.dev/user",
     });
 
-    expect(result).toBe("https://harissa.dev/user");
+    expect(result).toBe("https://webroute.dev/user");
   });
 });

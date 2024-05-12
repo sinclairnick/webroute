@@ -1,0 +1,67 @@
+---
+title: Comparisons
+description: Your first document
+icon: GitCompareArrows
+---
+import { InlineTOC } from 'fumadocs-ui/components/inline-toc';
+
+
+
+`webroute` builds on lessons from previous libraries and frameworks, aiming to provide the best abstraction for building general purpose APIs.
+
+It was born out of a dissatisfaction with existing options being some combination of too simple, poorly designed, confusing or convoluted.
+
+Ultimately, `webroute` was designed to be as scalable as NestJS, simple as express and even more flexible than modern web frameworks.
+
+<InlineTOC items={toc} />
+
+## Express
+
+Express is the go-to framework for Node-based APIs. While still a completely valid option, it suffers from several issues.
+
+Express is an old framework. This means it's both stable and battle-tested, hence its lingering popularity. However, express is reliant on node APIs that have since been succeeded by web standards. It makes heavy use of now-considered bad practices like monkey-patching and mutation of the request object. It has poor support for table-stakes like typescript and async support.
+
+All of these problems make it more difficult to create secure, testable, fast, reliable APIs.
+
+`webroute` aims to maintain the simplicity and intuitiveness of express, without the rough edges. Consequently `webroute` is if anything even simpler than express, yet behaves as one would expect and makes room for fundamental modern API requirements like validation, OpenAPI and testing.
+
+## tRPC
+
+The API for `webroute` is similar to [tRPC](https://trpc.io/) in many ways. The chained syntax allows for great composability and makes things like type-safe middleware possible.
+
+However tRPC is an RPC framework, whereas `webroute` is not a framework, and instead of RPC it is HTTP/REST-focused. While tRPC can be used with the `trpc-openapi` framework to work over REST, it is fundamentally not designed for REST, so rough edges abound.
+
+`webroute` is more primitive than tRPC and instead of shying away from HTTP/REST, it leans into it.
+
+## NestJS
+
+NestJS provides a huge amount of functionality and positions itself as the enterprise node solution. While it's true that express and other alternatives are likely insufficient for large-scale apps, NestJS has been rightly criticised for being overcomplicated. 
+
+Enforcing dependency injection, class-decorators and other methods familiar to OOP languages like Java or C#, NestJS often leads to obscure errors around circular dependencies and typescript metadata issues, making otherwise simple tasks complicated and difficult to resolve.
+
+Like express, NestJS also utilises functionality at its core which is at odds with where the standards are going. For example, Typescript decorators which relied on, yet are only experimentally supported. Moreover, the JavaScript proposal for decorators is deviating from the experimental TypeScript version.
+
+`webroute` was designed to sit somewhere between the reliability of NestJS and the stability of express.
+
+## Web Frameworks
+
+> Hono, Elysia, etc.
+
+While similar to these frameworks in some ways, `webroute` inverts the responsibility of route and "app". Typically a central `app` is initialised, where routes are then registered on to this `app` instance. 
+
+Contra to this approach, `webroute` defines the necessary functionality at the route-level, leaving the orchestration and routing decoupled and thus more flexible. Because `webroute`s are compatible with these frameworks, it can also be incrementally adopted or work alongside an existing app without adopting a new framework or methodology. An existing app with a single `webroute` shoehorned in is a completely valid use case and won't interfere negatively.
+
+
+
+## Other Node Frameworks
+
+> Fastify, Koa, etc.
+
+Similar to express, these frameworks have idiosyncratic APIs that are often hard to test, unreliable or complicated.
+
+
+## MVC Frameworks
+
+> Adonis, Sails, etc.
+
+`webroute` is not an MVC framework and has no opinions on rendering views. It can be used for such, but is not a fully-fledged framework for building web applications. Instead it is a simple abstraction for building APIs across web-compatible runtimes.

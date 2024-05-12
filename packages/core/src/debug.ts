@@ -1,7 +1,7 @@
 import debug from "debug";
 
 export const Debug = {
-  openapi: debug("harissa:openapi"),
-  route: debug("harissa:route"),
-  fsrouter: debug("harissa:fsrouter"),
+  openapi: debug("webroute:openapi"),
+  route: debug("webroute:route"),
+  fsrouter: debug("webroute:fsrouter"),
 };

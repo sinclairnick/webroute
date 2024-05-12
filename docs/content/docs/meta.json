@@ -1,0 +1,21 @@
+{
+  "title": "Webroute",
+  "root": true,
+  "pages": [
+    "index",
+    "quick-start",
+    "deployment",
+    "comparisons",
+    "---Fundamentals---",
+    "routes",
+    "validation",
+    "middleware",
+    "adapters",
+    "typescript",
+    "client",
+    "---Guides---",
+    "recommended-tools",
+    "---About---",
+    "acknowledgements"
+  ]
+}
