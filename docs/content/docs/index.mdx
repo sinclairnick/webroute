@@ -132,16 +132,12 @@ export const GET = myRoute
 
 ```ts title="bun-api.ts"
 Bun.serve({
-  fetch(req) {
-    return myRoute(req)
-  },
+  fetch: myRoute(req)
 });
 ```
 
 ```ts title="deno-api.ts"
-Deno.serve((req) => {
-  return myRoute(req)
-});
+Deno.serve(myRoute);
 ```
 
 And many more...
