@@ -23,7 +23,7 @@ route().handle(() => {
 
 But this provides no benefit over using a regular `(req: Request) => Response` handler. In fact the result is exactly this.
 
-`webroute` provides several ways of enhancing our route substantially, without adding much complexity. Bear in mind, none of the below is required.
+`webroute` provides several ways of enhancing our route substantially, without adding much complexity. Bear in mind, none of the below is _required_.
 
 ## Paths
 
@@ -184,7 +184,7 @@ route()
 			return { ...state, isAuthed: true }
 		}
 
-		// Abort request processing, return an error
+		// Or, Return a response, completing the request early
 		return Response.json({ code: "UNAUTHORIZED" }, { status: 401 })
 	})
 	.handle(({ state }) => {
@@ -197,7 +197,7 @@ route()
 Middleware should return either an object, which will become the `state` argument of successive handlers and middleware, or a `Response` which will be returned.
 
 <Callout>
-To keep things simple, routes are strictly unidirectional: there is no response middleware.
+To keep things simple, routes are strictly unidirectional. There is no _response_ middleware.
 </Callout>
 
 Middleware can be composed and chained. Learn more in [Composition](./composition).
