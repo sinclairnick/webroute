@@ -211,7 +211,7 @@ Using the `route` object we can also infer various things about our routes.
 import { route } from "@webroute/core"
 import { z } from "zod"
 // ---cut-end---
-
+// Define some route
 const myRoute = route("/post/:id")
 	.method(["put", "post"])
 	.params(z.object({ id: z.number() }))
@@ -224,7 +224,7 @@ const myRoute = route("/post/:id")
 type Path = route.InferPath<typeof myRoute>
 type Methods = route.InferMethods<typeof myRoute>
 
-// Schema
+// Infer schema shapes
 // In = before transform
 type ParamsIn = route.InferParamsIn<typeof myRoute>
 type QueryIn = route.InferQueryIn<typeof myRoute>
@@ -233,10 +233,10 @@ type OutputIn = route.InferOutputIn<typeof myRoute>
 
 // Out = after transform (if any)
 // type ParamsOut = route.InferParamsOut<typeof myRoute>
-// type QueryOut = route.InferQueryOut<typeof myRoute>
-// type BodyOut = route.InferBodyOut<typeof myRoute>
-// type OutputOut = route.InferOutputOut<typeof myRoute>
+// ...
 
 // Or infer all at once
-type RouteDef = route.InferRouteDef<typeof myRoute>
+type RouteDef = route.InferRouteDef<typeof myRoute>;
 ```
+
+`webroute` also provides some client-side type inference, which greatly speeds up development on the client side. Visit the [Client](./client) docs.

@@ -9,13 +9,15 @@ import { Callout } from "fumadocs-ui/components/callout"
 
 `webroute` is a lightweight primitive used to build scalable web APIs.
 
-Fundamentally, `webroute` consists of a single function, `route`, which is a poweful, simple and portable abstraction for atomically defining all aspects of an API endpoint.
+It consists of one function
+
+```ts
+import { route } from "@webroute/core"
+```
 
 <Callout>
-### `webroute` is not a framework
- Instead, `webroute` happily enhances existing frameworks, or can be used without one.
+Webroute happily works alongside other frameworks or without one.
 </Callout>
-
 
 ---
 
@@ -37,7 +39,7 @@ export default route("/pathname")
 
 ### Introspectable
 
-Declarative approach enables API contract and schema definitions for free
+The declarative approach allows us to specify things like input and output schema. We can then use this information for schema generation, or anything else.
 
 ```ts
 route()
@@ -73,7 +75,7 @@ authedRoute
 
 ### Atomic
 
-Each route is complete and standalone – `webroute`s are router agnostic. Upstream operations like middleware are always traceable and baked in.
+Each route is complete and standalone – `webroute`s are router agnostic. Upstream operations like middleware are always traceable at the code level and baked in.
 
 ```ts title="posts/route.ts"
 // No external orchestration, monkey-patching or side-effects necessary.
@@ -97,7 +99,7 @@ expect(await response.json()).toBe({ /*...*/ })
 
 ### Immutable
 
-`webroute`s are inherently immutable, never mutating request or response objects, nor monkey-patching any APIs.
+`webroute`s are inherently immutable, never mutating request or response objects, nor monkey-patching any APIs. The boundaries for extra functionality are explicit and never crossed.
 
 ```ts
 route()
