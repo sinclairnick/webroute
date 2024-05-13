@@ -1,0 +1,242 @@
+---
+title: Route
+---
+import { Callout } from 'fumadocs-ui/components/callout';
+
+```ts
+import { route } from "@webroute/core" 
+```
+
+A `webroute` is ultimately a declaration of an API endpoint, including validation, headers, middleware and the request handler.
+
+By defining all route information in one place, it makes applications easier to reason about, test and decouples routes from routing or other orchestration. This also means `webroute`s are agnostic to framework – so long as a `Request` and `Response` instance is on-hand.
+
+---
+
+A simple route can be as minimal as
+
+```ts
+route().handle(() => {
+	return new Response()
+})
+```
+
+But this provides no benefit over using a regular `(req: Request) => Response` handler. In fact the result is exactly this.
+
+`webroute` provides several ways of enhancing our route substantially, without adding much complexity. Bear in mind, none of the below is required.
+
+## Paths
+
+In most API frameworks, paths are defined at the router level. However, paths are tightly coupled to the actual handling. As such, it makes sense to define this in the same place. 
+
+```ts
+route("/path/:param").handle(() => {})
+```
+
+<Callout>
+This approach is highly declarative and [inverts control](https://en.wikipedia.org/wiki/Inversion_of_control) compared to traditional API frameworks, which grants us more freedom with how we might want to execute our app.
+</Callout>
+
+## Method
+
+We can define the method(s) of a route in a similar fashion.
+
+```ts
+route("/posts").method("get")
+// or
+route("/posts").method(["get", "post", /*...etc*/])
+```
+
+
+## Validation
+
+Any production API should be validating input and output to ensure the right information is coming in or going out. 
+
+We are able to validate many different parts of a request.
+
+<Callout>
+The below examples will use Zod schema, but you may use whatever validation you like. Most popular validation libraries are supported.
+</Callout>
+
+### Path Parameters
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+// ---cut-end---
+// GET /posts/123
+route("/posts/:id")
+	.method("get")
+	.params(z.object({ id: z.number() }))
+	.handle(async ({ req, params }) => {
+		// Run the parsing/validation, lazily
+		const { id } = await params()
+		//      ^^
+	})
+```
+
+### Query Parameters
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+// ---cut-end---
+// GET /posts?limit=1&offset=2
+
+route("/posts")
+	.method("get")
+	.query(z.object({
+		limit: z.number().optional(),
+		offset: z.number().optional() 
+	}))
+	.handle(async ({ req, query }) => {
+		// Run the parsing/validation, lazily
+		const { limit, offset } = await query()
+		//      ^^^^^  
+		//             ^^^^^^
+	})
+```
+
+### Incoming Headers
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+// ---cut-end---
+// GET /posts -H "Authorization: Bearer eYon...."
+
+route("/posts/:id")
+	.method("get")
+	.headers(z.object({ Authorization: z.string().regex(/Bearer [a-zA-Z0-9]+/) }))
+	.handle(async ({ req, headers }) => {
+		// Run the parsing/validation, lazily
+		const { Authorization } = await headers()
+		//      ^^^^^^^^^^^^^
+	})
+```
+
+### Request Body
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+// ---cut-end---
+// POST /login -D { "email": "...", "password": "..." }
+
+route("/login")
+	.method("post")
+	.body(z.object({
+		email: z.string().email(),
+		password: z.string().min(10, "Password too short") 
+	}))
+	.handle(async ({ req, body }) => {
+		// Run the parsing/validation, lazily
+		const { email, password } = await body()
+		//      ^^^^^
+		//             ^^^^^^^^
+	})
+```
+
+### Output (response)
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+declare function formatMoney(x :any): string
+// ---cut-end---
+// GET /balance
+
+route("/balance")
+	.method("get")
+	.output(z.object({ 
+		amount: z.number().transform(s => formatMoney(s)) 
+	}))
+	.handle(() => {
+		return { amount: 1_000_000 }
+		// <- "1,000,000"
+	})
+```
+
+## Middleware
+
+Middleware was invented to avoid repeating the same functionality. However, typically an app or router handles middleware, upstream from request handlers. This means it's not always clear what information the route will have access to (e.g. current user), and tightly couples our code to the framework.
+
+### Basic Middleware
+
+`webroute`s enable an explicit, type-safe, traceable chain of middleware by relying on standard code instead of app-level orchestration. 
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+declare function assert(x: any): void
+declare const isAuthed: boolean
+// ---cut-end---
+route()
+	.use(({ state }) => {
+		if(isAuthed) {
+			// Return updated state object
+			return { ...state, isAuthed: true }
+		}
+
+		// Abort request processing, return an error
+		return Response.json({ code: "UNAUTHORIZED" }, { status: 401 })
+	})
+	.handle(({ state }) => {
+		assert(state.isAuthed === true)
+		//           ^^^^^^^^
+	})
+```
+
+
+Middleware should return either an object, which will become the `state` argument of successive handlers and middleware, or a `Response` which will be returned.
+
+<Callout>
+To keep things simple, routes are strictly unidirectional: there is no response middleware.
+</Callout>
+
+Middleware can be composed and chained. Learn more in [Composition](./composition).
+
+## Type Utilities
+
+Using the `route` object we can also infer various things about our routes.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+// ---cut-end---
+
+const myRoute = route("/post/:id")
+	.method(["put", "post"])
+	.params(z.object({ id: z.number() }))
+	.query(z.object({ page: z.number() }))
+	.body(z.object({ name: z.string() }))
+	.output(z.object({ success: z.boolean() }))
+	.handle(() => ({ success: true }))
+
+// Infer parts independently
+type Path = route.InferPath<typeof myRoute>
+type Methods = route.InferMethods<typeof myRoute>
+
+// Schema
+// In = before transform
+type ParamsIn = route.InferParamsIn<typeof myRoute>
+type QueryIn = route.InferQueryIn<typeof myRoute>
+type BodyIn = route.InferBodyIn<typeof myRoute>
+type OutputIn = route.InferOutputIn<typeof myRoute>
+
+// Out = after transform (if any)
+// type ParamsOut = route.InferParamsOut<typeof myRoute>
+// type QueryOut = route.InferQueryOut<typeof myRoute>
+// type BodyOut = route.InferBodyOut<typeof myRoute>
+// type OutputOut = route.InferOutputOut<typeof myRoute>
+
+// Or infer all at once
+type RouteDef = route.InferRouteDef<typeof myRoute>
+```

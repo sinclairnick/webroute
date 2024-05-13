@@ -1,0 +1,129 @@
+---
+title: Composition
+---
+import { Callout } from 'fumadocs-ui/components/callout';
+
+Composition enables patterns like path prefixing and more complex middleware chains, without requiring routers or frameworks.
+
+Fundamentally, composition allows us to prevent repeating ourselves. In contrast to schema, which overwrite previous schema, paths and middleware are appended.
+
+## Composing Paths
+
+To avoid repeating common path param elements, we might sometimes wish to add path prefixes. For example, we might prefix our entire api with `/api` or `/v2`. Additionally, we might want to group routes under a group like `/posts/*`.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+// ---cut-end---
+const apiRoute = route("/api")
+
+const postRoute = apiRoute.path("/post")
+
+const getPostRoute = postRoute.method("get").handle(() => {})
+
+// Even typescript understands
+type Path = route.InferPath<typeof getPostRoute>
+//   ^?
+
+```
+
+## Composing Middleware
+
+Composing middleware is simple and powerful using `webroute`s. It makes it easier to understand what middleware each route depends on and means type-safety is retained throughout.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+// ---cut-end---
+// Define base route with auth middleware
+const authedRoute = route()
+	.use(({ req }) => {
+		const token = req.headers
+			.get("Authorization")
+			?.replace("Bearer ", "");
+
+		if(token) return { token }
+
+		return Response.json({ code: "UNAUTHORIZED" }, { status: 401 });
+	})
+
+
+// Define a route which employs the middleware
+// GET /me
+authedRoute
+	.path("/me")
+	.method("get")
+	.handle(({ state }) => {
+		const { token } = state
+		//      ^^^^^
+
+		// TODO: Get user
+	})
+```
+
+Middleware can be chained too.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+const authedRoute = route() .use(() => ({ token: "" }))
+declare function isAdmin(token: string): boolean
+// ---cut-end---
+// Extend the `authedRoute` base
+const adminRoute = authedRoute
+
+	// This middleware is run in addition to the `authedRoute` middleware.
+	// This does not affect the `authedRoute` base or its other descendants.
+	.use(({ req, state }) => {
+		if(isAdmin(state.token)) {
+			return state
+		}
+
+		return Response.json({ code: "UNAUTHORIZED", }, { status: 401 })
+	})
+
+
+// GET /me
+adminRoute
+	.path("/admins-only")
+	.method("get")
+	.handle(({ state }) => {
+		// ...
+	})
+```
+
+<Callout>
+For more complex middleware mixing and matching you may also want to extract the middleware logic into seperate functions.
+</Callout>
+
+## Composing Schema, Methods, ...etc.
+
+While middleware and paths benefit from composition the most, schema and methods can also be composed. Although, unlike middleware and paths, these override previous declarations.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+// ---cut-end---
+
+const paginatedRoute = route()
+	.query(z.object({ 
+		page: z.number().optional(),
+		limit: z.number().optional()
+	}))
+	.method("get")
+
+const postRoute = paginatedRoute.handle(() => {})
+
+const paperRoute = paginatedRoute
+	.query(z.object({
+		page: z.enum(["A4", "A3", "A2"])
+	}))
+	.handle(async ({query}) => {
+		const { page, ...rest } = await query()
+		//      ^^^^
+		//               ^^^^
+	})
+```
