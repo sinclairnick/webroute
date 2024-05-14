@@ -3,7 +3,7 @@ import { z } from "zod";
 import { LazyValidator, route } from ".";
 import { HandlerBuilder } from "./handler/builder";
 
-describe("Route", () => {
+describe("Route()", () => {
   describe("Schema", () => {
     test("Initially has no type info", () => {
       const result = route();
@@ -342,6 +342,70 @@ describe("Route", () => {
       const data = await res.json();
 
       expect(data).toEqual({ id: "456" });
+    });
+  });
+});
+
+describe("Route.", () => {
+  describe("Methods", () => {
+    test("Gets path", () => {
+      const r = route("/posts/:id").handle(() => {});
+      const path = route.getPath(r);
+
+      expectTypeOf(path).toEqualTypeOf<"/posts/:id">();
+      expect(path).toBe("/posts/:id");
+    });
+
+    test("Gets single operation", () => {
+      const r = route("/posts/:id")
+        .method("get")
+        .handle(() => {});
+      const operations = route.getOperations(r);
+
+      expectTypeOf(operations).toEqualTypeOf<"GET /posts/:id"[]>();
+      expect(operations).toEqual(["GET /posts/:id"]);
+    });
+
+    test("Gets multiple operations", () => {
+      const r = route("/posts/:id")
+        .method(["get", "post"])
+        .handle(() => {});
+      const operations = route.getOperations(r);
+
+      expectTypeOf(operations).toEqualTypeOf<
+        ("POST /posts/:id" | "GET /posts/:id")[]
+      >();
+      expect(operations).toEqual(["GET /posts/:id", "POST /posts/:id"]);
+    });
+
+    test("Gets single method", () => {
+      const r = route("/posts/:id")
+        .method("get")
+        .handle(() => {});
+      const methods = route.getMethods(r);
+
+      expectTypeOf(methods).toEqualTypeOf<"get"[]>();
+      expect(methods).toEqual(["get"]);
+    });
+
+    test("Gets non-standard method", () => {
+      const r = route("/posts/:id")
+        .method("custom")
+        .handle(() => {});
+      const methods = route.getMethods(r);
+
+      expectTypeOf(methods).toEqualTypeOf<"custom"[]>();
+      expect(methods).toEqual(["custom"]);
+    });
+
+    test("Gets multiple methods", () => {
+      const r = route("/posts/:id")
+        .method(["get", "post"])
+        .handle(() => {});
+      const methods = route.getMethods(r);
+
+      expectTypeOf(methods).toEqualTypeOf<("get" | "post")[]>();
+      expect(methods).toEqual(["get", "post"]);
     });
   });
 });
