@@ -72,34 +72,34 @@ export const createRoutes = (
 
     if (isCompiledRoute(handler)) {
       // Copy existing fields over
-      if (handler._def.meta) {
-        compiled = compiled.meta(handler._def.meta);
+      if (handler.~def.meta) {
+        compiled = compiled.meta(handler.~def.meta);
       }
-      if (handler._def.body) {
-        compiled = compiled.body(handler._def.body.schema);
+      if (handler.~def.body) {
+        compiled = compiled.body(handler.~def.body.schema);
       }
-      if (handler._def.query) {
-        compiled = compiled.query(handler._def.query.schema);
+      if (handler.~def.query) {
+        compiled = compiled.query(handler.~def.query.schema);
       }
-      if (handler._def.params) {
-        compiled = compiled.params(handler._def.params.schema);
+      if (handler.~def.params) {
+        compiled = compiled.params(handler.~def.params.schema);
       }
-      if (handler._def.output) {
-        compiled = compiled.output(handler._def.output.schema);
+      if (handler.~def.output) {
+        compiled = compiled.output(handler.~def.output.schema);
       }
-      if (method === "default" && handler._def.methods) {
-        compiled = compiled.method(handler._def.methods);
+      if (method === "default" && handler.~def.methods) {
+        compiled = compiled.method(handler.~def.methods);
       }
 
-      if (handler._def.path != null) {
+      if (handler.~def.path != null) {
         console.warn(
           `[${relativePath}] Handler for '${method}' method specifies a route path which will be ignored for the path derived from the file system.`
         );
       }
 
-      if (handler._def.methods && handler._def.methods.length > 0) {
+      if (handler.~def.methods && handler.~def.methods.length > 0) {
         if (method === "default") {
-          for (const specifiedMethod of handler._def.methods) {
+          for (const specifiedMethod of handler.~def.methods) {
             if (handlers[specifiedMethod] != null) {
               console.info(
                 `[${relativePath}] Both default and a named export will handle the ${specifiedMethod} method.`

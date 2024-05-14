@@ -1,13 +1,11 @@
 export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & {};
 
-export interface RootConfig<TContext, TMeta extends Record<PropertyKey, any>> {
-  $types: {
-    ctx: TContext;
-    meta: TMeta;
+export interface AnyRootConfig extends RootConfig<any> {}
+export interface RootConfig<TMeta extends Record<PropertyKey, any>> {
+  "~types": {
+    Meta: TMeta;
   };
 }
-
-export interface AnyRootConfig extends RootConfig<any, any> {}
 
 export const isArray = (
   arg: ReadonlyArray<any> | any

@@ -12,15 +12,14 @@ export type * from "./handler/types";
 export type * from "./parser";
 export type * from "./parser/types";
 
-export type DefaultConfig = {
-  $types: {
-    meta: RouteMeta;
-    ctx: {};
+interface DefaultConfig {
+  "~types": {
+    Meta: RouteMeta;
   };
-};
+}
 
-export const route = <TPath extends string>(path?: TPath) =>
-  createBuilder<DefaultConfig, TPath>({ path });
+export const route = <TPath extends string>(Path?: TPath) =>
+  createBuilder<DefaultConfig, TPath>({ path: Path });
 
 export namespace route {
   export type InferPart<
@@ -30,65 +29,65 @@ export namespace route {
 
   export type InferBodyIn<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_body_in"
+    "BodyIn"
   >;
   export type InferBodyOut<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_body_out"
+    "BodyOut"
   >;
 
   export type InferQueryIn<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_query_in"
+    "QueryIn"
   >;
   export type InferQueryOut<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_query_out"
+    "QueryOut"
   >;
 
   export type InferParamsIn<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_params_in"
+    "ParamsIn"
   >;
   export type InferParamsOut<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_params_out"
+    "ParamsOut"
   >;
 
   export type InferOutputIn<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_output_in"
+    "OutputIn"
   >;
   export type InferOutputOut<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_output_out"
+    "OutputOut"
   >;
 
   export type InferMeta<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_meta"
+    "Meta"
   >;
 
   export type InferPath<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_path"
+    "Path"
   >;
 
   export type InferMethods<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
-    "_methods"
+    "Methods"
   >;
 
   export interface DefinedRouteDef<TParams extends HandlerParams> {
-    paramsIn: TParams["_params_in"];
-    paramsOut: TParams["_params_out"];
-    bodyIn: TParams["_body_in"];
-    bodyOut: TParams["_body_out"];
-    queryIn: TParams["_query_in"];
-    queryOut: TParams["_query_out"];
-    outputIn: TParams["_output_in"];
-    outputOut: TParams["_output_out"];
-    path: TParams["_path"];
+    ParamsIn: TParams["ParamsIn"];
+    paramsOut: TParams["ParamsOut"];
+    BodyIn: TParams["BodyIn"];
+    BodyOut: TParams["BodyOut"];
+    QueryIn: TParams["QueryIn"];
+    QueryOut: TParams["QueryOut"];
+    OutputIn: TParams["OutputIn"];
+    OutputOut: TParams["OutputOut"];
+    Path: TParams["Path"];
   }
 
   export type InferRouteDef<TRoute extends AnyCompiledRoute> =

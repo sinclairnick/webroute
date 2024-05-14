@@ -57,6 +57,8 @@ getPost({ id: 123 }, fetcherOptions)
 Our custom fetcher is responsible for executing our request and parsing our response, if need be. It allows for flexible options and return types.
 
 ```ts
+import { createUrl } from "@webroute/client"
+
 const myFetcher = async (
 		// Contains info about path, method, body etc.
 		config,
@@ -65,6 +67,7 @@ const myFetcher = async (
 		// and fully typed.
 		opts: AxiosRequestConfig
 	) => {
+	// `createUrl` is a small helper for combining the path pattern with path and query params.
 	const url = createUrl(config);
 
 	const res = await axios({

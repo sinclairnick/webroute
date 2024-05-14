@@ -23,11 +23,11 @@ export namespace W {
     keyof TApp extends `${string} ${infer TPath}` ? TPath : never;
 
   export type DefinedEndpoint<TRoute extends AnyRouteDef> = {
-    query: TRoute["queryIn"];
-    params: TRoute["paramsIn"];
-    body: TRoute["bodyIn"];
-    output: TRoute["outputOut"];
-    path: TRoute["path"];
+    query: TRoute["QueryIn"];
+    params: TRoute["ParamsIn"];
+    body: TRoute["BodyIn"];
+    output: TRoute["OutputOut"];
+    path: TRoute["Path"];
   };
 
   export type Endpoint<

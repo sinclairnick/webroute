@@ -15,30 +15,26 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   /**
    * @internal
    */
-  _def: HandlerDefinition<TParams>;
+  "~def": HandlerDefinition<TParams>;
 
   path<TPath extends string>(
     path: TPath
   ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"] extends string
-      ? `${TParams["_path"]}${TPath}`
-      : TPath;
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _state: TParams["_state"];
+    Path: TParams["Path"] extends string ? `${TParams["Path"]}${TPath}` : TPath;
+    InferredParams: TParams["InferredParams"];
+    Meta: TParams["Meta"];
+    QueryIn: TParams["QueryIn"];
+    QueryOut: TParams["QueryOut"];
+    ParamsIn: TParams["ParamsIn"];
+    ParamsOut: TParams["ParamsOut"];
+    BodyIn: TParams["BodyIn"];
+    BodyOut: TParams["BodyOut"];
+    OutputIn: TParams["OutputIn"];
+    OutputOut: TParams["OutputOut"];
+    Methods: TParams["Methods"];
+    HeadersReqIn: TParams["HeadersReqIn"];
+    HeadersReqOut: TParams["HeadersReqOut"];
+    State: TParams["State"];
   }>;
 
   /**
@@ -47,23 +43,21 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   query<$Parser extends Parser>(
     schema: $Parser
   ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: inferParser<$Parser>["in"];
-    _query_out: inferParser<$Parser>["out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _state: TParams["_state"];
+    Path: TParams["Path"];
+    InferredParams: TParams["InferredParams"];
+    Meta: TParams["Meta"];
+    QueryIn: inferParser<$Parser>["in"];
+    QueryOut: inferParser<$Parser>["out"];
+    ParamsIn: TParams["ParamsIn"];
+    ParamsOut: TParams["ParamsOut"];
+    BodyIn: TParams["BodyIn"];
+    BodyOut: TParams["BodyOut"];
+    OutputIn: TParams["OutputIn"];
+    OutputOut: TParams["OutputOut"];
+    Methods: TParams["Methods"];
+    HeadersReqIn: TParams["HeadersReqIn"];
+    HeadersReqOut: TParams["HeadersReqOut"];
+    State: TParams["State"];
   }>;
 
   /**
@@ -72,23 +66,21 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   params<$Parser extends Parser>(
     schema: $Parser
   ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: inferParser<$Parser>["in"];
-    _params_out: inferParser<$Parser>["out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _state: TParams["_state"];
+    Path: TParams["Path"];
+    InferredParams: TParams["InferredParams"];
+    Meta: TParams["Meta"];
+    QueryIn: TParams["QueryIn"];
+    QueryOut: TParams["QueryOut"];
+    ParamsIn: inferParser<$Parser>["in"];
+    ParamsOut: inferParser<$Parser>["out"];
+    BodyIn: TParams["BodyIn"];
+    BodyOut: TParams["BodyOut"];
+    OutputIn: TParams["OutputIn"];
+    OutputOut: TParams["OutputOut"];
+    Methods: TParams["Methods"];
+    HeadersReqIn: TParams["HeadersReqIn"];
+    HeadersReqOut: TParams["HeadersReqOut"];
+    State: TParams["State"];
   }>;
 
   /**
@@ -97,45 +89,41 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   body<$Parser extends Parser>(
     schema: $Parser
   ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: inferParser<$Parser>["in"];
-    _body_out: inferParser<$Parser>["out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _state: TParams["_state"];
+    Path: TParams["Path"];
+    InferredParams: TParams["InferredParams"];
+    Meta: TParams["Meta"];
+    QueryIn: TParams["QueryIn"];
+    QueryOut: TParams["QueryOut"];
+    ParamsIn: TParams["ParamsIn"];
+    ParamsOut: TParams["ParamsOut"];
+    BodyIn: inferParser<$Parser>["in"];
+    BodyOut: inferParser<$Parser>["out"];
+    OutputIn: TParams["OutputIn"];
+    OutputOut: TParams["OutputOut"];
+    Methods: TParams["Methods"];
+    HeadersReqIn: TParams["HeadersReqIn"];
+    HeadersReqOut: TParams["HeadersReqOut"];
+    State: TParams["State"];
   }>;
 
   headers<$Parser extends Parser>(
     schema: $Parser
   ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: inferParser<$Parser>["in"];
-    _headers_req_out: inferParser<$Parser>["out"];
-    _state: TParams["_state"];
+    Path: TParams["Path"];
+    InferredParams: TParams["InferredParams"];
+    Meta: TParams["Meta"];
+    QueryIn: TParams["QueryIn"];
+    QueryOut: TParams["QueryOut"];
+    ParamsIn: TParams["ParamsIn"];
+    ParamsOut: TParams["ParamsOut"];
+    BodyIn: TParams["BodyIn"];
+    BodyOut: TParams["BodyOut"];
+    OutputIn: TParams["OutputIn"];
+    OutputOut: TParams["OutputOut"];
+    Methods: TParams["Methods"];
+    HeadersReqIn: inferParser<$Parser>["in"];
+    HeadersReqOut: inferParser<$Parser>["out"];
+    State: TParams["State"];
   }>;
 
   /**
@@ -144,91 +132,82 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
   output<$Parser extends Parser>(
     schema: $Parser
   ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: inferParser<$Parser>["in"];
-    _output_out: inferParser<$Parser>["out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _state: TParams["_state"];
+    Path: TParams["Path"];
+    InferredParams: TParams["InferredParams"];
+    Meta: TParams["Meta"];
+    QueryIn: TParams["QueryIn"];
+    QueryOut: TParams["QueryOut"];
+    ParamsIn: TParams["ParamsIn"];
+    ParamsOut: TParams["ParamsOut"];
+    BodyIn: TParams["BodyIn"];
+    BodyOut: TParams["BodyOut"];
+    OutputIn: inferParser<$Parser>["in"];
+    OutputOut: inferParser<$Parser>["out"];
+    Methods: TParams["Methods"];
+    HeadersReqIn: TParams["HeadersReqIn"];
+    HeadersReqOut: TParams["HeadersReqOut"];
+    State: TParams["State"];
   }>;
 
   method<TMethod extends HttpMethod | HttpMethod[]>(
     method: TMethod
   ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TMethod extends HttpMethod ? TMethod : TMethod[number];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _state: TParams["_state"];
+    Path: TParams["Path"];
+    InferredParams: TParams["InferredParams"];
+    Meta: TParams["Meta"];
+    QueryIn: TParams["QueryIn"];
+    QueryOut: TParams["QueryOut"];
+    ParamsIn: TParams["ParamsIn"];
+    ParamsOut: TParams["ParamsOut"];
+    BodyIn: TParams["BodyIn"];
+    BodyOut: TParams["BodyOut"];
+    OutputIn: TParams["OutputIn"];
+    OutputOut: TParams["OutputOut"];
+    Methods: TMethod extends HttpMethod ? TMethod : TMethod[number];
+    HeadersReqIn: TParams["HeadersReqIn"];
+    HeadersReqOut: TParams["HeadersReqOut"];
+    State: TParams["State"];
   }>;
 
   use<TState extends Record<PropertyKey, any> = {}>(
     handler: DecoratedRequestHandler<
       // Params
-      TParams["_inferredParams"] extends never
-        ? TParams["_params_out"]
-        : MergeObjectsShallow<
-            TParams["_inferredParams"],
-            TParams["_params_out"]
-          >,
+      TParams["InferredParams"] extends never
+        ? TParams["ParamsOut"]
+        : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
       // Query
-      TParams["_query_out"],
+      TParams["QueryOut"],
       // Body
-      TParams["_body_out"],
+      TParams["BodyOut"],
       // Headers
-      TParams["_headers_req_out"],
+      TParams["HeadersReqOut"],
       // Output
       TState,
       // Mods
-      TParams["_state"]
+      TParams["State"]
     >
   ): HandlerBuilder<{
-    _config: TParams["_config"];
-    _path: TParams["_path"];
-    _inferredParams: TParams["_inferredParams"];
-    _ctx: TParams["_ctx"];
-    _meta: TParams["_meta"];
-    _query_in: TParams["_query_in"];
-    _query_out: TParams["_query_out"];
-    _params_in: TParams["_params_in"];
-    _params_out: TParams["_params_out"];
-    _body_in: TParams["_body_in"];
-    _body_out: TParams["_body_out"];
-    _output_in: TParams["_output_in"];
-    _output_out: TParams["_output_out"];
-    _methods: TParams["_methods"];
-    _headers_req_in: TParams["_headers_req_in"];
-    _headers_req_out: TParams["_headers_req_out"];
-    _state: MergeObjectsShallow<TParams["_state"], TState>;
+    Path: TParams["Path"];
+    InferredParams: TParams["InferredParams"];
+    Meta: TParams["Meta"];
+    QueryIn: TParams["QueryIn"];
+    QueryOut: TParams["QueryOut"];
+    ParamsIn: TParams["ParamsIn"];
+    ParamsOut: TParams["ParamsOut"];
+    BodyIn: TParams["BodyIn"];
+    BodyOut: TParams["BodyOut"];
+    OutputIn: TParams["OutputIn"];
+    OutputOut: TParams["OutputOut"];
+    Methods: TParams["Methods"];
+    HeadersReqIn: TParams["HeadersReqIn"];
+    HeadersReqOut: TParams["HeadersReqOut"];
+    State: MergeObjectsShallow<TParams["State"], TState>;
   }>;
 
   /**
-   * Add a meta data to the procedure.
+   * Add a Meta data to the procedure.
    */
-  meta(meta: TParams["_meta"]): HandlerBuilder<TParams>;
+  meta(meta: TParams["Meta"]): HandlerBuilder<TParams>;
 
   handle(handler: HandlerFunction<TParams>): CompiledRoute<TParams>;
 }

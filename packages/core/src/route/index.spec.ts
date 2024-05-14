@@ -12,32 +12,32 @@ describe("Route", () => {
         ? TParams
         : never;
 
-      expectTypeOf<TParams["_query_out"]>().toEqualTypeOf<unknown>();
-      expectTypeOf<TParams["_params_out"]>().toEqualTypeOf<unknown>();
-      expectTypeOf<TParams["_body_out"]>().toEqualTypeOf<unknown>();
-      expectTypeOf<TParams["_output_out"]>().toEqualTypeOf<unknown>();
+      expectTypeOf<TParams["QueryOut"]>().toEqualTypeOf<unknown>();
+      expectTypeOf<TParams["ParamsOut"]>().toEqualTypeOf<unknown>();
+      expectTypeOf<TParams["BodyOut"]>().toEqualTypeOf<unknown>();
+      expectTypeOf<TParams["OutputOut"]>().toEqualTypeOf<unknown>();
     });
 
     test("Initially has no schema info", () => {
       const result = route();
 
-      expect(result._def.query).toBeUndefined();
-      expect(result._def.params).toBeUndefined();
-      expect(result._def.body).toBeUndefined();
-      expect(result._def.output).toBeUndefined();
+      expect(result["~def"].query).toBeUndefined();
+      expect(result["~def"].params).toBeUndefined();
+      expect(result["~def"].body).toBeUndefined();
+      expect(result["~def"].output).toBeUndefined();
     });
 
     test(".query() adds query param", () => {
       const schema = z.object({ a: z.number() });
       const result = route().query(schema);
 
-      expect(result._def.query).toBeDefined();
-      expect(result._def.query?.schema).toEqual(schema);
-      expect(result._def.query?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
-      expect(() => result._def.query?.parser({ a: "1" })).rejects.toThrow();
+      expect(result["~def"].query).toBeDefined();
+      expect(result["~def"].query?.schema).toEqual(schema);
+      expect(result["~def"].query?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
+      expect(() => result["~def"].query?.parser({ a: "1" })).rejects.toThrow();
 
       type QueryType = typeof result extends HandlerBuilder<infer TParams>
-        ? TParams["_query_out"]
+        ? TParams["QueryOut"]
         : never;
       expectTypeOf<QueryType>().toEqualTypeOf<{ a: number }>();
     });
@@ -46,13 +46,15 @@ describe("Route", () => {
       const schema = z.object({ a: z.number() });
       const result = route().params(schema);
 
-      expect(result._def.params).toBeDefined();
-      expect(result._def.params?.schema).toEqual(schema);
-      expect(result._def.params?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
-      expect(() => result._def.params?.parser({ a: "1" })).rejects.toThrow();
+      expect(result["~def"].params).toBeDefined();
+      expect(result["~def"].params?.schema).toEqual(schema);
+      expect(result["~def"].params?.parser({ a: 1 })).resolves.toEqual({
+        a: 1,
+      });
+      expect(() => result["~def"].params?.parser({ a: "1" })).rejects.toThrow();
 
       type ParamType = typeof result extends HandlerBuilder<infer TParams>
-        ? TParams["_params_out"]
+        ? TParams["ParamsOut"]
         : never;
 
       expectTypeOf<ParamType>().toEqualTypeOf<{ a: number }>();
@@ -62,13 +64,13 @@ describe("Route", () => {
       const schema = z.object({ a: z.number() });
       const result = route().body(schema);
 
-      expect(result._def.body).toBeDefined();
-      expect(result._def.body?.schema).toEqual(schema);
-      expect(result._def.body?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
-      expect(() => result._def.body?.parser({ a: "1" })).rejects.toThrow();
+      expect(result["~def"].body).toBeDefined();
+      expect(result["~def"].body?.schema).toEqual(schema);
+      expect(result["~def"].body?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
+      expect(() => result["~def"].body?.parser({ a: "1" })).rejects.toThrow();
 
       type BodyType = typeof result extends HandlerBuilder<infer TParams>
-        ? TParams["_body_out"]
+        ? TParams["BodyOut"]
         : never;
       expectTypeOf<BodyType>().toEqualTypeOf<{ a: number }>();
     });
@@ -77,17 +79,17 @@ describe("Route", () => {
       const schema = z.object({ a: z.number() });
       const result = route().headers(schema);
 
-      expect(result._def.headersReq).toBeDefined();
-      expect(result._def.headersReq?.schema).toEqual(schema);
-      expect(result._def.headersReq?.parser({ a: 1 })).resolves.toEqual({
+      expect(result["~def"].headersReq).toBeDefined();
+      expect(result["~def"].headersReq?.schema).toEqual(schema);
+      expect(result["~def"].headersReq?.parser({ a: 1 })).resolves.toEqual({
         a: 1,
       });
       expect(() =>
-        result._def.headersReq?.parser({ a: "1" })
+        result["~def"].headersReq?.parser({ a: "1" })
       ).rejects.toThrow();
 
       type BodyType = typeof result extends HandlerBuilder<infer TParams>
-        ? TParams["_headers_req_out"]
+        ? TParams["HeadersReqOut"]
         : never;
       expectTypeOf<BodyType>().toEqualTypeOf<{ a: number }>();
     });
@@ -96,18 +98,18 @@ describe("Route", () => {
       const schema = z.object({ a: z.number().transform((x) => "one") });
       const result = route().output(schema);
 
-      expect(result._def.output).toBeDefined();
-      expect(result._def.output?.schema).toEqual(schema);
-      expect(result._def.output?.parser({ a: 1 })).resolves.toEqual({
+      expect(result["~def"].output).toBeDefined();
+      expect(result["~def"].output?.schema).toEqual(schema);
+      expect(result["~def"].output?.parser({ a: 1 })).resolves.toEqual({
         a: "one",
       });
-      expect(() => result._def.output?.parser({ a: "1" })).rejects.toThrow();
+      expect(() => result["~def"].output?.parser({ a: "1" })).rejects.toThrow();
 
       type OutputType = typeof result extends HandlerBuilder<infer TParams>
-        ? TParams["_output_in"]
+        ? TParams["OutputIn"]
         : never;
       type OutputTypeOut = typeof result extends HandlerBuilder<infer TParams>
-        ? TParams["_output_out"]
+        ? TParams["OutputOut"]
         : never;
 
       expectTypeOf<OutputType>().toEqualTypeOf<{ a: number }>();
@@ -127,7 +129,7 @@ describe("Route", () => {
   });
 
   describe("Path", () => {
-    test("route path string aids inference with req.params", () => {
+    test("route Path string aids inference with req.params", () => {
       const _route = route("/user/:id");
 
       type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
@@ -138,7 +140,7 @@ describe("Route", () => {
       >();
     });
 
-    test("route path string inference params is concat w schema", () => {
+    test("route Path string inference params is concat w schema", () => {
       const _route = route("/user/:id").params(
         z.object({ another: z.number() })
       );
@@ -151,7 +153,7 @@ describe("Route", () => {
       >();
     });
 
-    test("route path string inference prefers schema type", () => {
+    test("route Path string inference prefers schema type", () => {
       const _route = route("/user/:id").params(z.object({ id: z.number() }));
 
       type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
@@ -162,30 +164,30 @@ describe("Route", () => {
       >();
     });
 
-    test("Handles recursively updating path", () => {
+    test("Handles recursively updating Path", () => {
       const r1 = route("/user/:id");
       const r2 = r1.path("/posts/:postId");
       const r3 = r2.path("/articles/:articleId");
 
-      const path = "/user/:id/posts/:postId/articles/:articleId";
+      const Path = "/user/:id/posts/:postId/articles/:articleId";
 
       type R1Path = typeof r1 extends HandlerBuilder<infer TParams>
-        ? TParams["_path"]
+        ? TParams["Path"]
         : never;
       type R2Path = typeof r2 extends HandlerBuilder<infer TParams>
-        ? TParams["_path"]
+        ? TParams["Path"]
         : never;
       type R3Path = typeof r3 extends HandlerBuilder<infer TParams>
-        ? TParams["_path"]
+        ? TParams["Path"]
         : never;
 
       expectTypeOf<R1Path>().toEqualTypeOf<"/user/:id">();
       expectTypeOf<R2Path>().toEqualTypeOf<"/user/:id/posts/:postId">();
-      expectTypeOf<R3Path>().toEqualTypeOf<typeof path>();
+      expectTypeOf<R3Path>().toEqualTypeOf<typeof Path>();
 
-      expect(r1._def.path).toEqual("/user/:id");
-      expect(r2._def.path).toEqual("/user/:id/posts/:postId");
-      expect(r3._def.path).toEqual(path);
+      expect(r1["~def"].path).toEqual("/user/:id");
+      expect(r2["~def"].path).toEqual("/user/:id/posts/:postId");
+      expect(r3["~def"].path).toEqual(Path);
     });
   });
 

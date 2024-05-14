@@ -19,13 +19,13 @@ describe("Infer", () => {
   });
 
   test("Infers query types", () => {
-    expectTypeOf<App["GET /hello"]["queryIn"]>().toEqualTypeOf<{
+    expectTypeOf<App["GET /hello"]["QueryIn"]>().toEqualTypeOf<{
       hi: number;
     }>();
   });
 
   test("Infers param types", () => {
-    expectTypeOf<App["POST /hello"]["bodyIn"]>().toEqualTypeOf<{
+    expectTypeOf<App["POST /hello"]["BodyIn"]>().toEqualTypeOf<{
       notHi: number;
     }>();
   });

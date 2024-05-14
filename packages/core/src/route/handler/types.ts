@@ -1,18 +1,11 @@
 import { Parser } from "../parser/types";
-import {
-  AnyRootConfig,
-  MergeObjectsShallow,
-  RemoveNeverKeys,
-  Simplify,
-} from "../../util";
+import { MergeObjectsShallow, RemoveNeverKeys, Simplify } from "../../util";
 import { ParseFn } from "../parser";
 
 export interface RouteMeta {}
 
 export interface HandlerParams<
-  TConfig extends AnyRootConfig = AnyRootConfig,
   TPath = unknown,
-  TContext = unknown,
   TQueryIn = unknown,
   TQueryOut = unknown,
   TParamsIn = unknown,
@@ -23,45 +16,41 @@ export interface HandlerParams<
   TOutputOut = unknown,
   TReqHeadersIn = unknown,
   TReqHeadersOut = unknown,
-  TMeta = TConfig["$types"]["meta"],
+  TMeta = unknown,
   TMethods = HttpMethod,
   TInferredParams = unknown,
   TState = {}
 > {
   /** @internal */
-  _config: TConfig;
+  Path: TPath;
   /** @internal */
-  _path: TPath;
+  InferredParams: TInferredParams;
   /** @internal */
-  _inferredParams: TInferredParams;
+  Meta: TMeta;
   /** @internal */
-  _ctx: TContext;
+  Methods: TMethods;
   /** @internal */
-  _meta: TMeta;
+  QueryIn: TQueryIn;
   /** @internal */
-  _methods: TMethods;
+  QueryOut: TQueryOut;
   /** @internal */
-  _query_in: TQueryIn;
+  ParamsIn: TParamsIn;
   /** @internal */
-  _query_out: TQueryOut;
+  ParamsOut: TParamsOut;
   /** @internal */
-  _params_in: TParamsIn;
+  BodyIn: TBodyIn;
   /** @internal */
-  _params_out: TParamsOut;
+  BodyOut: TBodyOut;
   /** @internal */
-  _body_in: TBodyIn;
+  OutputIn: TOutputIn;
   /** @internal */
-  _body_out: TBodyOut;
+  OutputOut: TOutputOut;
   /** @internal */
-  _output_in: TOutputIn;
+  HeadersReqIn: TReqHeadersIn;
   /** @internal */
-  _output_out: TOutputOut;
+  HeadersReqOut: TReqHeadersOut;
   /** @internal */
-  _headers_req_in: TReqHeadersIn;
-  /** @internal */
-  _headers_req_out: TReqHeadersOut;
-  /** @internal */
-  _state: TState;
+  State: TState;
 }
 
 export interface AnyHandlerDefinition extends HandlerDefinition<any> {}
@@ -77,8 +66,8 @@ export type HttpMethod =
   | (string & {});
 
 export interface HandlerDefinition<TParams extends HandlerParams> {
-  methods?: TParams["_methods"][];
-  path?: TParams["_path"];
+  methods?: TParams["Methods"][];
+  path?: TParams["Path"];
   query?: {
     parser: ParseFn<unknown>;
     schema: Parser;
@@ -100,7 +89,7 @@ export interface HandlerDefinition<TParams extends HandlerParams> {
     schema: Parser;
   };
   middleware?: DecoratedRequestHandler[];
-  meta?: TParams["_meta"];
+  meta?: TParams["Meta"];
 }
 
 export type ResponseOrLiteral<T> =
@@ -112,37 +101,37 @@ export type ResponseOrLiteral<T> =
 export interface HandlerFunction<TParams extends HandlerParams>
   extends DecoratedRequestHandler<
     // Params
-    TParams["_inferredParams"] extends never
-      ? TParams["_params_out"]
-      : MergeObjectsShallow<TParams["_inferredParams"], TParams["_params_out"]>,
+    TParams["InferredParams"] extends never
+      ? TParams["ParamsOut"]
+      : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
     // Query
-    TParams["_query_out"],
+    TParams["QueryOut"],
     // Body
-    TParams["_body_out"],
+    TParams["BodyOut"],
     // Headers
-    TParams["_headers_req_out"],
+    TParams["HeadersReqOut"],
     // Output
-    TParams["_output_in"],
+    TParams["OutputIn"],
     // Mods
-    TParams["_state"]
+    TParams["State"]
   > {}
 
 export interface HandlerFunction<TParams extends HandlerParams>
   extends DecoratedRequestHandler<
     // Params
-    TParams["_inferredParams"] extends never
-      ? TParams["_params_out"]
-      : MergeObjectsShallow<TParams["_inferredParams"], TParams["_params_out"]>,
+    TParams["InferredParams"] extends never
+      ? TParams["ParamsOut"]
+      : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
     // Query
-    TParams["_query_out"],
+    TParams["QueryOut"],
     // Body
-    TParams["_body_out"],
+    TParams["BodyOut"],
     // Headers
-    TParams["_headers_req_out"],
+    TParams["HeadersReqOut"],
     // Output
-    TParams["_output_in"],
+    TParams["OutputIn"],
     // Mods
-    TParams["_state"]
+    TParams["State"]
   > {}
 
 export interface MiddlewareFunction<
@@ -150,26 +139,25 @@ export interface MiddlewareFunction<
   TMutations extends Record<PropertyKey, any> = {}
 > extends DecoratedRequestHandler<
     // Params
-    TParams["_inferredParams"] extends never
-      ? TParams["_params_out"]
-      : MergeObjectsShallow<TParams["_inferredParams"], TParams["_params_out"]>,
+    TParams["InferredParams"] extends never
+      ? TParams["ParamsOut"]
+      : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
     // Query
-    TParams["_query_out"],
+    TParams["QueryOut"],
     // Body
-    TParams["_body_out"],
+    TParams["BodyOut"],
     // Headers
-    TParams["_headers_req_out"],
+    TParams["HeadersReqOut"],
     // Output
     TMutations,
     // Mods
-    TParams["_state"]
+    TParams["State"]
   > {}
 
 export interface AnyCompiledRoute extends CompiledRoute<any> {}
 
 export type CompiledRoute<TParams extends HandlerParams> = WebRequestHandler & {
-  _def: HandlerDefinition<TParams>;
-  __isCompiledRoute__: true;
+  "~def": HandlerDefinition<TParams>;
 };
 
 export type WebRequestHandler = (
