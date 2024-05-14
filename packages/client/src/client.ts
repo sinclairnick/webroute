@@ -15,12 +15,18 @@ export type FetcherConfig = {
   query?: unknown;
 };
 
-export type Fetcher<TOpts = unknown, TResponse = unknown> = (
+export type Fetcher<
+  TOpts extends unknown[] = unknown[],
+  TResponse = unknown
+> = (
   config: FetcherConfig,
-  opts: TOpts
+  ...opts: TOpts
 ) => Promise<FetcherReturn<unknown, TResponse>>;
 
-export type CreateTypedClientOpts<TOpts, TResponse> = {
+export type CreateTypedClientOpts<
+  TOpts extends unknown[] = unknown[],
+  TResponse = unknown
+> = {
   fetcher: Fetcher<TOpts, TResponse>;
 };
 
@@ -33,18 +39,10 @@ export type TypedClient<
   ? TEndpoint extends W.DefinedEndpoint<any>
     ? TFetcher extends Fetcher<infer TOpts, infer TResponse>
       ? (
-          ...args: undefined extends TOpts
-            ? [
-                config: MakeUnknownOptional<
-                  Pick<TEndpoint, "params" | "query" | "body">
-                >
-              ]
-            : [
-                config: MakeUnknownOptional<
-                  Pick<TEndpoint, "params" | "query" | "body">
-                >,
-                opts: TOpts
-              ]
+          config: MakeUnknownOptional<
+            Pick<TEndpoint, "params" | "query" | "body">
+          >,
+          ...args: TOpts
         ) => Promise<FetcherReturn<TEndpoint["output"], TResponse>>
       : never
     : never

@@ -79,7 +79,18 @@ describe("Client", () => {
     expectTypeOf<Actual>().toEqualTypeOf<Expectation>();
   });
 
-  test("Creates correct options type", () => {
+  test("Manages no additionl param", () => {
+    const client = createTypedClient<App>()({
+      fetcher: async (config) => {
+        return { data: {} };
+      },
+    });
+
+    const getHello = client("GET /hello");
+    expectTypeOf<Parameters<typeof getHello>["length"]>().toEqualTypeOf<1>();
+  });
+
+  test("Manages one additionl param", () => {
     const client = createTypedClient<App>()({
       fetcher: async (config, options: { a: number }) => {
         return { data: {} };
@@ -89,6 +100,26 @@ describe("Client", () => {
     const getHello = client("GET /hello");
     expectTypeOf<Parameters<typeof getHello>[1]>().toEqualTypeOf<{
       a: number;
+    }>();
+  });
+
+  test("Manages multiple additional params", () => {
+    const client = createTypedClient<App>()({
+      fetcher: async (
+        config,
+        options: { a: number },
+        options2: { b: number }
+      ) => {
+        return { data: {} };
+      },
+    });
+
+    const getHello = client("GET /hello");
+    expectTypeOf<Parameters<typeof getHello>[1]>().toEqualTypeOf<{
+      a: number;
+    }>();
+    expectTypeOf<Parameters<typeof getHello>[2]>().toEqualTypeOf<{
+      b: number;
     }>();
   });
 
