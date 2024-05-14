@@ -34,7 +34,7 @@ export default function HomePage() {
           <h1 className="text-4xl font-medium mb-4">
             <pre>webroute</pre>
           </h1>
-          <p>A route primitive for building WinterCG-compliant APIs</p>
+          <p>A route primitive for building scalable web-standard APIs</p>
         </div>
 
         <Pre className="bg-slate-100 dark:bg-slate-900 mx-auto px-12 rounded-lg py-4 text-lg overflow-scroll w-full max-w-lg">
