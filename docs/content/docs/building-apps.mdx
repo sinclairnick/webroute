@@ -1,0 +1,115 @@
+---
+title: Building Apps
+icon: Blocks
+---
+import { Callout } from "fumadocs-ui/components/callout"
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+
+
+`webroute` only concerns itself with routes and endpoints. It agnostic to how you might actually build, run or deploy an app.
+
+In many cases this is sufficient, for example when developing serverless functions. However sometimes we require greater orchestration, or integration with other runtimes and frameworks.
+
+Here we will explore some ways our `webroute`s can be connected to these existing runtimes and frameworks.
+
+<Callout>
+To learn more about how `webroute` _differs_ to these tools, visit the [Comparisons](./comparisons) page.
+</Callout>
+
+---
+
+## Filesystem Routers
+
+Filesystem routers handle routing for us, and work with `webroute`s simply and idiomatically.
+
+### Next.js et al.
+
+`webroute` works natively with `nextjs` and similar filesystem routers. Simply export each route in it's designated file.
+
+```ts title="posts/route.ts"
+export const GET = myRoute
+```
+
+<Callout>
+Bear in mind nextjs file routing determines the HTTP method and path, so specifying a `webroute` path or method is redundant and will have no effect.
+</Callout>
+
+## Traditional Routers
+
+
+_The below assumes you have some root handler for requests, which may or may not perform routing._
+
+```ts title="example-root-handler.ts"
+const handleRequest = (req: Request): Response => {
+	// ...
+}
+```
+
+<Callout>
+For more detailed advice on how to implement routing, please visit the [Routing](./routing) docs. 
+</Callout>
+
+---
+
+### Node
+
+While Node has supported the web standard `Request` and `Response` classes from v21, it does not provide a standard way to access an incoming HTTP `Request`. 
+
+Until node provides a built-in WinterCG-compliant server, one should use [`@hono/node-server`](https://github.com/honojs/node-server) which converts the traditional node Request/Responses to the web-standard counterpart, on the fly.
+
+```ts
+import { serve } from '@hono/node-server'
+
+serve({ fetch: handleRequest }) // <- Provides us with `Request` and `Response` in node.
+```
+
+### Bun
+
+```ts
+Bun.serve({ fetch: handleRequest })
+```
+
+### Deno
+
+```ts
+Deno.serve(handleRequest)
+```
+
+### Cloudflare Workers
+
+The `workerd` runtime that Cloudflare Workers utilise expects a default export with a `fetch` property.
+
+```ts
+export default {
+	fetch: handleRequest
+}
+```
+
+<Accordions>
+	<Accordion title="What about `env` and `ctx`">
+		Cloudflare also exposes environment bindings and context via two additional paremeters, `env` and `ctx`. To access these within our routes we can simply assign `env` and/or `ctx` to globally accessible variables.
+
+		```ts title="global.ts"
+		export let env: Env;
+		export let ctx: Ctx;
+		```
+
+		```ts title="index.ts"
+		import { env } from "./global"
+
+		export default {
+			fetch: (req, _env, _ctx) => {
+				env = _env
+				ctx = _ctx
+			}
+		}
+		```
+
+		```ts title="my-route.ts"
+		import { env } from "./global"
+		// ...
+		const myVar = env.MY_VAR
+		//...
+		```
+	</Accordion>
+</Accordions>

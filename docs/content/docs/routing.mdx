@@ -1,12 +1,9 @@
 ---
 title: Routing
-description: Your first document
 ---
-
 import { Callout } from 'fumadocs-ui/components/callout';
 import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
 import Diagram from "../../public/diagram.png"
-
 
 Since `webroute` is just a small utility, it's intentionally unopinionated about if or how you manage routing.
 
@@ -18,9 +15,7 @@ Typically web frameworks spread work across routers, handlers and middleware in 
 
 By encoding route path and method information directly into the route, we are decoupling the router. As a result, we can much more easily switch between routers, frameworks and runtimes with minimal changes.
 
-
 > As an example, `webroute`s could trivially be migrated from `Hono` to `nextjs` filesystem routing, or vice versa, since there is little to no framework-coupling.
-
 
 ## Basic Routing
 
@@ -123,5 +118,5 @@ Instead, we encourage writing your own adapter. This empowers you to make any cu
 In short: these types of adapaters increase coupling and are simple enough to write on your own, so you should do that.
 
 <Callout>
-With that said, we have provided some starting points in [Deployment](./deployment).
+With that said, we have provided some starting points in [Building Apps](./building-apps).
 </Callout>
