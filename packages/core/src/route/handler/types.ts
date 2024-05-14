@@ -182,7 +182,8 @@ export type DecoratedRequestHandler<
   TOutput = unknown,
   TState = {}
 > = (
-  ctx: { req: Request } & RemoveNeverKeys<{
+  request: Request,
+  ctx: RemoveNeverKeys<{
     params: unknown extends TParams ? never : LazyValidator<TParams>;
     query: unknown extends TQuery ? never : LazyValidator<TQuery>;
     body: unknown extends TBody ? never : LazyValidator<TBody>;

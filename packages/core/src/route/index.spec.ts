@@ -120,7 +120,7 @@ describe("Route()", () => {
       const _route = route().headers(z.object({ auth: z.boolean() }));
 
       type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
-      type ReqParam = Parameters<HandlerFn>[0];
+      type ReqParam = Parameters<HandlerFn>[1];
 
       expectTypeOf<ReqParam["headers"]>().toMatchTypeOf<
         LazyValidator<{ auth: boolean }>
@@ -133,7 +133,7 @@ describe("Route()", () => {
       const _route = route("/user/:id");
 
       type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
-      type ReqParam = Parameters<HandlerFn>[0];
+      type ReqParam = Parameters<HandlerFn>[1];
 
       expectTypeOf<ReqParam["params"]>().toEqualTypeOf<
         LazyValidator<{ id: string }>
@@ -146,7 +146,7 @@ describe("Route()", () => {
       );
 
       type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
-      type ReqParam = Parameters<HandlerFn>[0];
+      type ReqParam = Parameters<HandlerFn>[1];
 
       expectTypeOf<ReqParam["params"]>().toEqualTypeOf<
         LazyValidator<{ id: string; another: number }>
@@ -157,7 +157,7 @@ describe("Route()", () => {
       const _route = route("/user/:id").params(z.object({ id: z.number() }));
 
       type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
-      type ReqParam = Parameters<HandlerFn>[0];
+      type ReqParam = Parameters<HandlerFn>[1];
 
       expectTypeOf<ReqParam["params"]>().toEqualTypeOf<
         LazyValidator<{ id: number }>
@@ -212,7 +212,7 @@ describe("Route()", () => {
       let query: any;
       const _route = route()
         .query(schema)
-        .handle(async (c) => {
+        .handle(async (_, c) => {
           query = await c.query();
           return null;
         });
@@ -231,7 +231,7 @@ describe("Route()", () => {
 
       const _route = route("/:a")
         .params(schema)
-        .handle(async (c) => {
+        .handle(async (_, c) => {
           return c.params();
         });
 
@@ -250,7 +250,7 @@ describe("Route()", () => {
 
       const _route = route()
         .body(schema)
-        .handle(async (c) => {
+        .handle(async (_, c) => {
           return c.body();
         });
 
@@ -292,7 +292,7 @@ describe("Route()", () => {
 
     const _route = route()
       .headers(schema)
-      .handle((c) => {
+      .handle((_, c) => {
         return c.headers();
       });
 
@@ -313,7 +313,7 @@ describe("Route()", () => {
         .use((req) => {
           return { id: "123" };
         })
-        .handle(({ req, state }) => {
+        .handle((_, { state }) => {
           return state.id;
         });
 
@@ -329,11 +329,11 @@ describe("Route()", () => {
         .use(() => {
           return { id: "123" };
         })
-        .use(({ state }) => {
+        .use((req, { state }) => {
           expectTypeOf<typeof state>().toEqualTypeOf<{ id: string }>();
           return { id: "456" };
         })
-        .handle(({ state }) => {
+        .handle((req, { state }) => {
           return state;
         });
 

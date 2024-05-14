@@ -100,12 +100,12 @@ export function createBuilder<
       const _handler = async (req: Request) => {
         const validators = createLazyValidators(req, def);
 
-        const ctx = { ...validators, req, state: {} };
+        const ctx = { ...validators, state: {} };
 
         // Run middleware in sequence, recursively updating state
         if (def.middleware) {
           for (const middleware of def.middleware) {
-            const result = await middleware(ctx);
+            const result = await middleware(req, ctx);
 
             // If early exit, return response
             if (result instanceof Response) {
@@ -119,7 +119,7 @@ export function createBuilder<
           }
         }
 
-        const result = await handler(ctx as any);
+        const result = await handler(req, ctx as any);
 
         if (result instanceof Response) {
           Log("Is response. Next");
