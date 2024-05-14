@@ -1,4 +1,4 @@
-import { HttpMethod } from "../route/handler/types";
+import { HttpMethod } from "../../core/src/route/handler/types";
 
 export type FSRouterFormattedParams = Record<PropertyKey, any> | undefined;
 

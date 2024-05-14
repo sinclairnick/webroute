@@ -1,8 +1,8 @@
+import { route } from "@webroute/core";
 import express from "express";
 import { describe, expect, test } from "vitest";
 import { z } from "zod";
-import { route, registerRoutes } from "../dist";
-import { createOpenApiSpec } from "../dist/openapi";
+import { createOpenApiSpec } from "./spec";
 
 describe("Open API", () => {
   test("Works with zod", () => {
@@ -20,8 +20,6 @@ describe("Open API", () => {
         .method("post")
         .handle(() => {}),
     ];
-
-    registerRoutes(app, routes);
 
     const openapi = createOpenApiSpec(app);
 

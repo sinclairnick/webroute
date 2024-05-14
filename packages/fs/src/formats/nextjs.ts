@@ -1,4 +1,4 @@
-import { Log } from "../../internal/logger";
+import { Log } from "../../../core/src/internal/logger";
 import { FSRouterFormat } from "../format";
 
 export type NextJSFormatOptions = {
