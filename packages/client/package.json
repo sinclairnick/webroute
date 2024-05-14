@@ -1,0 +1,22 @@
+{
+  "name": "@webroute/client",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest",
+    "build": "tsup",
+    "publish-pkg": "npm run build && npm publish --access=public",
+    "check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@webroute/core": "workspace:*",
+    "ufo": "^1.5.3"
+  },
+  "devDependencies": {
+    "vitest": "^1.2.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

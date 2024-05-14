@@ -1,11 +1,11 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
-import { generateTestRoutes } from "../internal/test-util";
 import { createTypedClient } from "./client";
-import { H } from "../infer";
+import { W } from "./infer";
+import { generateTestRoutes } from "./test-util";
 
 describe("Client", () => {
   const routes = generateTestRoutes();
-  type App = H.Infer<typeof routes>;
+  type App = W.Infer<typeof routes>;
 
   test("Creates correct path param", () => {
     const client = createTypedClient<App>()({
@@ -13,8 +13,6 @@ describe("Client", () => {
         return { data: {} };
       },
     });
-
-    type Paths = Parameters<typeof client>[0];
 
     expectTypeOf<Parameters<typeof client>[0]>().toEqualTypeOf<
       "GET /hello" | "GET /bye" | "GET /with/{paramName}" | "POST /hello"

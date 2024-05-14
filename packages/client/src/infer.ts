@@ -1,8 +1,6 @@
-import { AnyCompiledRoute } from "../route/handler/types";
-import { route } from "../route";
-import { Simplify } from "../util";
+import { AnyCompiledRoute, Simplify, route } from "@webroute/core";
 
-export namespace H {
+export namespace W {
   export interface AnyRouteDef extends RouteDef<any> {}
   export type RouteDef<TRoute extends AnyCompiledRoute> =
     route.InferRouteDef<TRoute>;

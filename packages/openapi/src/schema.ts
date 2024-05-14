@@ -1,8 +1,7 @@
 import { ZodSchema } from "zod";
 import { zodToJsonSchema } from "zod-to-json-schema";
-import { Parser } from "../route/parser/types";
-import { Debug } from "../debug";
 import { JsonSchema } from "./types";
+import { Parser } from "@webroute/core";
 
 // Need to do this lame check because `instanceof` breaks once compiled
 // (for some reason)
@@ -25,10 +24,7 @@ export const getJsonSchema = ({
   schema: Parser;
 }): JsonSchema | undefined => {
   if (isZod(schema)) {
-    Debug.openapi("Is zod schema.");
     const { $schema, ...rest } = zodToJsonSchema(schema);
     return rest as any; // The types from ^ are wrong
   }
-
-  Debug.openapi(`No json schema formatter found for schema`, schema);
 };

@@ -1,12 +1,12 @@
 import { describe } from "vitest";
 import { test } from "vitest";
-import { H } from ".";
+import { W } from "./infer";
 import { expectTypeOf } from "vitest";
-import { generateTestRoutes } from "../internal/test-util";
+import { generateTestRoutes } from "./test-util";
 
 describe("Infer", () => {
   const routes = generateTestRoutes();
-  type App = H.Infer<typeof routes>;
+  type App = W.Infer<typeof routes>;
 
   test("Infers app paths", () => {
     expectTypeOf<App["GET /hello"]>().toBeObject();
@@ -31,7 +31,7 @@ describe("Infer", () => {
   });
 
   test("Infers app path union", () => {
-    type Paths = H.InferPaths<App>;
+    type Paths = W.InferPaths<App>;
 
     expectTypeOf<Paths>().toEqualTypeOf<
       "/hello" | "/bye" | "/with/{paramName}"
@@ -39,7 +39,7 @@ describe("Infer", () => {
   });
 
   test("Infers using `endpoint` helper", () => {
-    type HelloEndpoint = H.Endpoint<App, "GET /hello">;
+    type HelloEndpoint = W.Endpoint<App, "GET /hello">;
 
     expectTypeOf<HelloEndpoint["body"]>().toBeUnknown();
     expectTypeOf<HelloEndpoint["output"]>().toEqualTypeOf<{
@@ -48,7 +48,7 @@ describe("Infer", () => {
     expectTypeOf<HelloEndpoint["params"]>().toBeUnknown();
     expectTypeOf<HelloEndpoint["query"]>().toEqualTypeOf<{ hi: number }>();
 
-    type HelloEndpointPost = H.Endpoint<App, "POST /hello">;
+    type HelloEndpointPost = W.Endpoint<App, "POST /hello">;
     expectTypeOf<HelloEndpointPost["body"]>().toEqualTypeOf<{
       notHi: number;
     }>();

@@ -1,9 +1,9 @@
 import { Express } from "express";
 import { oas31 } from "openapi3-ts";
-import { discoverRoutes } from "../route";
+import { discoverRoutes } from "../../core/src/route";
 import { getJsonSchema } from "./schema";
-import { isCompiledRoute } from "../route/handler/util";
-import { Debug } from "../debug";
+import { isCompiledRoute } from "../../core/src/route/handler/util";
+import { Debug } from "../../core/src/debug";
 import * as Formatting from "./formatting";
 
 export type CreateOpenApiSpecOptions = {

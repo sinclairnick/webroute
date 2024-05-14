@@ -1,5 +1,5 @@
-import { H } from "../infer";
-import { MakeUnknownOptional } from "../util";
+import { MakeUnknownOptional } from "@webroute/core";
+import { W } from "./infer";
 
 export type FetcherReturn<TResult, TFetcherRes> = {
   [TKey in keyof TFetcherRes]: TKey extends "data"
@@ -25,12 +25,12 @@ export type CreateTypedClientOpts<TOpts, TResponse> = {
 };
 
 export type TypedClient<
-  TApp extends H.AnyAppDef,
+  TApp extends W.AnyAppDef,
   TFetcher extends Fetcher<any, any>
 > = <TPath extends keyof TApp & string>(
   path: TPath
-) => H.Endpoint<TApp, TPath> extends infer TEndpoint
-  ? TEndpoint extends H.DefinedEndpoint<any>
+) => W.Endpoint<TApp, TPath> extends infer TEndpoint
+  ? TEndpoint extends W.DefinedEndpoint<any>
     ? TFetcher extends Fetcher<infer TOpts, infer TResponse>
       ? (
           ...args: undefined extends TOpts
@@ -50,7 +50,7 @@ export type TypedClient<
     : never
   : never;
 
-export const createTypedClient = <TApp extends H.AnyAppDef>() => {
+export const createTypedClient = <TApp extends W.AnyAppDef>() => {
   return <TConfig extends CreateTypedClientOpts<any, any>>(
     config: TConfig
   ): TypedClient<TApp, TConfig["fetcher"]> => {
