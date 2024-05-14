@@ -9,6 +9,6 @@ export default {
     "./mdx-components.{ts,tsx}",
     "./node_modules/fumadocs-ui/dist/**/*.js",
   ],
-  darkMode: "media",
+  darkMode: "class",
   presets: [createPreset()],
 };
