@@ -34,7 +34,7 @@ Define route information declaratively, not imperatively
 // All route information is defined in one place, declaratively
 export default route("/pathname")
 	.params(MySchema)
-	.handle(({ req }) => ({ foo: "bar" }))
+	.handle((req) => ({ foo: "bar" }))
 ```
 
 ### Introspectable
@@ -62,12 +62,12 @@ Uses a simple but powerful middleware approach that is framework-agnostic
 import { route } from "@webroute/core"
 // ---cut-end---
 const authedRoute = route()
-	.use(({ req }) => ({ user: {id: 1} }))
+	.use((req) => ({ user: {id: 1} }))
 
 
 authedRoute
 	.path("/me")
-	.handle(({ state }) => {
+	.handle((req, { state }) => {
 		return state.user
 		//           ^^^^
 	})
@@ -103,13 +103,13 @@ expect(await response.json()).toBe({ /*...*/ })
 
 ```ts
 route()
-.use(({state}) => {
+.use((req, {state}) => {
 	const newState = { ...state, user: { id: 1 } }
 
 	// Type-safe mutations
 	return newState;
 })
-.handle(({ req, state }) => {
+.handle((req, { state }) => {
 	// Or mutate state directly
 	state.user.id = 2
 

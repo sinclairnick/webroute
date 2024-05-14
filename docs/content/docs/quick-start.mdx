@@ -56,7 +56,7 @@ const PostRoute = route("/posts/:id")
 					.params(z.object({ id: z.number() }))
 
 					// Handle the incoming request
-					.handle(async ({ req, params }) => {
+					.handle(async (req, { params }) => {
 
 						// Lazily validate and parse, minimising overhead
 						const { id } = await params()

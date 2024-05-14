@@ -38,7 +38,7 @@ import { z } from "zod"
 // ---cut-end---
 // Define base route with auth middleware
 const authedRoute = route()
-	.use(({ req }) => {
+	.use((req) => {
 		const token = req.headers
 			.get("Authorization")
 			?.replace("Bearer ", "");
@@ -54,7 +54,7 @@ const authedRoute = route()
 authedRoute
 	.path("/me")
 	.method("get")
-	.handle(({ state }) => {
+	.handle((req, { state }) => {
 		const { token } = state
 		//      ^^^^^
 
@@ -76,7 +76,7 @@ const adminRoute = authedRoute
 
 	// This middleware is run in addition to the `authedRoute` middleware.
 	// This does not affect the `authedRoute` base or its other descendants.
-	.use(({ req, state }) => {
+	.use((req, { state }) => {
 		if(isAdmin(state.token)) {
 			return state
 		}
@@ -89,7 +89,7 @@ const adminRoute = authedRoute
 adminRoute
 	.path("/admins-only")
 	.method("get")
-	.handle(({ state }) => {
+	.handle((req) => {
 		// ...
 	})
 ```
@@ -121,7 +121,7 @@ const paperRoute = paginatedRoute
 	.query(z.object({
 		page: z.enum(["A4", "A3", "A2"])
 	}))
-	.handle(async ({query}) => {
+	.handle(async (req, { query }) => {
 		const { page, ...rest } = await query()
 		//      ^^^^
 		//               ^^^^
