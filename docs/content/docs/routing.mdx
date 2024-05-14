@@ -40,7 +40,13 @@ Bun.serve({
 	fetch: (req) => {
 		// The order in which routes are specified in the `routes` array
 		// would matter here
-		const match = routes.find(route => route.match(req))
+		const match = routes.find(r => {
+			const path = route.getPath(r)
+			const methods = route.getMethods(r)
+
+			// TODO: Determine if route matches request
+			return r
+		})
 
 		return match?.(req)
 	}
@@ -65,7 +71,7 @@ export const GET = route("/not-posts") // <- FYI: This path will be ignored
 ```
 
 <Callout>
-Web frameworks typically encourage exporting a single app instance from one filesystem route. However, this circumvents all the benefits of filesystem routing.
+Existing web frameworks typically encourage exporting a single app instance from one filesystem route. However, this circumvents all the benefits of filesystem routing.
 </Callout>
 
 ### Routing Libraries
@@ -79,7 +85,7 @@ In the most basic case, we can simply wire up our routes explicitly and manually
 ```ts title="hono-example.ts"
 const app = new Hono()
 
-app.get(myRoute.getPath(), myRoute)
+app.get(route.getPath(myRoute), myRoute)
 ```
 
 #### Many at Once
@@ -90,13 +96,12 @@ We can also perform this iteratively when we have quite a few routes.
 const app = new Hono()
 
 // This is a completely valid, production ready "hono adapter"
-routes.forEach(route => {
+routes.forEach(r => {
 
 	// For every route, map each method to the route handler
-	for(const method of route.getMethods()) {
+	for(const method of route.getMethods(r)) {
 
-		app[method](route.getPath(), c => route(c.req))
-
+		app[method](route.getPath(r), c => route(c.req))
 	}
 })
 
