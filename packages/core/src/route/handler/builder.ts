@@ -6,7 +6,7 @@ import {
   HandlerDefinition,
   HandlerFunction,
   HandlerParams,
-  HttpMethod,
+  HttpMethodInput,
 } from "./types";
 
 export type AnyHandlerBuilder = HandlerBuilder<any>;
@@ -149,7 +149,7 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     State: TParams["State"];
   }>;
 
-  method<TMethod extends HttpMethod | HttpMethod[]>(
+  method<TMethod extends HttpMethodInput | HttpMethodInput[]>(
     method: TMethod
   ): HandlerBuilder<{
     Path: TParams["Path"];
@@ -163,7 +163,9 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     BodyOut: TParams["BodyOut"];
     OutputIn: TParams["OutputIn"];
     OutputOut: TParams["OutputOut"];
-    Methods: TMethod extends HttpMethod ? TMethod : TMethod[number];
+    Methods: TMethod extends HttpMethodInput
+      ? Uppercase<TMethod>
+      : Uppercase<TMethod[number]>;
     HeadersReqIn: TParams["HeadersReqIn"];
     HeadersReqOut: TParams["HeadersReqOut"];
     State: TParams["State"];

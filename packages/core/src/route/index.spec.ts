@@ -191,6 +191,55 @@ describe("Route()", () => {
     });
   });
 
+  describe("Methods", () => {
+    test(".method takes lowercase http verb", () => {
+      const r = route()
+        .method("get")
+        .handle(() => {});
+
+      expect(r["~def"].methods).toHaveLength(1);
+      expect(r["~def"].methods).includes("GET");
+    });
+
+    test(".method takes uppercase http verb", () => {
+      const r = route()
+        .method("GET")
+        .handle(() => {});
+
+      expect(r["~def"].methods).toHaveLength(1);
+      expect(r["~def"].methods).includes("GET");
+    });
+
+    test(".method takes many http verbs", () => {
+      const r = route()
+        .method(["GET", "POST"])
+        .handle(() => {});
+
+      expect(r["~def"].methods).toHaveLength(2);
+      expect(r["~def"].methods).includes("GET");
+      expect(r["~def"].methods).includes("POST");
+    });
+
+    test(".method takes mixed http verb casing", () => {
+      const r = route()
+        .method(["GET", "post"])
+        .handle(() => {});
+
+      expect(r["~def"].methods).toHaveLength(2);
+      expect(r["~def"].methods).includes("GET");
+      expect(r["~def"].methods).includes("POST");
+    });
+
+    test(".method takes uppercase http verb", () => {
+      const r = route()
+        .method("GET")
+        .handle(() => {});
+
+      expect(r["~def"].methods).toHaveLength(1);
+      expect(r["~def"].methods).includes("GET");
+    });
+  });
+
   describe("Execution", () => {
     test("handle() returns data as json", async () => {
       const _route = route().handle(async (req) => {
@@ -283,28 +332,28 @@ describe("Route()", () => {
       expect(data).toBeDefined();
       expect(data.a).toEqual("1_transformed");
     });
-  });
 
-  test("Parses incoming headers", async () => {
-    const schema = z.object({
-      a: z.string().transform((x) => `${x}_transformed`),
-    });
-
-    const _route = route()
-      .headers(schema)
-      .handle((_, c) => {
-        return c.headers();
+    test("Parses incoming headers", async () => {
+      const schema = z.object({
+        a: z.string().transform((x) => `${x}_transformed`),
       });
 
-    const headers = new Headers();
-    headers.set("a", "a");
-    const req = new Request("https://google.com", {
-      headers,
-    });
-    const res = await _route(req);
-    const data = await res.json();
+      const _route = route()
+        .headers(schema)
+        .handle((_, c) => {
+          return c.headers();
+        });
 
-    expect(data.a).toBe("a_transformed");
+      const headers = new Headers();
+      headers.set("a", "a");
+      const req = new Request("https://google.com", {
+        headers,
+      });
+      const res = await _route(req);
+      const data = await res.json();
+
+      expect(data.a).toBe("a_transformed");
+    });
   });
 
   describe("Middleware", () => {
@@ -384,8 +433,8 @@ describe("Route.", () => {
         .handle(() => {});
       const methods = route.getMethods(r);
 
-      expectTypeOf(methods).toEqualTypeOf<"get"[]>();
-      expect(methods).toEqual(["get"]);
+      expectTypeOf(methods).toEqualTypeOf<"GET"[]>();
+      expect(methods).toEqual(["GET"]);
     });
 
     test("Gets non-standard method", () => {
@@ -394,8 +443,8 @@ describe("Route.", () => {
         .handle(() => {});
       const methods = route.getMethods(r);
 
-      expectTypeOf(methods).toEqualTypeOf<"custom"[]>();
-      expect(methods).toEqual(["custom"]);
+      expectTypeOf(methods).toEqualTypeOf<"CUSTOM"[]>();
+      expect(methods).toEqual(["CUSTOM"]);
     });
 
     test("Gets multiple methods", () => {
@@ -404,8 +453,8 @@ describe("Route.", () => {
         .handle(() => {});
       const methods = route.getMethods(r);
 
-      expectTypeOf(methods).toEqualTypeOf<("get" | "post")[]>();
-      expect(methods).toEqual(["get", "post"]);
+      expectTypeOf(methods).toEqualTypeOf<("GET" | "POST")[]>();
+      expect(methods).toEqual(["GET", "POST"]);
     });
   });
 });

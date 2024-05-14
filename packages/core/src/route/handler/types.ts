@@ -17,7 +17,7 @@ export interface HandlerParams<
   TReqHeadersIn = unknown,
   TReqHeadersOut = unknown,
   TMeta = unknown,
-  TMethods = HttpMethod,
+  TMethods = HttpMethodInput,
   TInferredParams = unknown,
   TState = {}
 > {
@@ -55,15 +55,16 @@ export interface HandlerParams<
 
 export interface AnyHandlerDefinition extends HandlerDefinition<any> {}
 
-export type HttpMethod =
+export type HttpVerb =
   | "get"
   | "post"
   | "put"
   | "patch"
   | "delete"
   | "options"
-  | "head"
-  | (string & {});
+  | "head";
+
+export type HttpMethodInput = HttpVerb | Uppercase<HttpVerb> | (string & {});
 
 export interface HandlerDefinition<TParams extends HandlerParams> {
   methods?: TParams["Methods"][];

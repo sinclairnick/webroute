@@ -79,8 +79,16 @@ export function createBuilder<
       }) as AnyHandlerBuilder;
     },
     method(method) {
+      if (Array.isArray(method)) {
+        const unique = [...new Set(method.map((m) => m.toUpperCase()))];
+
+        return createNewBuilder(def, {
+          methods: unique,
+        }) as AnyHandlerBuilder;
+      }
+
       return createNewBuilder(def, {
-        methods: Array.isArray(method) ? method : [method],
+        methods: [String(method).toUpperCase()],
       }) as AnyHandlerBuilder;
     },
     headers(schema) {
