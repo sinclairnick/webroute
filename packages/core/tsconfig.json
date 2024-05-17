@@ -9,6 +9,6 @@
     "strict": true /* Enable all strict type-checking options. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "include": ["src/**/*.ts", "../openapi/src/openapi.spec.ts"],
-  "exclude": ["dist", "../fs/__test__", "../fs/src/**"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist"]
 }
