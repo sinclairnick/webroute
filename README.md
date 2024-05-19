@@ -43,7 +43,7 @@ To understand why this might be a good idea, please [read the docs](https://webr
 
 ## Contribution
 
-Feel free to open any PRs or issues.
+Feel free to [open any PRs or issues](https://github.com/sinclairnick/webroute/issues) or [start a discussion](https://github.com/sinclairnick/webroute/issues).
 
 ## Author
 
