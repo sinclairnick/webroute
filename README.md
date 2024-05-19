@@ -1,22 +1,33 @@
 # Webroute
 
-> Towards a web standard backend ecoysystem
+> Building toward a web-standard future
 
-Webroute is a project building framework-agnostic tooling for web standard APIs.
+Webroute is an initiative building framework-agnostic tooling for web standard APIs.
 
 [**View documentation ->**](webroute.vercel.app)
 
 ---
 
-## `route`
+### Philosophy
 
-Webroute boils down to a single export, `route`, which is a tiny utility that makes building declarative, validated, schema-introspectable Web API endpoints easy.
+Webroute adheres to a philosophy where tools should be interoperable to avoid repeating the same effort time and time again. As such, the various packages provided are isolated and independent. The goal is to create functionality that can be swapped in and out with other tools that adhere to the same, underlying, web standards.
+
+## In a Nutshell
+
+Webroute boils down to a single export, `route`, which is a tiny utility that makes it easy to build web standard API endpoints that are:
+- Declarative
+- Atomic
+- Interoperable/standard
+- Enterprise-grade
+- Composible
+
+This is all achieved with this single import:
 
 ```ts
 import { route } from "@webroute/core
 ```
 
-This single function allows us to validate HTTP inputs and outputs, declare schema shape to enable automatic Open API definitions, and is radically compatible with web standards and any frameworks that might run on web-standards (e.g. nextjs, Hono, Bun, Deno, and many more).
+This allows us to e.g. validate HTTP inputs and outputs, declare schema shape to enable automatic Open API definitions, and is radically compatible with web standards and any frameworks that might run on web-standards (e.g. nextjs, Hono, Bun, Deno, and many more).
 
 To understand why this might be a good idea, please [read the docs](webroute.vercel.app).
 
