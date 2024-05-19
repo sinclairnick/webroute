@@ -1,11 +1,9 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { createTypedClient } from "./client";
-import { W } from "./infer";
-import { generateTestRoutes } from "./test-util";
+import { TestAppDef } from "./test-util";
 
 describe("Client", () => {
-  const routes = generateTestRoutes();
-  type App = W.Infer<typeof routes>;
+  type App = TestAppDef;
 
   test("Creates correct path param", () => {
     const client = createTypedClient<App>()({
@@ -15,7 +13,11 @@ describe("Client", () => {
     });
 
     expectTypeOf<Parameters<typeof client>[0]>().toEqualTypeOf<
-      "GET /hello" | "GET /bye" | "GET /with/{paramName}" | "POST /hello"
+      | "GET /hello"
+      | "GET /bye"
+      | "GET /with/implicit/:paramName"
+      | "POST /hello"
+      | "GET /with/explicit/:paramName"
     >();
   });
 
@@ -26,14 +28,11 @@ describe("Client", () => {
       },
     });
     const getHello = client("GET /hello");
+    type Config = Parameters<typeof getHello>[0];
 
-    expectTypeOf<Parameters<typeof getHello>[0]>().toEqualTypeOf<{
-      query: {
-        hi: number;
-      };
-      params?: unknown;
-      body?: unknown;
-    }>();
+    expectTypeOf<Config["body"]>().toBeUnknown();
+    expectTypeOf<Config["params"]>().toBeUnknown();
+    expectTypeOf<Config["query"]>().toEqualTypeOf<{ hi: number }>();
   });
 
   test("Creates correct body type", () => {
@@ -42,15 +41,12 @@ describe("Client", () => {
         return { data: {} };
       },
     });
-
     const postHello = client("POST /hello");
-    expectTypeOf<Parameters<typeof postHello>[0]>().toEqualTypeOf<{
-      body: {
-        notHi: number;
-      };
-      params?: unknown;
-      query?: unknown;
-    }>();
+    type Config = Parameters<typeof postHello>[0];
+
+    expectTypeOf<Config["body"]>().toEqualTypeOf<{ notHi: number }>();
+    expectTypeOf<Config["params"]>().toBeUnknown();
+    expectTypeOf<Config["query"]>().toBeUnknown();
   });
 
   test("Creates correct return type", () => {

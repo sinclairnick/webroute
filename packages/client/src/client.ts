@@ -1,5 +1,5 @@
 import { MakeUnknownOptional } from "@webroute/core";
-import { W } from "./infer";
+import { AppDef, AppRoute } from "./infer";
 
 export type FetcherReturn<TResult, TFetcherRes> = {
   [TKey in keyof TFetcherRes]: TKey extends "data"
@@ -31,24 +31,26 @@ export type CreateTypedClientOpts<
 };
 
 export type TypedClient<
-  TApp extends W.AnyAppDef,
+  TApp extends AppDef,
   TFetcher extends Fetcher<any, any>
-> = <TPath extends keyof TApp & string>(
-  path: TPath
-) => W.Endpoint<TApp, TPath> extends infer TEndpoint
-  ? TEndpoint extends W.DefinedEndpoint<any>
+> = <TKey extends keyof TApp & string>(
+  key: TKey
+) => TApp[TKey] extends infer TEndpoint
+  ? TEndpoint extends AppRoute
     ? TFetcher extends Fetcher<infer TOpts, infer TResponse>
       ? (
-          config: MakeUnknownOptional<
-            Pick<TEndpoint, "params" | "query" | "body">
-          >,
+          config: MakeUnknownOptional<{
+            params: TEndpoint["Params"];
+            body: TEndpoint["Body"];
+            query: TEndpoint["Query"];
+          }>,
           ...args: TOpts
-        ) => Promise<FetcherReturn<TEndpoint["output"], TResponse>>
+        ) => Promise<FetcherReturn<TEndpoint["Output"], TResponse>>
       : never
     : never
   : never;
 
-export const createTypedClient = <TApp extends W.AnyAppDef>() => {
+export const createTypedClient = <TApp extends AppDef>() => {
   return <TConfig extends CreateTypedClientOpts<any, any>>(
     config: TConfig
   ): TypedClient<TApp, TConfig["fetcher"]> => {

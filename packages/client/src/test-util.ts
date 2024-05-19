@@ -1,5 +1,6 @@
 import { route } from "@webroute/core";
 import { z } from "zod";
+import { FromWebroutes } from "./from-webroute";
 
 export const generateTestRoutes = () => {
   const routes = {
@@ -18,10 +19,18 @@ export const generateTestRoutes = () => {
       .method("get")
       .params(z.object({ bye: z.number() }))
       .handle(() => {}),
-    d: route("/with/{paramName}")
+    d: route("/with/implicit/:paramName")
+      .method("get")
+      .handle(() => {}),
+    e: route("/with/explicit/:paramName")
+      .params(z.object({ paramName: z.number() }))
       .method("get")
       .handle(() => {}),
   };
 
   return routes;
 };
+
+export type TestAppDef = FromWebroutes.InferApp<
+  ReturnType<typeof generateTestRoutes>
+>;

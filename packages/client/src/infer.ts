@@ -1,41 +1,15 @@
-import { AnyCompiledRoute, Simplify, route } from "@webroute/core";
+export type AppRoute = {
+  Query?: any;
+  Params?: any;
+  Body?: any;
+  Output?: any;
+};
 
-export namespace W {
-  export interface AnyRouteDef extends RouteDef<any> {}
-  export type RouteDef<TRoute extends AnyCompiledRoute> =
-    route.InferRouteDef<TRoute>;
+export type AppDef = {
+  [operation: `${string} ${string}`]: AppRoute;
+};
 
-  export interface AnyEndpointDef extends EndpointDef<any> {}
-  export type EndpointDef<TRoute extends AnyCompiledRoute> = {
-    [TMethod in route.InferMethods<TRoute>]: RouteDef<TRoute>;
-  };
+export type DefineApp<T extends AppDef> = T;
 
-  export interface AnyAppDef extends Infer<any> {}
-
-  export type Infer<TRoutes extends Record<string, AnyCompiledRoute>> =
-    Simplify<{
-      [Key in keyof TRoutes as `${Uppercase<
-        route.InferMethods<TRoutes[Key]>
-      >} ${route.InferPath<TRoutes[Key]>}`]: RouteDef<TRoutes[Key]>;
-    }>;
-
-  export type InferPaths<TApp extends AnyAppDef> =
-    keyof TApp extends `${string} ${infer TPath}` ? TPath : never;
-
-  export type DefinedEndpoint<TRoute extends AnyRouteDef> = {
-    query: TRoute["QueryIn"];
-    params: TRoute["ParamsIn"];
-    body: TRoute["BodyIn"];
-    output: TRoute["OutputOut"];
-    path: TRoute["Path"];
-  };
-
-  export type Endpoint<
-    TApp extends Infer<any>,
-    TPath extends keyof TApp
-  > = TApp[TPath] extends infer TRoute
-    ? TRoute extends AnyRouteDef
-      ? DefinedEndpoint<TRoute>
-      : never
-    : never;
-}
+export type InferPaths<T extends AppDef> =
+  keyof T extends `${string} ${infer TPath}` ? TPath : never;
