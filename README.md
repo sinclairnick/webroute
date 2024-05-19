@@ -13,7 +13,7 @@
 
 Webroute is an initiative to build framework-agnostic tooling for web standard APIs.
 
-[**View documentation ->**](webroute.vercel.app)
+[**View documentation ->**](https://webroute.vercel.app)
 
 ---
 
@@ -39,7 +39,7 @@ import { route } from "@webroute/core
 
 This allows us to e.g. validate HTTP inputs and outputs, declare schema shape to enable automatic Open API definitions, and is radically compatible with web standards and any frameworks that might run on web-standards (e.g. nextjs, Hono, Bun, Deno, and many more).
 
-To understand why this might be a good idea, please [read the docs](webroute.vercel.app).
+To understand why this might be a good idea, please [read the docs](https://webroute.vercel.app).
 
 ## Contribution
 
