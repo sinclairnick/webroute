@@ -1,6 +1,6 @@
 {
   "name": "@webroute/client",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,7 @@
   "scripts": {
     "test": "vitest",
     "build": "tsup",
-    "publish-pkg": "npm run build && npm publish --access=public",
+    "publish-pkg": "pnpm run build && npm publish --access=public",
     "check": "tsc --noEmit"
   },
   "dependencies": {
