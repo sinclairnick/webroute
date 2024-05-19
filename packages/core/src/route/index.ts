@@ -49,11 +49,15 @@ export namespace route {
   export type InferParamsIn<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
     "ParamsIn"
-  >;
+  > extends infer TParamsIn extends {}
+    ? TParamsIn
+    : InferPart<TRoute, "InferredParams">;
   export type InferParamsOut<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
     "ParamsOut"
-  >;
+  > extends infer TParamsOut extends {}
+    ? TParamsOut
+    : InferPart<TRoute, "InferredParams">;
 
   export type InferOutputIn<TRoute extends AnyCompiledRoute> = InferPart<
     TRoute,
@@ -80,8 +84,16 @@ export namespace route {
   >;
 
   export interface DefinedRouteDef<TParams extends HandlerParams> {
-    ParamsIn: TParams["ParamsIn"];
-    paramsOut: TParams["ParamsOut"];
+    ParamsIn: unknown extends TParams["ParamsIn"]
+      ? [TParams["InferredParams"]] extends [never]
+        ? unknown
+        : TParams["InferredParams"]
+      : TParams["ParamsIn"];
+    ParamsOut: unknown extends TParams["ParamsOut"]
+      ? [TParams["InferredParams"]] extends [never]
+        ? unknown
+        : TParams["InferredParams"]
+      : TParams["ParamsOut"];
     BodyIn: TParams["BodyIn"];
     BodyOut: TParams["BodyOut"];
     QueryIn: TParams["QueryIn"];
