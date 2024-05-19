@@ -18,7 +18,8 @@
   },
   "devDependencies": {
     "tsup": "^8.0.1",
-    "vitest": "^1.2.2"
+    "vitest": "^1.2.2",
+    "zod": "^3.22.4"
   },
   "keywords": [],
   "author": "",

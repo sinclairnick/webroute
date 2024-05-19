@@ -91,6 +91,9 @@ importers:
       vitest:
         specifier: ^1.2.2
         version: 1.6.0(@types/node@20.12.12)
+      zod:
+        specifier: ^3.22.4
+        version: 3.23.8
 
   packages/core:
     dependencies:
