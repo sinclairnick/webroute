@@ -2,11 +2,21 @@
 
 > Building toward a web-standard future
 
-Webroute is an initiative building framework-agnostic tooling for web standard APIs.
+<div>
+
+![Core version](https://img.shields.io/npm/v/%40webroute%2Fcore?label=%40webroute%2Fcore)
+![Core size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fcore)
+![Client version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fclient)
+![Client size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fclient)
+
+</div>
+
+Webroute is an initiative to build framework-agnostic tooling for web standard APIs.
 
 [**View documentation ->**](webroute.vercel.app)
 
 ---
+
 
 ### Philosophy
 
