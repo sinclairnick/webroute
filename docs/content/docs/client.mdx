@@ -9,6 +9,7 @@ import { W, createTypedClient } from "@webroute/client"
 
 In addition to the core `route` functionality, `webroute` also offers client helpers. These helpers accelerate client-side development by reducing the need for manually specifying types. Consequently, they also reduce inaccuracies and mistakes.
 
+
 ---
 
 
@@ -34,12 +35,15 @@ export type AppRoutes = typeof appRoutes;
 App routes are defined in an object instead of an array to improve TypeScript inference performance.
 </Callout>
 
-
 ## Typed Client
 
 The typed client is an extremely lightweight, so-called "headless" client-side interface for your API. It is entirely unopinionated about how fetching is done and merely wires up end-to-end type safety, without getting in your way.
 
 {/* TODO: Complete post-client refactor, wire up twoslash */}
+
+<Callout type="warn">
+This API is currently being revised to entirely decouple from `@webroute/core`
+</Callout>
 
 ```ts title="react-app/api-client.ts"
 // Create a lightweight client instance
