@@ -8,6 +8,7 @@
     "comparisons",
 		"---API---",
     "route",
+		"client",
     "---Guides---",
 		"composition",
     "routing",

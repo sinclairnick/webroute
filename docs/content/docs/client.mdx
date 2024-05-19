@@ -2,22 +2,35 @@
 title: Client
 ---
 import { Callout } from 'fumadocs-ui/components/callout';
+import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ```ts twoslash
-import { W, createTypedClient } from "@webroute/client"
+import { DefineApp, createTypedClient, FromWebroutes, createUrl } from "@webroute/client"
 ```
 
-In addition to the core `route` functionality, `webroute` also offers client helpers. These helpers accelerate client-side development by reducing the need for manually specifying types. Consequently, they also reduce inaccuracies and mistakes.
+The `@webroute/client` package can be used _with or without_ using `@webroute/core`. It primarily provides a headless, extremely flexible client interface which provides end-to-end typesafety.
 
+It can be used with the fetching library of your choice and will expedite client-side development as well as reducing errors and mistakes, by enforcing your API contract.
 
 ---
 
+## Define App
 
-**Prerequisites**
+We can arbitrarily define our API schema for a typed client via the `DefineApp` type.
 
-To use client-side functionality, we first need to export the backend type information somehow. This could entail importing types in a monorepo or exporting it as an NPM package.
+```ts
+import { DefineApp } from "@webroute/client"
 
-```ts title="backend/routes.ts"
+type App = DefineApp<{
+	"GET /posts": {
+		Query: { limit?: number }
+	}
+}>;
+```
+
+Or, if you're using `webroute`s on the backend, you can convert this into the appropriate shape via the `FromWebroute` helper.
+
+```ts
 // Define routes in object
 const appRoutes = {
 	PostRoute,
@@ -26,28 +39,25 @@ const appRoutes = {
 	foo: UserRoute,
 	bar: CommentRoute,
 }
+// E.g. export this from your backend in a monorepo, or package via NPM
+type AppRoutes = typeof appRoutes
 
-// We need this information on the client-side
-export type AppRoutes = typeof appRoutes;
+type App = FromWebroutes.InferApp<AppRoutes>;
 ```
 
-<Callout>
+<Callout title="Why use objects if the keys don't matter?">
 App routes are defined in an object instead of an array to improve TypeScript inference performance.
 </Callout>
+
 
 ## Typed Client
 
 The typed client is an extremely lightweight, so-called "headless" client-side interface for your API. It is entirely unopinionated about how fetching is done and merely wires up end-to-end type safety, without getting in your way.
 
-{/* TODO: Complete post-client refactor, wire up twoslash */}
-
-<Callout type="warn">
-This API is currently being revised to entirely decouple from `@webroute/core`
-</Callout>
 
 ```ts title="react-app/api-client.ts"
 // Create a lightweight client instance
-const client = createTypedClient<AppRoutes>({
+const client = createTypedClient<App>({
 	fetcher: myFetcher
 })
 
@@ -71,34 +81,55 @@ const myFetcher = async (
 		// and fully typed.
 		opts: AxiosRequestConfig
 	) => {
+		const { path, method, body, params, query } = config
+
+	// ... Fetch using any method...
+}
+```
+
+<Accordions>
+<Accordion title='Creating URLs more easily with createUrl()'>
+
+
+It can be tedious to convert the `path`, `query` and `params` into a corresoponding url. If you require this functionality, you can use the `createUrl` utility. If you need more custom functionality, you can always roll your own.
+
+```ts
+// ...myFetcher
 	// `createUrl` is a small helper for combining the path pattern with path and query params.
 	const url = createUrl(config);
 
+	// e.g. use axios
 	const res = await axios({
-		method: config.method,
 		url,
+		method: config.method,
 		data: config.body,
 		...opts,
 	});
 
 	return res;
-}
+// ...myFetcher
 ```
+</Accordion>
+</Accordions>
 
-## Type Inference
 
-`webroute` also provides some inference helpers for specific parts of your APIs type definitions.
+## Schema Types
+
+The `App` definition is a very simple type which we can directly reference to get information on our routes `body`, `output` etc.
 
 ```ts
-type Endpoint = W.Endpoint<AppRoutes, "GET /post/:id">;
+const operation = "GET /posts" satistfies keyof App // an API operation
+type Endpoint = App[typeof operation];
+
+type Query = Endpoint["Query"];
+type Params = Endpoint["Params"];
+type Body = Endpoint["Body"];
+type Output = Endpoint["Output"];
 ```
 
 This is helpful for defining our own fetching functions or wrapping typed-client functionality.
 
 ```ts
-type Params = Endpoint["params"]
-type Result = Endpoint["output"]
-
 export const getPost = async (params: Params): Promise<Result> => {
 	// ...
 }
