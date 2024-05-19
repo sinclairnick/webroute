@@ -37,8 +37,8 @@ route("/path/:param").handle(() => {})
 This approach is highly declarative and [inverts control](https://en.wikipedia.org/wiki/Inversion_of_control) compared to traditional API frameworks, which grants us more freedom with how we might want to execute our app.
 </Callout>
 
-<Callout type="warn">
-The type of path pattern we use here _is_ dependent on which routing approach we might use, if any. In lieu of the experimental [URLPattern](https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API) API, we recommend adherering to the [`path-to-regexp`](https://github.com/pillarjs/path-to-regexp) style, like above.
+<Callout>
+In theory we can use any path pattern style here. Exactly what style you should use will depend on how you aim to implement routing, if at all. Read more in [Routing](./routing)
 </Callout>
 
 

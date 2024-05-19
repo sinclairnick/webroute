@@ -85,26 +85,33 @@ In the most basic case, we can simply wire up our routes explicitly and manually
 ```ts title="hono-example.ts"
 const app = new Hono()
 
-app.get(route.getPath(myRoute), myRoute)
+app.on(
+	route.getMethods(myRoute), // METHODS
+	route.getPath(myRoute),    // PATH
+	myRoute                    // HANDLER
+	)
 ```
 
 #### Many at Once
 
 We can also perform this iteratively when we have quite a few routes.
 
-```ts title="hono-example.ts"
+```ts title="hono-example.ts" twoslash
+// ---cut-start---
+import { Hono } from "hono"
+import { route } from "@webroute/core"
+const routes = [
+	route().handle(() => {})
+]
+// ---cut-end---
 const app = new Hono()
 
+// For every route, map each method to the route handler
+for(const r of routes) {
+	app.on(route.getMethods(r), route.getPath(r), c => r(c.req.raw))
+}
+
 // This is a completely valid, production ready "hono adapter"
-routes.forEach(r => {
-
-	// For every route, map each method to the route handler
-	for(const method of route.getMethods(r)) {
-
-		app[method](route.getPath(r), c => route(c.req))
-	}
-})
-
 export default app
 ```
 

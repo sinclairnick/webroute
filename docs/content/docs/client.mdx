@@ -3,7 +3,7 @@ title: Client
 ---
 import { Callout } from 'fumadocs-ui/components/callout';
 
-```ts
+```ts twoslash
 import { W, createTypedClient } from "@webroute/client"
 ```
 
@@ -87,7 +87,6 @@ const myFetcher = async (
 
 ```ts
 type Endpoint = W.Endpoint<AppRoutes, "GET /post/:id">;
-//   ^?
 ```
 
 This is helpful for defining our own fetching functions or wrapping typed-client functionality.

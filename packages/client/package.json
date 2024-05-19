@@ -2,7 +2,10 @@
   "name": "@webroute/client",
   "version": "0.18.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "private": false,
   "scripts": {
     "test": "vitest",
     "build": "tsup",
@@ -14,6 +17,7 @@
     "ufo": "^1.5.3"
   },
   "devDependencies": {
+    "tsup": "^8.0.1",
     "vitest": "^1.2.2"
   },
   "keywords": [],

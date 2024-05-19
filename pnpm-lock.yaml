@@ -51,12 +51,18 @@ importers:
       '@types/react-dom':
         specifier: ^18.3.0
         version: 18.3.0
+      '@webroute/client':
+        specifier: workspace:*
+        version: link:../packages/client
       '@webroute/core':
         specifier: workspace:*
         version: link:../packages/core
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.38)
+      hono:
+        specifier: ^4.3.7
+        version: 4.3.7
       postcss:
         specifier: ^8.4.38
         version: 8.4.38
@@ -79,6 +85,9 @@ importers:
         specifier: ^1.5.3
         version: 1.5.3
     devDependencies:
+      tsup:
+        specifier: ^8.0.1
+        version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
       vitest:
         specifier: ^1.2.2
         version: 1.6.0(@types/node@20.12.12)
@@ -1672,6 +1681,10 @@ packages:
 
   hast-util-whitespace@3.0.0:
     resolution: {integrity: sha512-88JUN06ipLwsnv+dVn+OIYOvAuvBMy/Qoi6O7mQHxdPXpjy+Cd6xRkWwux7DKO+4sYILtLBRIKgsdpS2gQc7qw==}
+
+  hono@4.3.7:
+    resolution: {integrity: sha512-GXlsGnCAwGosu+COwYyYC8MwOY2L6Ihg9V1znYdMD8DHCJl+13Nk4o8dsBYJpae4oujjw24jBaITuYWVq2+V8Q==}
+    engines: {node: '>=16.0.0'}
 
   human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
@@ -4610,6 +4623,8 @@ snapshots:
   hast-util-whitespace@3.0.0:
     dependencies:
       '@types/hast': 3.0.4
+
+  hono@4.3.7: {}
 
   human-signals@2.1.0: {}
 
