@@ -1,7 +1,5 @@
 # Webroute
 
-> Building toward a web-standard future
-
 <div>
 
 ![Core version](https://img.shields.io/npm/v/%40webroute%2Fcore?label=%40webroute%2Fcore)
