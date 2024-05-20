@@ -2,12 +2,13 @@ import { MergeObjectsShallow } from "../../util";
 import { Parser, inferParser } from "../parser/types";
 import {
   CompiledRoute,
-  DecoratedRequestHandler,
   HandlerDefinition,
   HandlerFunction,
   HandlerParams,
   HttpMethodInput,
+  UseMiddlewareInput,
 } from "./types";
+import type { StateResult } from "@webroute/middleware";
 
 export type AnyHandlerBuilder = HandlerBuilder<any>;
 
@@ -171,23 +172,8 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     State: TParams["State"];
   }>;
 
-  use<TState extends Record<PropertyKey, any> = {}>(
-    handler: DecoratedRequestHandler<
-      // Params
-      TParams["InferredParams"] extends never
-        ? TParams["ParamsOut"]
-        : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
-      // Query
-      TParams["QueryOut"],
-      // Body
-      TParams["BodyOut"],
-      // Headers
-      TParams["HeadersReqOut"],
-      // Output
-      TState,
-      // Mods
-      TParams["State"]
-    >
+  use<THandler extends UseMiddlewareInput<TParams>>(
+    handler: THandler
   ): HandlerBuilder<{
     Path: TParams["Path"];
     InferredParams: TParams["InferredParams"];
@@ -203,7 +189,12 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     Methods: TParams["Methods"];
     HeadersReqIn: TParams["HeadersReqIn"];
     HeadersReqOut: TParams["HeadersReqOut"];
-    State: MergeObjectsShallow<TParams["State"], TState>;
+    // Update state if any has been returned
+    State: Awaited<
+      ReturnType<THandler>
+    > extends infer TResult extends StateResult
+      ? MergeObjectsShallow<TParams["State"], TResult>
+      : TParams["State"];
   }>;
 
   /**

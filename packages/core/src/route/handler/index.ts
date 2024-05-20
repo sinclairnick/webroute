@@ -5,6 +5,7 @@ import {
   LazyValidator,
   InferParamsFromPath,
   HandlerDefinition,
+  MiddlewareOutFn,
 } from "./types";
 import { Log } from "../../internal/logger";
 import { AnyHandlerBuilder, HandlerBuilder } from "./builder";
@@ -107,6 +108,7 @@ export function createBuilder<
     handle(handler) {
       const _handler = async (req: Request) => {
         const validators = createLazyValidators(req, def);
+        const middlewareOut: MiddlewareOutFn[] = [];
 
         const ctx = { ...validators, state: {} };
 
@@ -120,6 +122,12 @@ export function createBuilder<
               return result;
             }
 
+            // If result is a function, it is a response handler
+            if (typeof result === "function") {
+              middlewareOut.push(result as MiddlewareOutFn);
+              continue;
+            }
+
             if (typeof result === "object") {
               // Otherwise modify state
               ctx.state = { ...ctx.state, ...result };
@@ -129,16 +137,30 @@ export function createBuilder<
 
         const result = await handler(req, ctx as any);
 
+        let response: Response;
+
+        // Assign response, depending on handler return type
         if (result instanceof Response) {
-          Log("Is response. Next");
-          return result;
+          Log("Result is response");
+          response = result;
+        } else {
+          Log("Parsing result.");
+          const parsed = def.output ? await def.output?.parser(result) : result;
+
+          Log("Sending parsed result as JSON");
+          response = Response.json(parsed);
         }
 
-        Log("Parsing result.");
-        const parsed = def.output ? await def.output?.parser(result) : result;
+        // Run through outgoing middleware
+        if (middlewareOut.length > 0) {
+          // Iterate through middleware out backwards
+          for (let i = middlewareOut.length - 1; i >= 0; i--) {
+            const middleware = middlewareOut[i];
+            response = await middleware(response, ctx);
+          }
+        }
 
-        Log("Sending parsed result as JSON");
-        return Response.json(parsed);
+        return response;
       };
 
       return Object.assign(_handler, { "~def": def });

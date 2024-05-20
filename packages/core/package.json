@@ -22,9 +22,11 @@
     "@types/debug": "^4.1.12",
     "tsup": "^8.0.1",
     "typescript": "^5.4.2",
-    "vitest": "^1.2.2"
+    "vitest": "^1.2.2",
+    "zod": "^3.22.4"
   },
   "dependencies": {
+    "@webroute/middleware": "workspace:*",
     "debug": "^4.3.4"
   }
 }

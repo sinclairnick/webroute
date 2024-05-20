@@ -1,6 +1,9 @@
 import { Parser } from "../parser/types";
 import { MergeObjectsShallow, RemoveNeverKeys, Simplify } from "../../util";
 import { ParseFn } from "../parser";
+import type { MiddlewareResult } from "@webroute/middleware";
+
+export type Awaitable<T> = Promise<T> | T;
 
 export interface RouteMeta {}
 
@@ -89,7 +92,7 @@ export interface HandlerDefinition<TParams extends HandlerParams> {
     parser: ParseFn<unknown>;
     schema: Parser;
   };
-  middleware?: DecoratedRequestHandler[];
+  middleware?: MiddlewareInFn[];
   meta?: TParams["Meta"];
 }
 
@@ -117,53 +120,16 @@ export interface HandlerFunction<TParams extends HandlerParams>
     TParams["State"]
   > {}
 
-export interface HandlerFunction<TParams extends HandlerParams>
-  extends DecoratedRequestHandler<
-    // Params
-    TParams["InferredParams"] extends never
-      ? TParams["ParamsOut"]
-      : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
-    // Query
-    TParams["QueryOut"],
-    // Body
-    TParams["BodyOut"],
-    // Headers
-    TParams["HeadersReqOut"],
-    // Output
-    TParams["OutputIn"],
-    // Mods
-    TParams["State"]
-  > {}
-
-export interface MiddlewareFunction<
-  TParams extends HandlerParams,
-  TMutations extends Record<PropertyKey, any> = {}
-> extends DecoratedRequestHandler<
-    // Params
-    TParams["InferredParams"] extends never
-      ? TParams["ParamsOut"]
-      : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
-    // Query
-    TParams["QueryOut"],
-    // Body
-    TParams["BodyOut"],
-    // Headers
-    TParams["HeadersReqOut"],
-    // Output
-    TMutations,
-    // Mods
-    TParams["State"]
-  > {}
-
 export interface AnyCompiledRoute extends CompiledRoute<any> {}
 
-export type CompiledRoute<TParams extends HandlerParams> = WebRequestHandler & {
+export interface CompiledRoute<TParams extends HandlerParams>
+  extends WebRequestHandler {
   "~def": HandlerDefinition<TParams>;
-};
+}
 
-export type WebRequestHandler = (
-  request: Request
-) => Response | Promise<Response>;
+export interface WebRequestHandler {
+  (request: Request): Response | Promise<Response>;
+}
 
 export type InferParamsFromPath<T> = T extends `${string}:${infer P}/${infer R}`
   ? Simplify<{ [K in P]: string } & InferParamsFromPath<R>>
@@ -175,20 +141,62 @@ export interface LazyValidator<T> {
   (): Promise<T>;
 }
 
-export type DecoratedRequestHandler<
+export type RequestCtx<
+  TParams = unknown,
+  TQuery = unknown,
+  TBody = unknown,
+  THeaders = unknown,
+  TState = {}
+> = RemoveNeverKeys<{
+  params: unknown extends TParams ? never : LazyValidator<TParams>;
+  query: unknown extends TQuery ? never : LazyValidator<TQuery>;
+  body: unknown extends TBody ? never : LazyValidator<TBody>;
+  headers: unknown extends THeaders ? never : LazyValidator<THeaders>;
+  state: TState;
+}>;
+
+export interface DecoratedRequestHandler<
   TParams = unknown,
   TQuery = unknown,
   TBody = unknown,
   THeaders = unknown,
   TOutput = unknown,
   TState = {}
-> = (
-  request: Request,
-  ctx: RemoveNeverKeys<{
-    params: unknown extends TParams ? never : LazyValidator<TParams>;
-    query: unknown extends TQuery ? never : LazyValidator<TQuery>;
-    body: unknown extends TBody ? never : LazyValidator<TBody>;
-    headers: unknown extends THeaders ? never : LazyValidator<THeaders>;
-    state: TState;
-  }>
-) => ResponseOrLiteral<TOutput>;
+> {
+  (
+    request: Request,
+    ctx: RequestCtx<TParams, TQuery, TBody, THeaders, TState>
+  ): Awaitable<Response | TOutput>;
+}
+
+// -- Middleware --
+
+export interface UseMiddlewareInput<
+  TParams extends HandlerParams = HandlerParams
+> {
+  (
+    request: Request,
+    ctx: RequestCtx<
+      // Params
+      TParams["InferredParams"] extends never
+        ? TParams["ParamsOut"]
+        : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
+      // Query
+      TParams["QueryOut"],
+      // Body
+      TParams["BodyOut"],
+      // Headers
+      TParams["HeadersReqOut"],
+      // Mods
+      TParams["State"]
+    >
+  ): MiddlewareResult<any>;
+}
+
+export interface MiddlewareInFn {
+  (request: Request, ctx: RequestCtx): Awaitable<any>;
+}
+
+export interface MiddlewareOutFn {
+  (response: Response, ctx: RequestCtx): Awaitable<Response>;
+}

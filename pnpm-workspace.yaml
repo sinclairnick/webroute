@@ -2,3 +2,4 @@ packages:
   - "docs"
   - "packages/core"
   - "packages/client"
+  - "packages/middleware"
