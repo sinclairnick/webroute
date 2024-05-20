@@ -3,15 +3,14 @@
   "root": true,
   "pages": [
     "index",
-    "quick-start",
-    "building-apps",
     "comparisons",
-		"---API---",
-    "route",
-		"client",
-    "---Guides---",
-		"composition",
-    "routing",
+    "---Route---",
+    "route/index",
+    "route/quick-start",
+    "route/reference",
+    "route/guides",
+    "---Client---",
+    "client/reference",
     "---About---",
     "acknowledgements"
   ]

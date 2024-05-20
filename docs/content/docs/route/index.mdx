@@ -1,0 +1,145 @@
+---
+title: Overview
+icon: Home
+---
+import { Cards, Card } from "fumadocs-ui/components/card"
+import { Callout } from "fumadocs-ui/components/callout"
+
+## Introduction
+
+`webroute` is a lightweight primitive used to build scalable web APIs.
+
+It consists of one function
+
+```ts
+import { route } from "@webroute/core"
+```
+
+<Callout>
+Webroute happily works alongside other frameworks or without one.
+</Callout>
+
+---
+
+## Benefits and Features
+
+Using `webroute`s is a good idea because they are:
+
+
+### Declarative
+
+Define route information declaratively, not imperatively
+
+```ts
+// All route information is defined in one place, declaratively
+export default route("/pathname")
+	.params(MySchema)
+	.handle((req) => ({ foo: "bar" }))
+```
+
+### Introspectable
+
+The declarative approach allows us to specify things like input and output schema. We can then use this information for schema generation, or anything else.
+
+```ts
+route()
+	.params(ParamSchema)
+	.query(QuerySchema)
+	.headers(HeadersSchema)
+	.body(BodySchema)
+	.output(ResponseSchema)
+// ...
+
+// Can now derive OpenAPI, Typescript or custom schema
+```
+
+### Composable
+
+Uses a simple but powerful middleware approach that is framework-agnostic
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+// ---cut-end---
+const authedRoute = route()
+	.use((req) => ({ user: {id: 1} }))
+
+
+authedRoute
+	.path("/me")
+	.handle((req, { state }) => {
+		return state.user
+		//           ^^^^
+	})
+```
+
+### Atomic
+
+Each route is complete and standalone – `webroute`s are router agnostic. Upstream operations like middleware are always traceable at the code level and baked in.
+
+```ts title="posts/route.ts"
+// No external orchestration, monkey-patching or side-effects necessary.
+export default routeWithMiddleware.handle(() => { 
+	// Middleware was executed as expected
+})
+```
+
+### Future-proof
+
+Built on web-standards, `webroute`s don't do anything funky, opaque or complex.
+
+```ts
+// Testing a webroute is as simple as
+
+const request = new Request("https://myurl.com")
+const response = await myRoute(request)
+
+expect(await response.json()).toBe({ /*...*/ })
+```
+
+### Immutable
+
+`webroute`s are inherently immutable, never mutating request or response objects, nor monkey-patching any APIs. The boundaries for extra functionality are explicit and never crossed.
+
+```ts
+route()
+.use((req, {state}) => {
+	const newState = { ...state, user: { id: 1 } }
+
+	// Type-safe mutations
+	return newState;
+})
+.handle((req, { state }) => {
+	// Or mutate state directly
+	state.user.id = 2
+
+	// Instead of mutating the request
+	req.user = {}
+})
+
+```
+
+
+### Flexible
+
+Work with your existing tools and frameworks
+
+```ts title="validator-agnostic.ts"
+route().params(ZodSchema).body(YupSchema)
+```
+
+```ts title="nextjs/route.ts"
+export const GET = myRoute
+```
+
+```ts title="bun-api.ts"
+Bun.serve({
+  fetch: myRoute(req)
+});
+```
+
+```ts title="deno-api.ts"
+Deno.serve(myRoute);
+```
+
+And many more...

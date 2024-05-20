@@ -34,12 +34,8 @@ export default function HomePage() {
           <h1 className="text-4xl font-medium mb-4">
             <pre>webroute</pre>
           </h1>
-          <p>A route primitive for building scalable web-standard APIs</p>
+          <p>A toolkit for building scalable web-standard APIs</p>
         </div>
-
-        <Pre className="bg-slate-100 dark:bg-slate-900 mx-auto px-12 rounded-lg py-4 text-lg overflow-scroll w-full max-w-lg">
-          npm install @webroute/core
-        </Pre>
 
         <div>
           <Link href="/docs" className="underline text-lg font-medium">
@@ -50,11 +46,8 @@ export default function HomePage() {
 
       <hr />
 
-      <div className="flex flex-col items-center mx-8 rounded-xl overflow-hidden border shadow-md mb-16 mt-16">
-        <Pre className="bg-blue-950 text-slate-100 py-12 font-medium shadow-inner overflow-scroll w-full">
-          import {"{ route }"} from "@webroute/core"
-        </Pre>
-        <div className="grid grid-cols-1 sm:grid-cols-2 border-t">
+      <div className="flex flex-col items-center mx-8 rounded-xl overflow-hidden border mb-16 mt-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 border-t bg-gray-100 dark:bg-slate-900">
           <Card title="Web Standards" icon={<GlobeLock className="w-6 h-6" />}>
             Future-proof your APIs by leveraging web standards.
           </Card>

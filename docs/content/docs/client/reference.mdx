@@ -1,5 +1,6 @@
 ---
-title: Client
+title: Reference
+icon: BookMarked
 ---
 import { Callout } from 'fumadocs-ui/components/callout';
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
@@ -30,7 +31,9 @@ type App = DefineApp<{
 }>;
 ```
 
-Or, if you're using `webroute`s on the backend, you can convert this into the appropriate shape via the `FromWebroute` helper.
+<Accordions>
+<Accordion title="Using @webroute/core?">
+If you're using `webroute`s on the backend, you can convert this into the appropriate shape via the `FromWebroute` helper.
 
 ```ts
 // Define routes in object
@@ -50,6 +53,9 @@ type App = FromWebroutes.InferApp<AppRoutes>;
 <Callout title="Why use objects if the keys don't matter?">
 App routes are defined in an object instead of an array to improve TypeScript inference performance.
 </Callout>
+</Accordion>
+</Accordions>
+
 
 
 ## Typed Client
