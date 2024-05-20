@@ -29,14 +29,14 @@ export type MiddlewareResult<T> = Awaitable<
  * A framework agnostic middleware function.
  *
  * Returns a middleware result, which is either void, a state update or a response handler.
- * 
+ *
  * @param {Request} request
  * The web request object.
  *
  * @param {TRest} rest...
  * Optional array of additional parameters
  *
- * @returns {MiddlewareResult<T>} 
+ * @returns {MiddlewareResult<T>}
  */
 export type MiddlewareFn<
   T extends StateResult = StateResult,
@@ -45,11 +45,11 @@ export type MiddlewareFn<
 
 /**
  * A middleware builder which takes 0..n config arguments.
- * 
+ *
  * Returns a middleware function.
- * 
+ *
  * @param {TOpts} Opts
- * 
+ *
  * @returns {MiddlewareFn<T, TRest>}
  */
 export type MiddlewareBuilder<

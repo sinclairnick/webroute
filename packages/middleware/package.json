@@ -1,6 +1,6 @@
 {
   "name": "@webroute/middleware",
-  "version": "0.23.0",
+  "version": "0.1.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
