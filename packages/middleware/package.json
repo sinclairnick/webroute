@@ -12,14 +12,9 @@
     "publish-pkg": "pnpm run build && pnpm publish --access=public",
     "check": "tsc --noEmit"
   },
-  "dependencies": {
-    "@webroute/core": "workspace:*",
-    "ufo": "^1.5.3"
-  },
   "devDependencies": {
     "tsup": "^8.0.1",
-    "vitest": "^1.6.0",
-    "zod": "^3.22.4"
+    "vitest": "^1.6.0"
   },
   "keywords": [],
   "author": "",
