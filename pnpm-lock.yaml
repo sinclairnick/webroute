@@ -121,13 +121,6 @@ importers:
         version: 3.23.8
 
   packages/middleware:
-    dependencies:
-      '@webroute/core':
-        specifier: workspace:*
-        version: link:../core
-      ufo:
-        specifier: ^1.5.3
-        version: 1.5.3
     devDependencies:
       tsup:
         specifier: ^8.0.1
@@ -135,9 +128,6 @@ importers:
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.12.12)
-      zod:
-        specifier: ^3.22.4
-        version: 3.23.8
 
 packages:
 
