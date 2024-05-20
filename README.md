@@ -9,7 +9,7 @@
 
 </div>
 
-Webroute is an initiative to build framework-agnostic tooling for web standard APIs.
+Webroute is a collection of tools that are compatible with any web-standard framework or runtime.
 
 [**View documentation ->**](https://webroute.vercel.app)
 
