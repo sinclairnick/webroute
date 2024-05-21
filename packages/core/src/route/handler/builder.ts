@@ -1,3 +1,4 @@
+import { DataResult } from "@webroute/middleware";
 import { MergeObjectsShallow } from "../../util";
 import { Parser, inferParser } from "../parser/types";
 import {
@@ -8,7 +9,6 @@ import {
   HttpMethodInput,
   UseMiddlewareInput,
 } from "./types";
-import type { StateResult } from "@webroute/middleware";
 
 export type AnyHandlerBuilder = HandlerBuilder<any>;
 
@@ -172,8 +172,15 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     State: TParams["State"];
   }>;
 
-  use<THandler extends UseMiddlewareInput<TParams>>(
-    handler: THandler
+  use<TResult extends DataResult | void = void>(
+    handler: UseMiddlewareInput<
+      TParams["ParamsOut"],
+      TParams["QueryOut"],
+      TParams["BodyOut"],
+      TParams["HeadersReqOut"],
+      TParams["State"],
+      TResult
+    >
   ): HandlerBuilder<{
     Path: TParams["Path"];
     InferredParams: TParams["InferredParams"];
@@ -189,17 +196,11 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     Methods: TParams["Methods"];
     HeadersReqIn: TParams["HeadersReqIn"];
     HeadersReqOut: TParams["HeadersReqOut"];
+
     // Update state if any has been returned
-    State: Awaited<
-      ReturnType<THandler>
-    > extends infer TResult extends StateResult
-      ? MergeObjectsShallow<TParams["State"], TResult>
-      : TParams["State"];
+    State: void extends TResult ? TParams["State"] : TResult;
   }>;
 
-  /**
-   * Add a Meta data to the procedure.
-   */
   meta(meta: TParams["Meta"]): HandlerBuilder<TParams>;
 
   handle(handler: HandlerFunction<TParams>): CompiledRoute<TParams>;

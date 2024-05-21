@@ -8,6 +8,7 @@ describe("route().use", () => {
         return { id: "123" };
       })
       .handle((_, { state }) => {
+        expectTypeOf(state.id).toEqualTypeOf<string>();
         return state.id;
       });
 
@@ -20,14 +21,18 @@ describe("route().use", () => {
 
   test("Handles chained middleware", async () => {
     const _route = route()
-      .use(() => {
+      .use((req, { state }) => {
         return { id: "123" };
       })
       .use((req, { state }) => {
-        expectTypeOf<typeof state>().toEqualTypeOf<{ id: string }>();
+        return { id: true };
+      })
+      .use((req, { state }) => {
+        expectTypeOf<typeof state>().toEqualTypeOf<{ id: boolean }>();
         return { id: 456 };
       })
       .handle((req, { state }) => {
+        expectTypeOf<typeof state>().toEqualTypeOf<{ id: number }>();
         return state;
       });
 
@@ -38,12 +43,87 @@ describe("route().use", () => {
     expect(data).toEqual({ id: 456 });
   });
 
-  test("Supports response middleware", async () => {
+  test("Handles conditional middleware", async () => {
     const _route = route()
       .use(() => {
+        if (Math.random()) {
+          return { id: "123" };
+        }
+        return new Response("");
+      })
+      .handle((req, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ id: string }>();
+        return state;
+      });
+  });
+
+  test("Handles chained middleware with response", async () => {
+    const _route = route()
+      .use(() => {
+        if (Math.random()) {
+          return { id: "123" };
+        }
+        return new Response("");
+      })
+      .use((_, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ id: string }>();
+        return new Response("");
+      })
+      .use((_, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ id: string }>();
+        return new Response("");
+      })
+      .handle((req, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ id: string }>();
+        return state;
+      });
+  });
+
+  test("Retains type with spread", () => {
+    const _route = route()
+      .use(() => {
+        if (Math.random()) {
+          return { id: "123" };
+        }
+        return new Response("");
+      })
+      .use((_, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ id: string }>();
+        return { ...state, a: 1 };
+      })
+      .use((_, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ id: string; a: number }>();
+        return { ...state, b: 2 };
+      })
+      .handle((req, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{
+          id: string;
+          a: number;
+          b: number;
+        }>();
+      });
+  });
+
+  test("Overwrites state if not spread", () => {
+    const _route = route()
+      .use(() => {
+        return { id: "123" };
+      })
+      .use((_, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ id: string }>();
+        return { a: 1 };
+      })
+      .handle((req, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ a: number }>();
+      });
+  });
+
+  test("Supports response middleware", async () => {
+    const _route = route()
+      .use((_, { state }) => {
         const userId = 123;
 
-        return (response: Response) => {
+        return (response) => {
           return new Response(`${userId}`);
         };
       })
@@ -75,7 +155,7 @@ describe("route().use", () => {
         const val = "2";
 
         // This one should run first
-        return (response: Response) => {
+        return (response, { state }) => {
           values.push(val);
           return new Response(val);
         };

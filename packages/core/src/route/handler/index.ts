@@ -37,7 +37,7 @@ export function createBuilder<
   Methods: string;
   HeadersReqIn: unknown;
   HeadersReqOut: unknown;
-  State: {};
+  State: unknown;
 }> {
   return {
     "~def": def,

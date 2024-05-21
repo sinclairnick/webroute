@@ -57,6 +57,9 @@ importers:
       '@webroute/core':
         specifier: workspace:*
         version: link:../packages/core
+      '@webroute/middleware':
+        specifier: workspace:*
+        version: link:../packages/middleware
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.38)

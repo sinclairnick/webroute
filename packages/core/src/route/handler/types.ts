@@ -1,7 +1,7 @@
 import { Parser } from "../parser/types";
 import { MergeObjectsShallow, RemoveNeverKeys, Simplify } from "../../util";
 import { ParseFn } from "../parser";
-import type { MiddlewareResult } from "@webroute/middleware";
+import { DataResult, MiddlewareFn } from "@webroute/middleware";
 
 export type Awaitable<T> = Promise<T> | T;
 
@@ -22,7 +22,7 @@ export interface HandlerParams<
   TMeta = unknown,
   TMethods = HttpMethodInput,
   TInferredParams = unknown,
-  TState = {}
+  TState = unknown
 > {
   /** @internal */
   Path: TPath;
@@ -104,19 +104,13 @@ export type ResponseOrLiteral<T> =
 
 export interface HandlerFunction<TParams extends HandlerParams>
   extends DecoratedRequestHandler<
-    // Params
     TParams["InferredParams"] extends never
       ? TParams["ParamsOut"]
       : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
-    // Query
     TParams["QueryOut"],
-    // Body
     TParams["BodyOut"],
-    // Headers
     TParams["HeadersReqOut"],
-    // Output
     TParams["OutputIn"],
-    // Mods
     TParams["State"]
   > {}
 
@@ -128,7 +122,7 @@ export interface CompiledRoute<TParams extends HandlerParams>
 }
 
 export interface WebRequestHandler {
-  (request: Request): Response | Promise<Response>;
+  (request: Request): Awaitable<Response>;
 }
 
 export type InferParamsFromPath<T> = T extends `${string}:${infer P}/${infer R}`
@@ -146,13 +140,13 @@ export type RequestCtx<
   TQuery = unknown,
   TBody = unknown,
   THeaders = unknown,
-  TState = {}
+  TState = unknown
 > = RemoveNeverKeys<{
   params: unknown extends TParams ? never : LazyValidator<TParams>;
   query: unknown extends TQuery ? never : LazyValidator<TQuery>;
   body: unknown extends TBody ? never : LazyValidator<TBody>;
   headers: unknown extends THeaders ? never : LazyValidator<THeaders>;
-  state: TState;
+  state: Simplify<TState>;
 }>;
 
 export interface DecoratedRequestHandler<
@@ -161,7 +155,7 @@ export interface DecoratedRequestHandler<
   TBody = unknown,
   THeaders = unknown,
   TOutput = unknown,
-  TState = {}
+  TState = unknown
 > {
   (
     request: Request,
@@ -171,27 +165,32 @@ export interface DecoratedRequestHandler<
 
 // -- Middleware --
 
+export type MiddlewareResult<
+  TParams = unknown,
+  TQuery = unknown,
+  TBody = unknown,
+  THeaders = unknown,
+  TState = unknown,
+  TResult = unknown
+> =
+  | Response
+  | ((
+      response: Response,
+      ctx: RequestCtx<TParams, TQuery, TBody, THeaders, TState>
+    ) => Response)
+  | TResult;
+
 export interface UseMiddlewareInput<
-  TParams extends HandlerParams = HandlerParams
-> {
-  (
-    request: Request,
-    ctx: RequestCtx<
-      // Params
-      TParams["InferredParams"] extends never
-        ? TParams["ParamsOut"]
-        : MergeObjectsShallow<TParams["InferredParams"], TParams["ParamsOut"]>,
-      // Query
-      TParams["QueryOut"],
-      // Body
-      TParams["BodyOut"],
-      // Headers
-      TParams["HeadersReqOut"],
-      // Mods
-      TParams["State"]
-    >
-  ): MiddlewareResult<any>;
-}
+  TParams = unknown,
+  TQuery = unknown,
+  TBody = unknown,
+  THeaders = unknown,
+  TState = unknown,
+  TResult extends DataResult | void = void
+> extends MiddlewareFn<
+    TResult,
+    [ctx: RequestCtx<TParams, TQuery, TBody, THeaders, TState>]
+  > {}
 
 export interface MiddlewareInFn {
   (request: Request, ctx: RequestCtx): Awaitable<any>;
