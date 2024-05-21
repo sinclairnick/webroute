@@ -118,6 +118,70 @@ describe("route().use", () => {
       });
   });
 
+  test("Skips remaining request middleware in early exit", async () => {
+    let didRun = false;
+
+    const _route = route()
+      .use((_, { state }) => {
+        return new Response("0");
+      })
+      .use(() => {
+        didRun = true;
+      })
+      .handle((req, { state }) => {});
+
+    const res = await _route(new Request("https://google.com"));
+    const data = await res.json();
+    expect(data).toBe(0);
+    expect(didRun).toBe(false);
+  });
+
+  test("Allows arbitrary mutation", () => {
+    const _route = route()
+      .use<{ foo: number }>((_, { state }) => {
+        (state as any).foo = 1;
+
+        return;
+      })
+      .handle((req, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ foo: number }>();
+      });
+  });
+
+  test("Explicit type param appends, not overwrites", () => {
+    const _route = route()
+      .use(() => {
+        return { a: "" };
+      })
+      .use<{ foo: number }>((_, { state }) => {
+        (state as any).foo = 1;
+
+        return;
+      })
+      .handle((req, { state }) => {
+        expectTypeOf(state).toEqualTypeOf<{ foo: number; a: string }>();
+      });
+  });
+
+  test("Return value replaces existing state", async () => {
+    const _route = route()
+      .use(() => {
+        return { a: "a" };
+      })
+      .use((_, { state }) => {
+        return { b: "b" };
+      })
+      .handle((req, { state }) => {
+        return state;
+      });
+
+    const req = new Request("https://google.com");
+    const res = await _route(req);
+    const data = await res.json();
+
+    expect(data).toEqual({ b: "b" });
+  });
+
   test("Supports response middleware", async () => {
     const _route = route()
       .use((_, { state }) => {

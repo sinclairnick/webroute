@@ -141,13 +141,15 @@ export type RequestCtx<
   TBody = unknown,
   THeaders = unknown,
   TState = unknown
-> = RemoveNeverKeys<{
-  params: unknown extends TParams ? never : LazyValidator<TParams>;
-  query: unknown extends TQuery ? never : LazyValidator<TQuery>;
-  body: unknown extends TBody ? never : LazyValidator<TBody>;
-  headers: unknown extends THeaders ? never : LazyValidator<THeaders>;
-  state: Simplify<TState>;
-}>;
+> = Simplify<
+  RemoveNeverKeys<{
+    params: unknown extends TParams ? never : LazyValidator<TParams>;
+    query: unknown extends TQuery ? never : LazyValidator<TQuery>;
+    body: unknown extends TBody ? never : LazyValidator<TBody>;
+    headers: unknown extends THeaders ? never : LazyValidator<THeaders>;
+    state: Simplify<TState>;
+  }>
+>;
 
 export interface DecoratedRequestHandler<
   TParams = unknown,

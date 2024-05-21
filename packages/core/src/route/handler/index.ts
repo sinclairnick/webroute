@@ -112,6 +112,9 @@ export function createBuilder<
 
         const ctx = { ...validators, state: {} };
 
+        let response: Response | undefined;
+
+        // -- REQ MIDDLEWARE --
         // Run middleware in sequence, recursively updating state
         if (def.middleware) {
           for (const middleware of def.middleware) {
@@ -119,7 +122,12 @@ export function createBuilder<
 
             // If early exit, return response
             if (result instanceof Response) {
-              return result;
+              response = result;
+
+              // Don't run remaining request middleware.
+              // WARN: This also prevents the subsequent response middleware from
+              // not being registered.
+              break;
             }
 
             // If result is a function, it is a response handler
@@ -130,27 +138,32 @@ export function createBuilder<
 
             if (typeof result === "object") {
               // Otherwise modify state
-              ctx.state = { ...ctx.state, ...result };
+              ctx.state = result;
             }
           }
         }
 
-        const result = await handler(req, ctx as any);
+        // --- HANDLER ---
+        // Skip handler if response has been acquired
+        if (response == null) {
+          const result = await handler(req, ctx as any);
 
-        let response: Response;
+          // Assign response, depending on handler return type
+          if (result instanceof Response) {
+            Log("Result is response");
+            response = result;
+          } else {
+            Log("Parsing result.");
+            const parsed = def.output
+              ? await def.output?.parser(result)
+              : result;
 
-        // Assign response, depending on handler return type
-        if (result instanceof Response) {
-          Log("Result is response");
-          response = result;
-        } else {
-          Log("Parsing result.");
-          const parsed = def.output ? await def.output?.parser(result) : result;
-
-          Log("Sending parsed result as JSON");
-          response = Response.json(parsed);
+            Log("Sending parsed result as JSON");
+            response = Response.json(parsed);
+          }
         }
 
+        // --- RES MIDDLEWARE ---
         // Run through outgoing middleware
         if (middlewareOut.length > 0) {
           // Iterate through middleware out backwards

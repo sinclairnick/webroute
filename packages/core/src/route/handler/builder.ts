@@ -1,5 +1,4 @@
 import { DataResult } from "@webroute/middleware";
-import { MergeObjectsShallow } from "../../util";
 import { Parser, inferParser } from "../parser/types";
 import {
   CompiledRoute,
@@ -172,14 +171,17 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     State: TParams["State"];
   }>;
 
-  use<TResult extends DataResult | void = void>(
+  use<
+    TMutations extends DataResult | unknown = unknown,
+    TResult extends DataResult | void = void
+  >(
     handler: UseMiddlewareInput<
       TParams["ParamsOut"],
       TParams["QueryOut"],
       TParams["BodyOut"],
       TParams["HeadersReqOut"],
       TParams["State"],
-      TResult
+      TResult | void
     >
   ): HandlerBuilder<{
     Path: TParams["Path"];
@@ -198,7 +200,9 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
     HeadersReqOut: TParams["HeadersReqOut"];
 
     // Update state if any has been returned
-    State: void extends TResult ? TParams["State"] : TResult;
+    State: void extends TResult
+      ? TParams["State"] & TMutations
+      : TResult & TMutations;
   }>;
 
   meta(meta: TParams["Meta"]): HandlerBuilder<TParams>;
