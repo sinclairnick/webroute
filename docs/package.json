@@ -24,6 +24,7 @@
     "@types/react-dom": "^18.3.0",
     "@webroute/core": "workspace:*",
     "@webroute/client": "workspace:*",
+    "@webroute/middleware": "workspace:*",
     "autoprefixer": "^10.4.19",
     "hono": "^4.3.7",
     "postcss": "^8.4.38",

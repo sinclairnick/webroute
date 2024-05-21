@@ -1,6 +1,5 @@
 ---
-title: Reference
-icon: BookMarked
+title: Basics
 ---
 import { Callout } from 'fumadocs-ui/components/callout';
 
@@ -168,46 +167,6 @@ route("/balance")
 		// <- "1,000,000"
 	})
 ```
-
-## Middleware
-
-Middleware was invented to avoid repeating the same functionality. However, typically an app or router handles middleware, upstream from request handlers. This means it's not always clear what information the route will have access to (e.g. current user), and tightly couples our code to the framework.
-
-### Basic Middleware
-
-`webroute`s enable an explicit, type-safe, traceable chain of middleware by relying on standard code instead of app-level orchestration. 
-
-```ts twoslash
-// ---cut-start---
-import { route } from "@webroute/core"
-import { z } from "zod"
-declare function assert(x: any): void
-declare const isAuthed: boolean
-// ---cut-end---
-route()
-	.use((req, { state }) => {
-		if(isAuthed) {
-			// Return updated state object
-			return { ...state, isAuthed: true }
-		}
-
-		// Or, Return a response, completing the request early
-		return Response.json({ code: "UNAUTHORIZED" }, { status: 401 })
-	})
-	.handle((req, { state }) => {
-		assert(state.isAuthed === true)
-		//           ^?
-	})
-```
-
-
-Middleware should return either an object, which will become the `state` argument of successive handlers and middleware, or a `Response` which will be returned.
-
-<Callout>
-To keep things simple, routes are strictly unidirectional. There is no _response_ middleware.
-</Callout>
-
-Middleware can be composed and chained. Learn more in [Composition](./composition).
 
 ## Route Utilities
 

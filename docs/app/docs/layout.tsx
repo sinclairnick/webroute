@@ -15,7 +15,13 @@ export default function RootDocsLayout({ children }: { children: ReactNode }) {
           v1.0.
         </span>
       </section>
-      <DocsLayout tree={pageTree} nav={{ title: "Webroute" }}>
+      <DocsLayout
+        tree={pageTree}
+        nav={{
+          title: "Webroute",
+          githubUrl: "https://github.com/sinclairnick/webroute",
+        }}
+      >
         {children}
       </DocsLayout>
     </>
