@@ -1,18 +1,19 @@
-export type StateResult =
-  | number
-  | string
+/**
+ * Data or state produced in the middleware.
+ *
+ * Used to enable the consumer to attach any necessary data to state, or
+ * otherwise use the resulting information.
+ */
+export type DataResult =
   // This value param must be unknown otherwise arbitrary functions are accepted
-  | Record<PropertyKey, unknown>
-  | boolean
-  | symbol
-  | any[];
+  Record<PropertyKey, unknown>;
 
 export type Awaitable<T> = T | Promise<T>;
 
 export type ResponseHandler<TRest extends any[] = any[]> = (
   response: Response,
   ...rest: TRest
-) => Response;
+) => Awaitable<Response>;
 
 /**
  * Could be empty, a state update value (primitive, object or array value), or a response handler.
@@ -20,9 +21,10 @@ export type ResponseHandler<TRest extends any[] = any[]> = (
  * - If a state update is returned, the consumer is responsible for mutating the request state to append this information.
  * - If a response handler is returnned, the consumer is responsible for calling this at the appropriate time during the request.
  */
-export type MiddlewareResult<T> = Awaitable<
-  Response | T | void | ResponseHandler
->;
+export type MiddlewareResult<
+  T extends DataResult | void = void,
+  TRest extends any[] = any[]
+> = Response | T | ResponseHandler<TRest>;
 
 /**
  *
@@ -39,21 +41,12 @@ export type MiddlewareResult<T> = Awaitable<
  * @returns {MiddlewareResult<T>}
  */
 export type MiddlewareFn<
-  T extends StateResult = StateResult,
+  T extends DataResult | void = void,
   TRest extends any[] = any[]
-> = (request: Request, ...rest: TRest) => MiddlewareResult<T>;
+> = (request: Request, ...rest: TRest) => Awaitable<MiddlewareResult<T, TRest>>;
 
-/**
- * A middleware builder which takes 0..n config arguments.
- *
- * Returns a middleware function.
- *
- * @param {TOpts} Opts
- *
- * @returns {MiddlewareFn<T, TRest>}
- */
-export type MiddlewareBuilder<
-  T extends StateResult = StateResult,
-  TOpts extends any[] = any[],
-  TRest extends any[] = any[]
-> = (...opts: TOpts) => MiddlewareFn<T, TRest>;
+export type InferMiddlewareFnResult<T extends MiddlewareFn> = Awaited<
+  ReturnType<T>
+>;
+
+export type AnyMiddlewareFn = MiddlewareFn<DataResult | void, any[]>;

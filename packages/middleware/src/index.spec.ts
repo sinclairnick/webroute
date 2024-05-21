@@ -1,130 +1,105 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
-import { MiddlewareBuilder } from "./types";
-import { defineMiddleware } from ".";
+import { AnyMiddlewareFn, defineMiddleware } from ".";
 
 describe("Middleware", () => {
   describe("Types", () => {
     test("Allows empty fns", () => {
-      const middleware = (() => () => {
+      const middleware = (() => {
         return;
-      }) satisfies MiddlewareBuilder;
+      }) satisfies AnyMiddlewareFn;
 
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
     });
 
     test("Disallows random first param", () => {
-      // @ts-expect-error
-      const middleware = (() => (a: number) => {
+      const middleware = ((a: number) => {
         return;
-      }) satisfies MiddlewareBuilder;
+        // @ts-expect-error
+      }) satisfies AnyMiddlewareFn;
 
-      expectTypeOf(middleware).not.toMatchTypeOf<MiddlewareBuilder>();
-    });
-
-    test("Allows no options", () => {
-      const middleware = (() => (req: Request) => {
-        return;
-      }) satisfies MiddlewareBuilder;
-
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
-    });
-
-    test("Allows one option", () => {
-      const middleware = ((opt) => (req: Request) => {
-        return;
-      }) satisfies MiddlewareBuilder;
-
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
-    });
-
-    test("Allows n options", () => {
-      const middleware = ((opt1, opt2, opt3) => (req: Request) => {
-        return;
-      }) satisfies MiddlewareBuilder;
-
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
-    });
-
-    test("Allows n options", () => {
-      const middleware = ((opt1, opt2, opt3) => (req: Request) => {
-        return;
-      }) satisfies MiddlewareBuilder;
-
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
+      expectTypeOf(middleware).not.toMatchTypeOf<AnyMiddlewareFn>();
     });
 
     test("Allows 1 rest", () => {
-      const middleware = ((opt1) => (req: Request, rest1) => {
+      const middleware = ((req: Request, rest1) => {
         return;
-      }) satisfies MiddlewareBuilder;
+      }) satisfies AnyMiddlewareFn;
 
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
     });
 
     test("Allows n rest", () => {
-      const middleware = ((opt1) => (req: Request, rest1, rest2) => {
+      const middleware = ((req: Request, rest1, rest2) => {
         return;
-      }) satisfies MiddlewareBuilder;
+      }) satisfies AnyMiddlewareFn;
 
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
-    });
-
-    test("Allows return value number", () => {
-      const middleware = ((opt1) => (req: Request, rest1, rest2) => {
-        return 1;
-      }) satisfies MiddlewareBuilder;
-
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
     });
 
     test("Allows return value object", () => {
-      const middleware = ((opt1) => (req: Request, rest1, rest2) => {
+      const middleware = ((req: Request, rest1, rest2) => {
         return {};
-      }) satisfies MiddlewareBuilder;
+      }) satisfies AnyMiddlewareFn;
 
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
-    });
-
-    test("Allows return value array", () => {
-      const middleware = ((opt1) => (req: Request, rest1, rest2) => {
-        return [];
-      }) satisfies MiddlewareBuilder;
-
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
     });
 
     test("Disallows return value as arbitary fn", () => {
       // @ts-expect-error
       const middleware = ((opt1) => (req: Request, rest1, rest2) => {
         return (a: number, b: number) => {};
-      }) satisfies MiddlewareBuilder;
+      }) satisfies AnyMiddlewareFn;
 
-      expectTypeOf(middleware).not.toMatchTypeOf<MiddlewareBuilder>();
+      expectTypeOf(middleware).not.toMatchTypeOf<AnyMiddlewareFn>();
     });
 
     test("Allows return response handler", () => {
-      const middleware = ((opt1) => (req: Request, rest1, rest2) => {
+      const middleware = ((req: Request, rest1, rest2) => {
         return (response) => new Response();
-      }) satisfies MiddlewareBuilder;
+      }) satisfies AnyMiddlewareFn;
 
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
     });
 
     test("Disllows return response handler with random first param", () => {
       // @ts-expect-error
       const middleware = ((opt1) => (req: Request) => {
         return (response: number) => new Response();
-      }) satisfies MiddlewareBuilder;
+      }) satisfies AnyMiddlewareFn;
 
-      expectTypeOf(middleware).not.toMatchTypeOf<MiddlewareBuilder>();
+      expectTypeOf(middleware).not.toMatchTypeOf<AnyMiddlewareFn>();
     });
 
     test("Allows return response handler with rest", () => {
-      const middleware = ((opt1) => (req: Request, rest1, rest2) => {
+      const middleware = ((req: Request, rest1, rest2) => {
         return (response, rest1, rest2) => new Response();
-      }) satisfies MiddlewareBuilder;
+      }) satisfies AnyMiddlewareFn;
 
-      expectTypeOf(middleware).toMatchTypeOf<MiddlewareBuilder>();
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
+    });
+
+    test("Allows async req handler", () => {
+      const middleware = ((req: Request, rest1, rest2) => {
+        return (response, rest1, rest2) => new Response();
+      }) satisfies AnyMiddlewareFn;
+
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
+    });
+
+    test("Allows async res handler", () => {
+      const middleware = (async (req: Request) => {
+        return {};
+      }) satisfies AnyMiddlewareFn;
+
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
+    });
+
+    test("Allows async res handler", () => {
+      const middleware = ((req: Request) => {
+        return async () => new Response();
+      }) satisfies AnyMiddlewareFn;
+
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
     });
   });
 
@@ -171,6 +146,52 @@ describe("Middleware", () => {
 
       const headers = result.headers;
       expect(headers.get("x-powered-by")).toBe("Webroute");
+    });
+
+    test("Works with empty result", () => {
+      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+        return;
+      });
+    });
+
+    test("Works with state result", () => {
+      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+        return {};
+      });
+    });
+
+    test("Works with response handler result", () => {
+      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+        return () => new Response();
+      });
+    });
+
+    test("Doesn't work with primitives or arrays", () => {
+      // @ts-expect-error
+      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+        return [];
+      });
+      // @ts-expect-error
+      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+        return 1;
+      });
+      // @ts-expect-error
+      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+        return true;
+      });
+    });
+
+    test("Works with request handler", () => {
+      const mid = defineMiddleware(
+        <F>(foo: F) =>
+          <B>(request: Request, bar: B) => {
+            return { foo, bar };
+          }
+      );
+
+      const { bar, foo } = mid(1)(new Request("https://google.com"), "");
+      expectTypeOf(foo).toBeNumber();
+      expectTypeOf(bar).toBeString();
     });
   });
 });
