@@ -1,6 +1,7 @@
 import { AnyMiddlewareFn } from "./types";
 
 export * from "./types";
+export * from "./to-framework";
 
 /**
  * An (optional) helper for defining a middleware function.
@@ -16,4 +17,3 @@ export const defineMiddleware = <
 >(
   fn: (...opt: TOpts) => TMiddleware
 ) => fn;
-
