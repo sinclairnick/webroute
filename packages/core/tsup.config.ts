@@ -7,5 +7,6 @@ export default defineConfig({
   format: ["cjs", "esm"],
   outDir: "dist",
   sourcemap: false,
-  external: ["zod", "zod-to-json-schema"],
+  external: ["zod"],
+  treeshake: "recommended",
 });
