@@ -1,7 +1,7 @@
 # Webroute
 
 
-Webroute is a collection of interoperable tools for building web-standard APIs, based on the [WinterCG Minimum Common Web API](https://common-min-api.proposal.wintercg.org/).
+Webroute is an experimental collection of interoperable tools for building web-standard APIs, based on the [WinterCG Minimum Common Web API](https://common-min-api.proposal.wintercg.org/).
 
 ---
 
@@ -9,7 +9,7 @@ Leaning heavily into web standards, `webroute` draws hard boundaries between rou
 
 Ultimately, `webroute` aims to foster a more interoperable JS backend ecosystem, and provides a few primitives, mental models and implementations as a starting point.
 
-[**View tooling documentation ->**](https://webroute.vercel.app)
+[**View package documentation ->**](https://webroute.vercel.app)
 
 ---
 
@@ -21,7 +21,7 @@ On top of reference implementations and tooling, webroute outlines some patterns
 
 ## Background
 
-To understand why webroute was developed, we should first look at what is wrong with the JS ecosystem - or any web backend ecosystem, regardless of language.
+To understand why webroute was developed, we should first look at the issues or drawbacks with the current approaches.
 
 ```ts
 const app = new FrameworkApp();
@@ -37,7 +37,7 @@ app.get("/posts/:id", (req, res) => res.send("..."));
 This example is what you might see in a typical JS web framework. While familiar, and simple to write, it has several problems. We've largely become numb to these problems, but that doesn't mean they stop being problems.
 
 > [!NOTE]
-> The popular use of such web frameworks shows they are still very useful. This section is merely meant to illustrate where room for improvement lies.
+> The below is not intended to disparage any of the existing tools. Rather it aims to explore how things could improve.
 
 
 ### Bespoke Request/Response
@@ -85,8 +85,9 @@ To realise the suggested improvements described above, webroute provides several
 
 ### Route
 
-![Core version](https://img.shields.io/npm/v/%40webroute%2Fcore?label=%40webroute%2Fcore)
-![Core size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fcore)
+![Core Version](https://img.shields.io/npm/v/%40webroute%2Fcore?label=%40webroute%2Fcore)
+![Core License](https://img.shields.io/npm/l/%40webroute%2Fcore)
+![Core Size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fcore)
 
 `@webroute/core` boils down to a single export, `route`, which is a tiny utility that makes it easy to build web standard API endpoints that are:
 
@@ -110,8 +111,9 @@ To understand why this might be a good idea, please [read the docs](https://webr
 
 ### Client
 
-![Client version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fclient)
-![Client size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fclient)
+![Client Version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fclient)
+![Client License](https://img.shields.io/npm/l/%40webroute%2Fclient)
+![Client Size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fclient)
 
 
 `@webroute/client` provides client-side helpers for calling APIs, regardless of what fetching client or backend you are using.
@@ -121,20 +123,13 @@ To understand why this might be a good idea, please [read the docs](https://webr
 ### Middleware
 
 ![Middleware version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fmiddleware)
-![Middleware size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fmiddleware)
+![Client License](https://img.shields.io/npm/l/%40webroute%2Fmiddleware)![Middleware size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fmiddleware)
 
 `@webroute/middleware` is a tiny helper for _defining_ framework-agnostic middleware.
 
 Middleware implementations will be added to separate packages in the future.
 
 ---
-
-## Disclaimer
-
-Naturally, with any project like this, one is obliged to preempt this xkcd.
-
-![xkcd](https://imgs.xkcd.com/comics/standards.png)
-
 
 ## Contribution
 
