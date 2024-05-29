@@ -6,141 +6,44 @@ import { Cards, Card } from "fumadocs-ui/components/card"
 import { Callout } from "fumadocs-ui/components/callout"
 
 
-## Introduction
-
-`webroute` is a lightweight primitive used to build scalable web APIs.
-
-It consists of one function
-
-```ts
-import { route } from "@webroute/core"
-```
-
-<Callout>
-Webroute happily works alongside other frameworks or without one.
-</Callout>
-
----
-
-## Benefits and Features
-
-Using `webroute`s is a good idea because they are:
+Webroute makes it incredibly easy to build atomic HTTP routes with type-safe validation and middleware. The resulting route handler can be run anywhere web standard `Request` and `Response` are supported, and even without a router.
 
 
-### Declarative
-
-Define route information declaratively, not imperatively
-
-```ts
-// All route information is defined in one place, declaratively
-export default route("/pathname")
-	.params(MySchema)
-	.handle((req) => ({ foo: "bar" }))
-```
-
-### Introspectable
-
-The declarative approach allows us to specify things like input and output schema. We can then use this information for schema generation, or anything else.
-
-```ts
-route()
-	.params(ParamSchema)
-	.query(QuerySchema)
-	.headers(HeadersSchema)
-	.body(BodySchema)
-	.output(ResponseSchema)
-// ...
-
-// Can now derive OpenAPI, Typescript or custom schema
-```
-
-### Composable
-
-Uses a simple but powerful middleware approach that is framework-agnostic
+For example, you could use it with `next`
 
 ```ts twoslash
 // ---cut-start---
 import { route } from "@webroute/core"
+import { z } from "zod"
 // ---cut-end---
-const authedRoute = route()
-	.use((req) => ({ user: {id: 1} }))
+export const GET = route()
 
-
-authedRoute
-	.path("/me")
-	.handle((req, { state }) => {
-		return state.user
-		//           ^^^^
+	// Specify middleware, returning data will update the `state` field later
+	.use((req, { state }) => {
+		return { ...state, userId: "123" }
 	})
+
+	// Specify any input and output validators...
+	.body(z.object({ name: z.string() }))
+
+	// Handle the request...
+	.handle(async (req, { state, body }) => {
+		const { userId } = state
+		const { name } = await body() // Lazily validate body
+
+		return { ok: true } // Sends as JSON
+		// or: return Response.json(...)
+	})
+
+// Just a regular request handler
+const response = await GET(new Request("https://google.com"))
 ```
 
-### Atomic
-
-Each route is complete and standalone – `webroute`s are router agnostic. Upstream operations like middleware are always traceable at the code level and baked in.
-
-```ts title="posts/route.ts"
-// No external orchestration, monkey-patching or side-effects necessary.
-export default routeWithMiddleware.handle(() => { 
-	// Middleware was executed as expected
-})
-```
-
-### Future-proof
-
-Built on web-standards, `webroute`s don't do anything funky, opaque or complex.
+And you could use this exact same route handler with Hono too.
 
 ```ts
-// Testing a webroute is as simple as
-
-const request = new Request("https://myurl.com")
-const response = await myRoute(request)
-
-expect(await response.json()).toBe({ /*...*/ })
+app.get("/post", c => GET(c.req.raw))
 ```
 
-### Immutable
-
-`webroute`s are inherently immutable, never mutating request or response objects, nor monkey-patching any APIs. The boundaries for extra functionality are explicit and never crossed.
-
-```ts
-route()
-.use((req, {state}) => {
-	const newState = { ...state, user: { id: 1 } }
-
-	// Type-safe mutations
-	return newState;
-})
-.handle((req, { state }) => {
-	// Or mutate state directly
-	state.user.id = 2
-
-	// Instead of mutating the request
-	req.user = {}
-})
-
-```
-
-
-### Flexible
-
-Work with your existing tools and frameworks
-
-```ts title="validator-agnostic.ts"
-route().params(ZodSchema).body(YupSchema)
-```
-
-```ts title="nextjs/route.ts"
-export const GET = myRoute
-```
-
-```ts title="bun-api.ts"
-Bun.serve({
-  fetch: myRoute(req)
-});
-```
-
-```ts title="deno-api.ts"
-Deno.serve(myRoute);
-```
-
-And many more...
+By packaging the validation and middleware (and more) with the route itself, it becomes incredible portable, and you'll find your applications actually become _simpler_ too.
+Learn more about what webroute includes in [Features](./features) or get up and running via the [Quick Start](.//quick-start).

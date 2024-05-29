@@ -1,0 +1,199 @@
+---
+title: Features
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card"
+import { Callout } from "fumadocs-ui/components/callout"
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion"
+
+
+Webroutes have many features and benefits, compared to using a web framework or writing raw request handlers. It sits somewhere between the two.
+
+<Accordions>
+<Accordion title="Where can I use webroutes?">
+Webroutes are very lightweight and are built on [WinterCG web standards](https://common-min-api.proposal.wintercg.org/), meaning they are fully compatible with:
+
+<div className="flex flex-row">
+
+<div className="flex-1">
+**Frameworks**
+- NextJS
+- Remix
+- SolidStart
+- Express
+</div>
+
+<div className="flex-1">
+**Runtimes**
+- Bun
+- Deno
+- Node (w/ adapters)
+- Cloudflare workers
+- Vercel Edge
+</div>
+
+</div>
+
+</Accordion>
+</Accordions>
+
+### Declarative
+
+
+```ts
+// All route information is defined in one place, declaratively
+export default route("/pathname")
+	.params(MySchema)
+	.handle((req) => ({ foo: "bar" }))
+```
+
+Define route information declaratively, not imperatively. This encourages setting API boundaries and makes composition and introspection easier.
+
+
+### Composable
+
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+// ---cut-end---
+// Define route w/ middleware
+const authedRoute = route()
+	.use((req) => ({ user: { id: 1 } }))
+
+// Extend that route even more
+const meRoute = authedRoute.path("/me")
+
+// Create a request handler off it
+const updateMeRoute = meRoute
+	.path("/update")
+	.handle((req, { state }) => {
+		return state.user
+		//           ^?
+	})
+```
+
+Compose previously declared middleware, paths or schema to produce powerful endpoints, without having to repeat yourself.
+
+### Atomic
+
+
+```ts title="posts/route.ts"
+export default routeWithMiddleware.handle(() => {/**...*/})
+// This does not require any root-level app to e.g. run middleware, it is self-sufficient
+```
+
+Each route is complete, standalone and router agnostic. Upstream operations like middleware are always traceable at the code level and baked in. Your route can now be used with any framework or runtime that uses web-standards.
+
+<Callout title="Who uses web standards?">
+The WinterCG web standard is supported by Vercel, Cloudflare, Bun, Deno and many others.
+</Callout>
+
+### Validation-first
+
+
+```ts
+route()
+	// Declare schema with no performance overhead
+	.params(ParamSchema)
+	.query(QuerySchema)
+	.headers(HeadersSchema)
+	.body(BodySchema)
+	.output(ResponseSchema)
+	.handle(async (req, ctx) => {
+		const { query, params, headers, body } = ctx
+		try {
+			// Validation is only run here.
+			// This avoids unnecessary work and enables custom error handling
+			const { /**...*/ } = await query() 
+		} catch(e) {
+			// TODO: Handle this error in a special way
+		}
+
+		return { /**...*/ } // Return values will be parsed
+	})
+// ...
+```
+
+Webroutes encourage input and output validation and provide a first class interface. Use any validation library you want. Since you've defined these schema up-front, producing things like OpenAPI specs becomes a piece of cake.
+
+### Future-proof
+
+
+```ts
+// Nothing weird or magical happening here...
+
+const request = new Request("https://myurl.com")
+const response = await myRoute(request)
+
+expect(await response.json()).toBe({ /*...*/ })
+```
+
+Built on web-standards, `webroute`s don't do anything funky, opaque or complex. It is complex enough to want to avoid rewriting for each app, but simple enough to not feel to magical (and brittle).
+
+### Immutable
+
+
+```ts
+route()
+.use((req, {state}) => {
+	const newState = { ...state, user: { id: 1 } }
+
+	// Type-safe mutations
+	return newState;
+})
+.handle((req, { state }) => {
+	// Instead of adding arbitrary properties to the request object
+	req.user = {}
+})
+
+```
+
+`webroute`s prioritise immutabability, never mutating request or response objects, nor monkey-patching any APIs. The boundaries for extra functionality are explicit and never crossed.
+
+
+### Flexible
+
+Webroutes work with your existing stack. And they'll still work without them.
+
+### Like validation libraries...
+
+```ts title="validator-agnostic.ts"
+route().params(ZodSchema).body(YupSchema)
+```
+
+### Nextjs...
+
+```ts title="nextjs/route.ts"
+export const GET = myRoute
+```
+
+### Bun...
+
+```ts title="bun-api.ts"
+Bun.serve({
+	fetch: myRoute(req)
+});
+```
+
+### Deno...
+
+```ts title="deno-api.ts"
+Deno.serve(myRoute);
+```
+
+### Node...
+
+```ts
+import { serve } from "@hono/node-serve"
+
+serve({
+	fetch: myRoute
+})
+```
+
+And many more...
+
+<Callout title="But what about routing?">
+Find out how to achieve routing in [Routing](./route/guides/routing)
+</Callout>

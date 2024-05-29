@@ -32,17 +32,22 @@ import { Callout } from 'fumadocs-ui/components/callout';
 </Tabs>
 
 
-## Define Your First Route
+## Create a Route
 
 In this example, we will create a `GET /posts/:id` endpoint which validates and parses path params, and automatically serialises the response as json.
+
+```ts
+const PostRoute = route("/posts/:id")
+						.params(/** Define a param validator */)
+						.handle(/** Handle the request*/)
+```
+
+We might implement this like so
 
 ```ts twoslash
 import { route } from "@webroute/core"
 // ---cut-start---
 import { z } from "zod"
-// ---cut-end---
-
-// ---cut-start---
 type Post = { id:number, name:string, authorId:number }
 const getPostFromDb = async (id:number): Promise<Post> => {
 	return { id: 1, name: "", authorId: 2 }
@@ -50,14 +55,9 @@ const getPostFromDb = async (id:number): Promise<Post> => {
 // ---cut-end---
 
 const PostRoute = route("/posts/:id")
-
-					// Specify path param `id` is number
 					.params(z.object({ id: z.number() }))
-
-					// Handle the incoming request
 					.handle(async (req, { params }) => {
-
-						// Lazily validate and parse, minimising overhead
+						// Validate and parse the params
 						const { id } = await params()
 						//      ^^
 
@@ -71,38 +71,47 @@ const PostRoute = route("/posts/:id")
 The resulting route is a standard web request handler and works in any web-standard environment.
 
 ```ts
-const response = await PostRoute(new Request("https://google.com"))
+const response = await PostRoute(new Request("https://myapi.com/posts/123"))
 ```
 
-<Callout title="Where can I use webroutes?">
-Webroutes are very lightweight and are built on [WinterCG web standards](https://common-min-api.proposal.wintercg.org/), meaning they are fully compatible with:
+## Add Middleware
 
-<div className="flex flex-row">
+As applications grow, we often want to use middleware to handle the flow of requests or add state to our request. We can achieve this using the `.use` method.
 
-<div className="flex-1">
-**Frameworks**
-- NextJS
-- Remix
-- SolidStart
-- Express
-</div>
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/core"
+import { z } from "zod"
+type Post = { id:number, name:string, authorId:number }
+const getPostFromDb = async (id:number): Promise<Post> => {
+	return { id: 1, name: "", authorId: 2 }
+}
+declare const isAuthed: (req: Request) => Promise<boolean>;
+// ---cut-end---
+const authedRoute = route().use(req => {
+	if(!isAuthed(req)) {
+		return Response.json({ code: "UNAUTHORIZED" }, { status: 401 })
+	}
+})
+```
 
-<div className="flex-1">
-**Runtimes**
-- Bun
-- Deno
-- Node (w/ adapters)
-- Cloudflare workers
-- Vercel Edge
-</div>
+Now we could reuse the base route for any of our authed routes. If we wanted to make our post route an authed route, we could easily do so. 
 
-</div>
 
-</Callout>
+```ts
+const postRoute = authedRoute.path("/posts/:id")
+					.params(z.object({ id: z.number() }))
+					.handle(async (req, { params }) => {
+						const { id } = await params()
+						const post = await getPostFromDb(id)
+						return post
+					})
+```
 
+This approach is helpful because it makes it very clear what middleware runs prior to this route handler.
 
 ## Next Steps
 
-To explore the power of `webroute`s read more about [routes](./route). 
+You've just learned webroute. You can easily learn the rest by merely using it.
 
-To understand how to orchestrate and run your routes, visit the [Building Apps](./building-apps) or [Routing](./routing) docs.
+But if you're interested in digging deeper, feel free to check out one of the [guides](./guides) which go into more detail.
