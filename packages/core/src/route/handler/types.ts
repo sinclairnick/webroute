@@ -122,7 +122,7 @@ export interface CompiledRoute<TParams extends HandlerParams>
 }
 
 export interface WebRequestHandler {
-  (request: Request): Awaitable<Response>;
+  (request: Request): Promise<Response>;
 }
 
 export type InferParamsFromPath<T> = T extends `${string}:${infer P}/${infer R}`
