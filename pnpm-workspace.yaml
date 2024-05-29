@@ -3,3 +3,5 @@ packages:
   - "packages/core"
   - "packages/client"
   - "packages/middleware"
+  - "packages/schema"
+  - "packages/router"
