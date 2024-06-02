@@ -31,7 +31,7 @@ Webroute adheres to a philosophy where tools should be interoperable to avoid re
 - ✅ Cloudflare Workers
 - ✅ Vercel Edge
 
-## [Packages](https://webroute.vercel.app/docs/route/overview)
+## [Packages](https://webroute.vercel.app/docs/packages)
 
 Webroute provides several packages that are entirely independent of one another. Combined, they can be used to create fully-fledged apps.
 

@@ -5,6 +5,7 @@
     "index",
     "comparisons",
     "---Packages---",
+    "packages",
     "route",
     "client",
     "middleware",

@@ -6,10 +6,13 @@ import { Cards, Card } from "fumadocs-ui/components/card"
 import { Callout } from "fumadocs-ui/components/callout"
 
 
-Webroute makes it incredibly easy to build atomic HTTP routes with type-safe validation and middleware. The resulting route handler can be run anywhere web standard `Request` and `Response` are supported, and even without a router.
+Webroute makes building fully-fledged standalone HTTP routes easy. The end result can be run anywhere web standard `Request` and `Response` are supported, including without any router.
 
+Conceptually, `route` moves middleware and I/O validation out of the router and into the route itself. This enables powerful composition and each route becomes incredibly portable.
 
-For example, you could use it with `next`
+---
+
+The utility of this approach becomes clear when used with `nextjs` or other filesystem routers, for example:
 
 ```ts twoslash
 // ---cut-start---

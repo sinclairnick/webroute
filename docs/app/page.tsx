@@ -30,45 +30,50 @@ export default function HomePage() {
   return (
     <main className="flex min-h-screen flex-col text-center max-w-4xl mx-auto">
       <div className="flex flex-col gap-y-8 py-16 px-4">
-        <div>
+        <div className="flex flex-col gap-y-2">
+          <img src="/webroute.png" className="w-[100px] h-auto mx-auto" />
           <h1 className="text-4xl font-medium mb-4">
             <pre>webroute</pre>
           </h1>
           <p>A toolkit for building scalable web-standard APIs</p>
         </div>
 
-        <div>
-          <Link href="/docs" className="underline text-lg font-medium">
-            View documentation
-          </Link>
+        <div className="bg-gray-100 rounded py-2 px-4 w-max mx-auto">
+          <table>
+            <tr>
+              <td>
+                <code>npm i</code>
+              </td>
+              <td />
+            </tr>
+            <tr>
+              <td />
+              <td align="right">
+                <code>@webroute/core</code>
+              </td>
+            </tr>
+            <tr>
+              <td />
+              <td align="right">
+                <code>@webroute/client</code>
+              </td>
+            </tr>
+            <tr>
+              <td />
+              <td align="right">
+                <code>@webroute/middleware</code>
+              </td>
+            </tr>
+          </table>
         </div>
-      </div>
 
-      <hr />
-
-      <div className="flex flex-col items-center mx-8 rounded-xl overflow-hidden border mb-16 mt-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 border-t bg-gray-100 dark:bg-slate-900">
-          <Card title="Web Standards" icon={<GlobeLock className="w-6 h-6" />}>
-            Future-proof your APIs by leveraging web standards.
-          </Card>
-          <Card title="Declarative" icon={<NotebookPen className="w-6 h-6" />}>
-            Define your route path, methods, validation and more, all in one
-            place.
-          </Card>
-          <Card title="Composable" icon={<Component className="w-6 h-6" />}>
-            Use composition to create traceable, type-safe middleware chains.
-          </Card>
-          <Card title="Atomic" icon={<Atom className="w-6 h-6" />}>
-            Each route is a atomic, standalone and easily understood.
-          </Card>
-          <Card title="Immutable" icon={<Lock className="w-6 h-6" />}>
-            No monkey-patching or otherwise altering of <code>Request</code> or{" "}
-            <code>Response</code> objects.
-          </Card>
-          <Card title="Agnostic" icon={<Shapes className="w-6 h-6" />}>
-            Use it with your favourite framework or none at all.{" "}
-            <code>webroute</code> is router, runtime, framework agnostic.
-          </Card>
+        <div>
+          <Link
+            href="/docs"
+            className="underline text-lg font-medium text-blue-500"
+          >
+            View docs
+          </Link>
         </div>
       </div>
     </main>

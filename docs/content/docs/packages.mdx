@@ -1,0 +1,20 @@
+---
+title: Introduction
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Webroute explicitly draws hard boundaries between packages, such that they are entirely decoupled. This requires slightly rethinking how middleware, routing, request handling and client libraries all interact. Each package has been especially designed to do its sole task well and be easily interchangeable, avoiding much of the magic and vendor lock in of typical server-side frameworks.
+
+<Callout type="warn">
+  Webroute is currently at an alpha stage. Packages are at various levels of
+  stability.
+</Callout>
+
+| Package                                  | Purpose                                                             | Status              |
+| ---------------------------------------- | ------------------------------------------------------------------- | ------------------- |
+| [Route](./docs/route/overview)           | Build powereful, portable web-standard request handlers             | 🟢 Fairly Stable    |
+| [Client](./docs/client/overview)         | A type-safe client builder which works with any REST API            | 🟢 Fairly Stable    |
+| [Middleware](./docs/middleware/overview) | Middleware that works with any framework                            | 🟡 Work in Progress |
+| Schema                                   | Universal schema tools for better interop                           | 🟠 Unpublished      |
+| Router                                   | A basic web router mapping incoming requests to any type of handler | 🟠 Unpublished      |

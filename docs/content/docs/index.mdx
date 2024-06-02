@@ -3,25 +3,14 @@ title: Overview
 icon: Home
 ---
 
-`webroute` is a framework-agnostic toolkit for building web-standard APIs.
 
-## What does this mean?
+**Webroute is a suite of independent tools for building server-side apps and APIs, based on the [WinterCG Minimum Common Web API](https://common-min-api.proposal.wintercg.org/).**
 
-Instead of requiring massive framework buy-in, `webroute` consists of various independent packages that do not rely on each other. This means they can be used separately, with other frameworks and libraries or in conjunction.
-
-The APIs and package boundaries have been painstakingly obsessed over. In that regard, `webroute` is, first and foremost, a philosophy and approach, and a set of packaged code a close second.
-
-## Packages
-
-| Package      | Purpose                                                                                    |
-| ------------ | ------------------------------------------------------------------------------------------ |
-| [Route](./docs/route/overview) | Build powereful, portable web-standard request handlers                                    |
-| [Client](./docs/client/overview)       | An unopninionated, "headless", type-safe client builder which can be used with any library |
-| [Middleware](./docs/middleware/overview)   | Define middleware to be used with any web(-standard) framework                             |
+Instead of a monolithic framework, Webroute provides a handful of independent packages. Boundaries between **routing**, **middleware**, **validation**, **routing** and **client** are clearly defined and separate. This means you're not tied down by framework or runtime.
 
 ## Philosophy
 
-Below are some of the principles we value, when building or designing new tooling.
+When building new web tools, the following principles are followed.
 
 | Concept          | Description                                                                            |
 | ---------------- | :------------------------------------------------------------------------------------- |
