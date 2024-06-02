@@ -1,23 +1,108 @@
+<center>
+
+<img src="./static/webroute.png" style="width: 100px"/>
+
 # Webroute
 
+**Webroute is a suite of independent tools for building server-side apps and APIs, based on the [WinterCG Minimum Common Web API](https://common-min-api.proposal.wintercg.org/).**
 
-Webroute is an experimental collection of interoperable tools for building web-standard APIs, based on the [WinterCG Minimum Common Web API](https://common-min-api.proposal.wintercg.org/).
-
----
-
-Leaning heavily into web standards, `webroute` draws hard boundaries between routing, middleware, request handling and orchestration.
-
-Ultimately, `webroute` aims to foster a more interoperable JS backend ecosystem, and provides a few primitives, mental models and implementations as a starting point.
-
-[**View package documentation ->**](https://webroute.vercel.app)
-
----
+</center>
 
 ## Philosophy
 
-Webroute adheres to a philosophy where tools should be interoperable to avoid repeating the same effort time and time again. As such, the various packages provided are isolated and independent. The goal is to create functionality that can be swapped in and out with other tools that adhere to the same, underlying, web standards.
+Webroute adheres to a philosophy where tools should be interoperable to avoid repeating the same effort time and time again. As such, the various packages provided are isolated, independent and will play nicely with the tools of today _and tomorrow_.
 
-On top of reference implementations and tooling, webroute outlines some patterns, approaches and guidance on how to create e.g. framework-agnostic middleware.
+**Find more via the [documentation](https://webroute.vercel.app).**
+
+## Compatibility
+
+### Frameworks:
+
+- ✅ Express (via adapter)
+- ✅ NextJS
+- ✅ Remix
+- ✅ SolidStart
+
+### Runtimes:
+
+- ✅ Bun
+- ✅ Deno
+- ✅ Node (via adapter)
+- ✅ Cloudflare Workers
+- ✅ Vercel Edge
+
+## [Packages](https://webroute.vercel.app/docs/route/overview)
+
+Webroute provides several packages that are entirely independent of one another. Combined, they can be used to create fully-fledged apps.
+
+They will work with any framework or runtime that utilises web-standard `Request` and `Response` objects.
+
+---
+
+### [Route](https://webroute.vercel.app/docs/route/overview)
+
+![Core Version](https://img.shields.io/npm/v/%40webroute%2Fcore?label=%40webroute%2Fcore)
+![Core License](https://img.shields.io/npm/l/%40webroute%2Fcore)
+![Core Size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fcore)
+
+The `@webroute/core` package primarily exports the `route` builder. This enables building routes which support declaring and composing input/output schema, headers, middleware and paths all at once. The result is a single standard request handler which can be used anywhere.
+
+```ts
+export const GET = route()
+  .use(someMiddleware)
+  .params(ParamsSchema)
+  .handle(() => {
+    /**...*/
+  });
+```
+
+---
+
+### [Client](https://webroute.vercel.app/docs/client/overview)
+
+![Client Version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fclient)
+![Client License](https://img.shields.io/npm/l/%40webroute%2Fclient)
+![Client Size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fclient)
+
+`@webroute/client` provides helpers for calling APIs on the client-side with full type-safety. This reduces errors and expedites frontend development.
+
+Unlike most client-side API helpers, `@webroute/client` is agnostic to what tech you're running on the backend. It will work with any REST API regardless of framework, runtime or language.
+
+```ts
+// Define endpoints here
+type App = DefineApp<{
+  // GET /posts?limit=X
+  "GET /posts": {
+    Query: { limit?: number };
+  };
+}>;
+
+const client = createTypedClient<App>({
+  fetcher: async (
+    config,
+    opts: AxiosRequestConfig // Provide custom input parameters
+  ) => {
+    return axios(/**...*/); //  and result type
+  },
+});
+
+// All of the below is fully type-safe
+const getPost = client("GET /post/:id");
+const axiosRes = getPost({ id: 123 }, axiosOpts);
+```
+
+---
+
+### Middleware
+
+![Middleware version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fmiddleware)
+![Client License](https://img.shields.io/npm/l/%40webroute%2Fmiddleware)![Middleware size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fmiddleware)
+
+`@webroute/middleware` is a tiny helper for _defining_ framework-agnostic middleware.
+
+Middleware implementations will be added to separate packages in the future.
+
+---
 
 ## Background
 
@@ -26,8 +111,8 @@ To understand why webroute was developed, we should first look at the issues or 
 ```ts
 const app = new FrameworkApp();
 
-app.use((bespokeReq, res, next) => {
-  bespokeReq.someFunctionality();
+app.use((req, res, next) => {
+  req.doSomething();
   next();
 });
 
@@ -37,8 +122,7 @@ app.get("/posts/:id", (req, res) => res.send("..."));
 This example is what you might see in a typical JS web framework. While familiar, and simple to write, it has several problems. We've largely become numb to these problems, but that doesn't mean they stop being problems.
 
 > [!NOTE]
-> The below is not intended to disparage any of the existing tools. Rather it aims to explore how things could improve.
-
+> The point of this section is not to disparage the existing tools.
 
 ### Bespoke Request/Response
 
@@ -75,59 +159,6 @@ Aside from the _bespokeness_ of the `Request` and `Response` objects, described 
 ---
 
 All of these improvements over the traditional approaches enable much more observable and reliable backends. Perhaps even more importantly, any code we (or others) write has a much longer lifetime since it is decoupled from any framework, and built on web-standards.
-
-
-## Packages
-
-To realise the suggested improvements described above, webroute provides several packages. These are entirely independent, and can be used individually or mixed and matched. They are intentionally framework agnostic, so you can also use them with existing (web-standard) frameworks or runtimes.
-
----
-
-### Route
-
-![Core Version](https://img.shields.io/npm/v/%40webroute%2Fcore?label=%40webroute%2Fcore)
-![Core License](https://img.shields.io/npm/l/%40webroute%2Fcore)
-![Core Size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fcore)
-
-`@webroute/core` boils down to a single export, `route`, which is a tiny utility that makes it easy to build web standard API endpoints that are:
-
-- Declarative
-- Atomic
-- Interoperable/standard
-- Enterprise-grade
-- Composible
-
-This is all achieved with this single import:
-
-```ts
-import { route } from "@webroute/core
-```
-
-This allows us to e.g. validate HTTP inputs and outputs, declare schema shape to enable automatic Open API definitions, and is radically compatible with web standards and any frameworks that might run on web-standards (e.g. nextjs, Hono, Bun, Deno, and many more).
-
-To understand why this might be a good idea, please [read the docs](https://webroute.vercel.app).
-
----
-
-### Client
-
-![Client Version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fclient)
-![Client License](https://img.shields.io/npm/l/%40webroute%2Fclient)
-![Client Size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fclient)
-
-
-`@webroute/client` provides client-side helpers for calling APIs, regardless of what fetching client or backend you are using.
-
----
-
-### Middleware
-
-![Middleware version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fmiddleware)
-![Client License](https://img.shields.io/npm/l/%40webroute%2Fmiddleware)![Middleware size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fmiddleware)
-
-`@webroute/middleware` is a tiny helper for _defining_ framework-agnostic middleware.
-
-Middleware implementations will be added to separate packages in the future.
 
 ---
 
