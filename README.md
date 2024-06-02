@@ -1,4 +1,4 @@
-<center>
+<div style="display: flex; flex-direction: column; flex-gap: 8px; align-items: center; text-align: center">
 
 <img src="./static/webroute.png" style="width: 100px"/>
 
@@ -6,7 +6,7 @@
 
 **Webroute is a suite of independent tools for building server-side apps and APIs, based on the [WinterCG Minimum Common Web API](https://common-min-api.proposal.wintercg.org/).**
 
-</center>
+</div>
 
 ## Philosophy
 
