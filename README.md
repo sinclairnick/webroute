@@ -1,12 +1,12 @@
-<div style="display: flex; flex-direction: column; flex-gap: 8px; align-items: center; text-align: center">
+<div align="center">
 
-<img src="./static/webroute.png" style="width: 100px"/>
+<h1>Webroute</h1>
 
-# Webroute
-
-**Webroute is a suite of independent tools for building server-side apps and APIs, based on the [WinterCG Minimum Common Web API](https://common-min-api.proposal.wintercg.org/).**
+<p><b>Webroute is a suite of independent tools for building server-side apps and APIs, based on the <a href="https://common-min-api.proposal.wintercg.org/">WinterCG Minimum Common Web API</a>.</b></p>
 
 </div>
+
+<img src="./static/webroute-cover.jpg"/>
 
 ## Philosophy
 
