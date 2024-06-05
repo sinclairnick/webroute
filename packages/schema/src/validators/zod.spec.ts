@@ -1,9 +1,10 @@
 import { describe, expect, test } from "vitest";
-import { CaseMap, TestCases, runTests } from "./common._spec";
+import { CaseMap, TestCases } from "./common._spec";
 import { ZodFormatter, ZodParser } from "./zod";
 import { z } from "zod";
 import { createParser } from "../parser/parser";
 import { createFormatter } from "../formatter/formatter";
+import { SchemaDef } from "../def/schema-def";
 
 const schemas = {
   string: z.string(),
@@ -11,6 +12,8 @@ const schemas = {
   number: z.number(),
   symbol: z.symbol(),
   undefined: z.undefined(),
+  date: z.date(),
+  enum: z.enum(["A", "B"]),
   objects: z.object({
     a: z.number(),
   }),
@@ -29,6 +32,7 @@ const schemas = {
   unions: z.union([z.number(), z.boolean()]),
   tuples: z.tuple([z.number(), z.boolean()]),
   any: z.any(),
+  null: z.null(),
 } satisfies CaseMap;
 
 describe("Zod", () => {
@@ -36,7 +40,59 @@ describe("Zod", () => {
     const parser = createParser(ZodParser());
 
     test.each(TestCases)("Works with %s", (key, def) => {
-      expect(parser.parse(schemas[key])).toEqual(def);
+      expect(parser.parse(schemas[key])).toMatchObject(def);
+    });
+
+    test("Supports transforms", () => {
+      const schema = z.object({ a: z.number() }).transform((x) => x);
+      const expected: SchemaDef = {
+        type: "object",
+        properties: {
+          a: { type: "number" },
+        },
+      };
+
+      expect(parser.parse(schema)).toMatchObject(expected);
+    });
+
+    test("Supports refines", () => {
+      const schema = z.object({ a: z.number() }).refine((x) => undefined);
+      const expected: SchemaDef = {
+        type: "object",
+        properties: {
+          a: { type: "number" },
+        },
+      };
+
+      expect(parser.parse(schema)).toMatchObject(expected);
+    });
+
+    test("Supports pick", () => {
+      const schema = z
+        .object({ a: z.number(), b: z.number() })
+        .pick({ a: true });
+      const expected: SchemaDef = {
+        type: "object",
+        properties: {
+          a: { type: "number" },
+        },
+      };
+
+      expect(parser.parse(schema)).toMatchObject(expected);
+    });
+
+    test("Supports passthrough", () => {
+      const schema = z.object({ a: z.number() }).passthrough();
+
+      const expected: SchemaDef = {
+        type: "object",
+        properties: {
+          a: { type: "number" },
+        },
+        additionalProperties: true,
+      };
+
+      expect(parser.parse(schema)).toMatchObject(expected);
     });
   });
 
@@ -52,8 +108,7 @@ describe("Zod", () => {
       // Comparisons thus usually fail.
       // Instead we do a "good enough" comparison.
       expect(result._type).toEqual(expected._type);
-      expect(Object.keys(result._def)).toEqual(Object.keys(expected._def));
-      expect(JSON.stringify(result)).toEqual(JSON.stringify(result));
+      expect(JSON.stringify(result)).toEqual(JSON.stringify(expected));
     });
   });
 });

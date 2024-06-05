@@ -1,10 +1,11 @@
+import { z } from "zod";
 import { createBuilder } from "./handler";
 import {
   AnyCompiledRoute,
   CompiledRoute,
   HandlerParams,
-  RouteMeta,
 } from "./handler/types";
+import { Def } from "./handler/util";
 
 // Export all types
 export type * from "./handler";
@@ -12,14 +13,8 @@ export type * from "./handler/types";
 export type * from "./parser";
 export type * from "./parser/types";
 
-interface DefaultConfig {
-  "~types": {
-    Meta: RouteMeta;
-  };
-}
-
 export function route<TPath extends string>(Path?: TPath) {
-  return createBuilder<DefaultConfig, TPath>({ path: Path });
+  return createBuilder<TPath>({ path: Path });
 }
 
 export namespace route {
@@ -111,22 +106,22 @@ export namespace route {
   export const getPath = <T extends AnyCompiledRoute>(
     route: T
   ): InferPath<T> => {
-    return route["~def"].path;
+    return route[Def].path;
   };
 
   /**
-   * Gets all operation keys in the form `{METHOD} {path}`.
+   * Gets all operation keys in the form `{METHOD} {pathPattern}`.
    * Will return an empty array if either `methods` or `path` are undefined.
    */
-  export const getOperations = <T extends AnyCompiledRoute>(
+  export const getOperationKeys = <T extends AnyCompiledRoute>(
     route: T
   ): InferPath<T> extends infer $Path extends string
     ? InferMethods<T> extends infer $Methods extends string
       ? Array<`${Uppercase<$Methods>} ${$Path}`>
       : []
     : [] => {
-    const methods = route["~def"].methods;
-    const path = route["~def"].path;
+    const methods = route[Def].methods;
+    const path = route[Def].path;
 
     if (methods == null || path == null) return [] as any;
 
@@ -141,6 +136,6 @@ export namespace route {
   export const getMethods = <T extends AnyCompiledRoute>(
     route: T
   ): InferMethods<T>[] => {
-    return route["~def"]["methods"] ?? [];
+    return route[Def]["methods"] ?? [];
   };
 }

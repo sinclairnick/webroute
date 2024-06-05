@@ -1,7 +1,7 @@
-import { SchemaDef } from "../typedef/types";
+import { ObjectDef, SchemaDef } from "../def/schema-def";
 import { SchemaParser, InferParserSchemaAny } from "./types";
 
-export const createParser = <TParser extends SchemaParser<any, any>>(
+export const createParser = <TParser extends SchemaParser<any>>(
   parser: TParser
 ) => {
   const parse = (schema: InferParserSchemaAny<TParser>): SchemaDef => {
@@ -14,98 +14,63 @@ export const createParser = <TParser extends SchemaParser<any, any>>(
       case "string":
       case "symbol":
       case "undefined":
+      case "date":
       case "null": {
-        return {
-          ...config,
-          type: config.type,
-        };
+        return { ...config, type: config.type };
       }
 
       // Complex
       case "array": {
-        const element = parser.getArrayElement(schema);
+        const element = config.element
+          ? parse(config.element)
+          : { type: "any" as const };
 
-        return {
-          ...config,
-          type: "array",
-          element: element ? parse(element) : { type: "any" },
-        };
+        return { ...config, type: "array", element };
       }
       case "object": {
-        const fields = parser.getObjectEntries(schema);
+        const properties: ObjectDef["properties"] = {};
+        for (const key in config.properties ?? {}) {
+          const value = config.properties[key];
+          properties[key] = parse(value);
+        }
 
-        return {
-          ...config,
-          type: "object",
-          entries: fields
-            ? fields.map(([key, value]) => [key, parse(value)])
-            : [],
-        };
+        return { ...config, type: "object", properties };
       }
       case "function": {
-        return {
-          ...config,
-          type: config.type,
-        };
+        const parameters = config.parameters
+          ? config.parameters.map(parse)
+          : [];
+        const result = config.result ? parse(config.result) : undefined;
+
+        return { ...config, type: config.type, parameters, result };
       }
 
       // Abstract
-      case "nullable": {
-        const inner = parser.getNullableMember?.(schema);
+      case "unwrap": {
+        // Pull innerType out
+        const { innerType, ...rest } = config;
 
-        return inner
-          ? {
-              ...config,
-              ...parse(inner),
-              nullable: true,
-            }
-          : {
-              ...config,
-              type: "unknown",
-              nullable: true,
-            };
-      }
-      case "optional": {
-        const inner = parser.getOptionalMember?.(schema);
+        const parsed = parse(innerType);
 
-        return inner
-          ? {
-              ...config,
-              ...parse(inner),
-              optional: true,
-            }
-          : {
-              ...config,
-              type: "unknown",
-              optional: true,
-            };
+        return { ...rest, ...parsed };
       }
       case "intersection": {
-        const members = parser.getIntersectionMembers?.(schema);
+        const members = config.members ? config.members.map(parse) : [];
 
-        return {
-          ...config,
-          type: "intersection",
-          members: members ? members.map(parse) : [{ type: "unknown" }],
-        };
+        return { ...config, type: "intersection", members };
       }
       case "union": {
-        const members = parser.getUnionMembers?.(schema);
+        const members = config.members ? config.members.map(parse) : [];
 
-        return {
-          ...config,
-          type: "union",
-          members: members?.map(parse) ?? [{ type: "unknown" }],
-        };
+        return { ...config, type: "union", members };
       }
       case "tuple": {
-        const entries = parser.getTupleEntries?.(schema);
+        const entries = config.entries ? config.entries.map(parse) : [];
 
-        return {
-          ...config,
-          type: "tuple",
-          entries: entries?.map(parse) ?? [],
-        };
+        return { ...config, type: "tuple", entries };
+      }
+      case "enum": {
+        return { ...config };
       }
       case "any": {
         return { type: "any" };
@@ -113,10 +78,7 @@ export const createParser = <TParser extends SchemaParser<any, any>>(
 
       // Default
       default: {
-        return {
-          ...config,
-          type: "unknown",
-        };
+        return { ...(config ?? {}), type: "unknown" };
       }
     }
   };

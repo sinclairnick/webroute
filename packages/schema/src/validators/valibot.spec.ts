@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CaseMap, TestCases, runTests } from "./common._spec";
+import { CaseMap, TestCases } from "./common._spec";
 import * as v from "valibot";
 import { ValibotFormatter, ValibotParser } from "./valibot";
 import { createParser } from "../parser/parser";
@@ -11,6 +11,8 @@ const schemas = {
   number: v.number(),
   symbol: v.symbol(),
   undefined: v.undefined_(),
+  date: v.date(),
+  enum: v.enum_({ A: "A", B: "B" }),
   objects: v.object({
     a: v.number(),
   }),
@@ -29,6 +31,7 @@ const schemas = {
   unions: v.union([v.number(), v.boolean()]),
   tuples: v.tuple([v.number(), v.boolean()]),
   any: v.any(),
+  null: v.null_(),
 } satisfies CaseMap;
 
 describe("Valibot", () => {
@@ -36,7 +39,9 @@ describe("Valibot", () => {
     const parser = createParser(ValibotParser());
 
     test.each(TestCases)("Works with %s", (key, def) => {
-      expect(parser.parse(schemas[key])).toEqual(def);
+      const schema = schemas[key as keyof typeof schemas];
+
+      expect(parser.parse(schema)).toEqual(def);
     });
   });
 
@@ -49,7 +54,7 @@ describe("Valibot", () => {
 
       expect(result.type).toEqual(expected.type);
       expect(result._types).toEqual(expected._types);
-      expect(JSON.stringify(result)).toEqual(JSON.stringify(result));
+      expect(JSON.stringify(result)).toEqual(JSON.stringify(expected));
     });
   });
 });

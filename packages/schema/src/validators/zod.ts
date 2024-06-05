@@ -1,10 +1,12 @@
 import {
-  AnyZodObject,
   ZodAny,
   ZodArray,
   ZodBoolean,
-  ZodFunction,
+  ZodDate,
+  ZodEffects,
+  ZodEnum,
   ZodIntersection,
+  ZodNativeEnum,
   ZodNull,
   ZodNullable,
   ZodNumber,
@@ -19,156 +21,224 @@ import {
   z,
 } from "zod";
 import { SchemaParser } from "../parser/types";
-import { ValueConfig, ValueOptions, ValueSchemaMap } from "../typedef/types";
 import { SchemaFormatter } from "../formatter/types";
+import { SchemaDefOptions } from "../def/core";
+import { SchemaDiscriminator } from "../discriminator/types";
 
-type ZodValueSchemaMap = ValueSchemaMap<{
-  any: ZodAny;
-  array: ZodArray<any>;
-  boolean: ZodBoolean;
-  function: ZodFunction<any, any>;
-  null: ZodNull;
-  number: ZodNumber;
-  object: AnyZodObject;
-  string: ZodString;
-  symbol: ZodSymbol;
-  undefined: ZodUndefined;
-  intersection: ZodIntersection<any, any>;
-  tuple: ZodTuple;
-  union: ZodUnion<any>;
-  nullable: ZodNullable<any>;
-  optional: ZodOptional<any>;
-}>;
+export type AnyZodType = ZodType;
 
-const TypeMap = [
-  [ZodString, "string"],
-  [ZodBoolean, "boolean"],
-  [ZodObject, "object"],
-  [ZodFunction, "function"],
-  [ZodNumber, "number"],
-  [ZodSymbol, "symbol"],
-  [ZodArray, "array"],
-  [ZodUndefined, "undefined"],
-  [ZodNull, "null"],
-  [ZodIntersection, "intersection"],
-  [ZodUnion, "union"],
-  [ZodTuple, "tuple"],
-  [ZodAny, "any"],
-  [ZodOptional, "optional"],
-  [ZodNullable, "nullable"],
-] as const;
-
-export const ZodParser = (): SchemaParser<ZodType, ZodValueSchemaMap> => {
+export const ZodParser = (): SchemaParser<AnyZodType> => {
   return {
-    identifyType(schema): ValueConfig {
-      const opts: ValueOptions = {};
+    identifyType(schema) {
+      const opts: SchemaDefOptions = {};
 
       if (schema._def.description) {
         opts.description = schema._def.description;
       }
 
-      for (const [_Class, type] of TypeMap) {
-        if (schema instanceof _Class) {
-          return { ...opts, type };
-        }
+      // Wrapped types
+      if (schema instanceof ZodEffects) {
+        const innerType = schema._def.schema;
+        return { ...opts, type: "unwrap", innerType };
+      }
+
+      if (schema instanceof ZodOptional) {
+        const innerType = schema._def.innerType;
+        return { ...opts, optional: true, type: "unwrap", innerType };
+      }
+
+      if (schema instanceof ZodNullable) {
+        const innerType = schema._def.innerType;
+        return { ...opts, nullable: true, type: "unwrap", innerType };
+      }
+
+      // Container types
+      if (schema instanceof ZodObject) {
+        return {
+          ...opts,
+          type: "object",
+          properties: schema.shape,
+          additionalProperties: schema._def.unknownKeys === "passthrough",
+        };
+      }
+
+      if (schema instanceof ZodArray) {
+        return { ...opts, type: "array", element: schema.element };
+      }
+
+      if (schema instanceof ZodTuple) {
+        return { ...opts, type: "tuple", entries: schema._def.items };
+      }
+
+      if (schema instanceof ZodIntersection) {
+        return {
+          ...opts,
+          type: "intersection",
+          members: [schema._def.left, schema._def.right],
+        };
+      }
+
+      if (schema instanceof ZodUnion) {
+        return { ...opts, type: "union", members: schema._def.options };
+      }
+
+      if (schema instanceof ZodEnum || schema instanceof ZodNativeEnum) {
+        return { ...opts, type: "enum", members: schema.enum };
+      }
+
+      // Primitive types
+      if (schema instanceof ZodString) {
+        return { ...opts, type: "string" };
+      }
+
+      if (schema instanceof ZodNumber) {
+        return { ...opts, type: "number" };
+      }
+
+      if (schema instanceof ZodBoolean) {
+        return { ...opts, type: "boolean" };
+      }
+
+      if (schema instanceof ZodNull) {
+        return { ...opts, type: "null" };
+      }
+
+      if (schema instanceof ZodUndefined) {
+        return { ...opts, type: "undefined" };
+      }
+
+      if (schema instanceof ZodSymbol) {
+        return { ...opts, type: "symbol" };
+      }
+
+      if (schema instanceof ZodAny) {
+        return { ...opts, type: "any" };
+      }
+
+      if (schema instanceof ZodDate) {
+        return { ...opts, type: "date" };
       }
 
       return { ...opts, type: "unknown" };
     },
-    getArrayElement(val) {
-      return val.element;
-    },
-    getObjectEntries(val) {
-      return Object.entries(val.shape);
-    },
-    getOptionalMember(val) {
-      return val._def.innerType;
-    },
-    getNullableMember(val) {
-      return val._def.innerType;
-    },
-    getIntersectionMembers(val) {
-      return [val._def.left, val._def.right];
-    },
-    getUnionMembers(val) {
-      return val._def.options;
-    },
-    getTupleEntries(val) {
-      return val._def.items;
-    },
   };
 };
 
-export const ZodFormatter = (): SchemaFormatter<ZodType> => {
+export const ZodFormatter = (): SchemaFormatter<AnyZodType> => {
   return {
-    formatDefault() {
-      return z.any();
-    },
-    applyDecorators(schema, opts) {
-      let s = schema;
+    format(def) {
+      let s: ZodType;
 
-      if (opts.nullable) {
+      switch (def.type) {
+        // Primitives
+        case "string": {
+          s = z.string();
+          break;
+        }
+        case "number": {
+          s = z.number();
+          break;
+        }
+        case "boolean": {
+          s = z.boolean();
+          break;
+        }
+        case "symbol": {
+          s = z.symbol();
+          break;
+        }
+        case "any": {
+          s = z.any();
+          break;
+        }
+        case "enum": {
+          const [first, ...rest] = Object.values(def.members);
+          s = z.enum([first, ...rest]);
+          break;
+        }
+        case "date": {
+          s = z.date();
+          break;
+        }
+        case "null": {
+          s = z.null();
+          break;
+        }
+        case "undefined": {
+          s = z.undefined();
+          break;
+        }
+
+        // Wrappers
+        case "object": {
+          s = z.object(def.properties);
+
+          if (def.additionalProperties) {
+            s = (s as any).passthrough();
+          }
+
+          break;
+        }
+        case "array": {
+          s = z.array(def.element);
+          break;
+        }
+        case "function": {
+          s = z.function();
+
+          if (def.parameters) {
+            s = (s as any).args(...def.parameters);
+          }
+
+          if (def.result) {
+            s = (s as any).returns(def.result);
+          }
+
+          break;
+        }
+        case "intersection": {
+          const [first, second] = def.members;
+          s = z.intersection(first, second);
+          break;
+        }
+        case "union": {
+          const [first, second, ...rest] = def.members;
+          s = z.union([first, second, ...rest]);
+          break;
+        }
+        case "tuple": {
+          const [first, ...rest] = def.entries;
+          s = z.tuple([first, ...rest]);
+          break;
+        }
+      }
+
+      s ??= z.unknown();
+
+      if (def.nullable) {
         s = s.nullable();
       }
 
-      if (opts.optional) {
+      if (def.optional) {
         s = s.optional();
       }
 
-      if (opts.description) {
-        s = s.describe(opts.description);
+      if (def.description) {
+        s = s.describe(def.description);
       }
 
-      if (opts.default_) {
-        s = s.default(opts.default_);
+      if (def.default_) {
+        s = s.default(def.default_);
       }
 
       return s;
     },
-    formatAny() {
-      return z.any();
-    },
-    formatArray(def) {
-      return def.element.array();
-    },
-    formatObject(def) {
-      return z.object(Object.fromEntries(def.entries));
-    },
-    formatUnion(def) {
-      // Satisfy TS
-      const [first, second, ...rest] = def.members;
-      return z.union([first, second, ...rest]);
-    },
-    formatIntersection(def) {
-      // Satisfy TS
-      const [first, second] = def.members;
-      return z.intersection(first, second);
-    },
-    formatTuple(def) {
-      // Satisfy TS
-      const [first, second, ...rest] = def.entries;
-      return z.tuple([first, second, ...rest]);
-    },
-    formatString() {
-      return z.string();
-    },
-    formatNumber() {
-      return z.number();
-    },
-    formatBoolean() {
-      return z.boolean();
-    },
-    formatNull() {
-      return z.null();
-    },
-    formatUndefined() {
-      return z.undefined();
-    },
-    formatSymbol() {
-      return z.symbol();
-    },
-    formatFunction() {
-      return z.function();
-    },
+  };
+};
+
+export const ZodDiscriminator = (): SchemaDiscriminator<AnyZodType> => {
+  return {
+    isSchema: (schema): schema is AnyZodType =>
+      typeof schema === "object" && "_def" in schema,
   };
 };

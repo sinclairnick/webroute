@@ -9,6 +9,6 @@
     "strict": true /* Enable all strict type-checking options. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../oas/src/operation.ts"],
   "exclude": ["dist"]
 }

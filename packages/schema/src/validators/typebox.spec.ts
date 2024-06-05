@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { CaseMap, TestCases, runTests } from "./common._spec";
+import { CaseMap, TestCases } from "./common._spec";
 import { createParser } from "../parser/parser";
 import { TypeboxFormatter, TypeboxParser } from "./typebox";
 import * as T from "@sinclair/typebox";
@@ -56,7 +56,7 @@ describe("Typebox", () => {
       if (!expected) return;
 
       expect(result[T.Kind]).toEqual(expected[T.Kind]);
-      expect(result).toEqual(result);
+      expect(result).toEqual(expected);
     });
   });
 });

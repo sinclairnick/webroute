@@ -1,9 +1,4 @@
-import { describe, expect, test } from "vitest";
-import { SchemaParser } from "../parser/types";
-import { createParser } from "../parser/parser";
-import { SchemaDef } from "../typedef/types";
-import { createFormatter } from "../formatter/formatter";
-import { SchemaFormatter } from "../formatter/types";
+import { SchemaDef } from "../def/schema-def";
 
 export const TestCases = [
   ["string", { type: "string" }],
@@ -11,28 +6,30 @@ export const TestCases = [
   ["symbol", { type: "symbol" }],
   ["boolean", { type: "boolean" }],
   ["undefined", { type: "undefined" }],
+  ["null", { type: "null" }],
+  ["date", { type: "date" }],
+  ["enum", { type: "enum", members: { A: "A", B: "B" } }],
   [
     "objects",
     {
       type: "object",
-      entries: [["a", { type: "number" }]],
+      properties: {
+        a: { type: "number" },
+      },
     },
   ],
   [
     "nested objects",
     {
       type: "object",
-      entries: [
-        [
-          "a",
-          {
-            type: "object",
-            entries: [
-              ["b", { type: "object", entries: [["c", { type: "boolean" }]] }],
-            ],
+      properties: {
+        a: {
+          type: "object",
+          properties: {
+            b: { type: "object", properties: { c: { type: "boolean" } } },
           },
-        ],
-      ],
+        },
+      },
     },
   ],
   [
@@ -97,27 +94,3 @@ export const TestCases = [
 export type CaseName = (typeof TestCases)[number][0];
 
 export type CaseMap = Record<CaseName, any>;
-
-export const runTests = (
-  s: SchemaParser<any, any>,
-  f: SchemaFormatter<any>,
-  schemas: CaseMap
-) => {
-  const parser = createParser(s);
-  const formatter = createFormatter(f);
-
-  describe("Parser", () => {
-    test.each(TestCases)("Works with %s", (key, def) => {
-      expect(parser.parse(schemas[key])).toEqual(def);
-    });
-  });
-
-  describe.only("Formatter", () => {
-    test.each(TestCases)("Works with %s", (key, def) => {
-      const result = formatter.format(def);
-      const expected = schemas[key];
-
-      expect(result).toEqual(expected);
-    });
-  });
-};

@@ -5,3 +5,4 @@ packages:
   - "packages/middleware"
   - "packages/schema"
   - "packages/router"
+  - "packages/oas"

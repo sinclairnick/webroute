@@ -1,133 +1,159 @@
 import * as S from "superstruct";
-import { ValueConfig, ValueOptions, ValueSchemaMap } from "../typedef/types";
 import { SchemaParser } from "../parser/types";
 import { SchemaFormatter } from "../formatter/types";
+import { SchemaDefOptions } from "../def/core";
+import { SchemaDiscriminator } from "../discriminator/types";
 
-type SuperstructValueSchemaMap = ValueSchemaMap<{
-  any: S.Struct<any>;
-  array: S.Struct<any[], any>;
-  boolean: S.Struct<boolean, any>;
-  function: S.Struct<Function, any>;
-  number: S.Struct<number, any>;
-  object: S.Struct<Record<string, any>, any>;
-  string: S.Struct<string, any>;
-  intersection: S.Struct<[any, ...any[]], any>;
-  tuple: S.Struct<[any, ...any[]], any>;
-  union: S.Struct<[any, ...any[]], any>;
-  optional: S.Struct<any, any>;
-  nullable: S.Struct<any, any>;
-}>;
+export type AnySuperstructSchema = S.Struct<any, any>;
 
-const TypeMap = [
-  ["string", "string"],
-  ["boolean", "boolean"],
-  ["object", "object"],
-  ["func", "function"],
-  ["number", "number"],
-  ["array", "array"],
-  ["intersection", "intersection"],
-  ["union", "union"],
-  ["tuple", "tuple"],
-  ["any", "any"],
-] as const;
-
-export const SupertstructParser = (): SchemaParser<
-  S.Struct<any, any>,
-  SuperstructValueSchemaMap
-> => {
+export const SupertstructParser = (): SchemaParser<AnySuperstructSchema> => {
   return {
-    identifyType(schema): ValueConfig {
-      const opts: ValueOptions = {};
+    identifyType(schema) {
+      const opts: SchemaDefOptions = {};
 
-      for (const [sType, type] of TypeMap) {
-        if (schema.type === sType) {
-          return { ...opts, type };
+      switch (schema.type) {
+        // Containers
+        case "object": {
+          return { ...opts, type: "object", properties: schema.schema };
+        }
+        case "array": {
+          return { ...opts, type: "array", element: schema.schema };
+        }
+        // Note: Superstruct provides no way of knowing
+        // what set members exist
+        case "intersection": {
+          return { ...opts, type: "intersection", members: [] };
+        }
+        case "union": {
+          return { ...opts, type: "union", members: [] };
+        }
+        case "tuple": {
+          return { ...opts, type: "tuple", entries: [] };
+        }
+        case "func": {
+          return { ...opts, type: "function" };
+        }
+        case "enums": {
+          return { ...opts, type: "enum", members: schema.schema };
+        }
+
+        // Primitives
+        case "string": {
+          return { ...opts, type: "string" };
+        }
+        case "number": {
+          return { ...opts, type: "number" };
+        }
+        case "boolean": {
+          return { ...opts, type: "boolean" };
+        }
+        case "symbol": {
+          return { ...opts, type: "symbol" };
+        }
+        case "undefined": {
+          return { ...opts, type: "undefined" };
+        }
+        case "null": {
+          return { ...opts, type: "null" };
+        }
+        case "date": {
+          return { ...opts, type: "date" };
+        }
+        case "any": {
+          return { ...opts, type: "any" };
         }
       }
 
       return { ...opts, type: "unknown" };
     },
-    getArrayElement(val) {
-      return val.schema;
-    },
-    getObjectEntries(val) {
-      return Object.entries(val.schema);
-    },
-    getIntersectionMembers(val) {
-      return val.schema;
-    },
-    getUnionMembers(val) {
-      return val.schema;
-    },
-    getTupleEntries(val) {
-      return val.schema;
-    },
-    getOptionalMember(val) {
-      return val.schema;
-    },
-    getNullableMember(val) {
-      return val.schema;
-    },
   };
 };
 
-export const SuperstructFormatter = (): SchemaFormatter<S.Struct<any, any>> => {
-  return {
-    formatDefault() {
-      return S.any();
-    },
-    applyDecorators(schema, opts) {
-      let s = schema;
+export const SuperstructFormatter =
+  (): SchemaFormatter<AnySuperstructSchema> => {
+    return {
+      format(def) {
+        let s: AnySuperstructSchema;
 
-      if (opts.nullable) {
-        s = S.nullable(s);
-      }
+        switch (def.type) {
+          case "string": {
+            s = S.string();
+            break;
+          }
+          case "number": {
+            s = S.number();
+            break;
+          }
+          case "boolean": {
+            s = S.boolean();
+            break;
+          }
+          case "date": {
+            s = S.date();
+            break;
+          }
+          case "any": {
+            s = S.any();
+            break;
+          }
 
-      if (opts.optional) {
-        s = S.optional(s);
-      }
+          // Containers
+          case "object": {
+            s = S.object(def.properties);
+            break;
+          }
+          case "array": {
+            s = S.array(def.element);
+            break;
+          }
+          case "function": {
+            s = S.func();
+            break;
+          }
+          case "enum": {
+            s = S.enums(Object.values(def.members));
+            break;
+          }
+          case "intersection": {
+            const [first, ...rest] = def.members;
+            s = S.intersection([first, ...rest]);
+            break;
+          }
+          case "union": {
+            const [first, ...rest] = def.members;
+            s = S.union([first, ...rest]);
+            break;
+          }
+          case "tuple": {
+            const [first, ...rest] = def.entries;
+            s = S.tuple([first, ...rest]);
+            break;
+          }
+        }
 
-      if (opts.default_) {
-        s = S.defaulted(s, opts.default_);
-      }
+        s ??= S.unknown();
 
-      return s;
-    },
-    formatAny() {
-      return S.any();
-    },
-    formatArray(def) {
-      return S.array(def.element);
-    },
-    formatObject(def) {
-      return S.object(Object.fromEntries(def.entries));
-    },
-    formatUnion(def) {
-      // Satisfy TS
-      const [first, second, ...rest] = def.members;
-      return S.union([first, second, ...rest]);
-    },
-    formatIntersection(def) {
-      // Satisfy TS
-      const [first, second, ...rest] = def.members;
-      return S.intersection([first, second, ...rest]);
-    },
-    formatTuple(def) {
-      // Satisfy TS
-      const [first, second, ...rest] = def.entries;
-      return S.tuple([first, second, ...rest]);
-    },
-    formatString() {
-      return S.string();
-    },
-    formatNumber() {
-      return S.number();
-    },
-    formatBoolean() {
-      return S.boolean();
-    },
-    formatFunction() {
-      return S.func();
-    },
+        if (def.nullable) {
+          s = S.nullable(s);
+        }
+
+        if (def.optional) {
+          s = S.optional(s);
+        }
+
+        if (def.default_) {
+          s = S.defaulted(s, def.default_);
+        }
+
+        return s;
+      },
+    };
   };
-};
+
+export const SuperstructDiscriminator =
+  (): SchemaDiscriminator<AnySuperstructSchema> => {
+    return {
+      isSchema: (schema): schema is AnySuperstructSchema =>
+        typeof schema === "object" && "refiner" in schema,
+    };
+  };

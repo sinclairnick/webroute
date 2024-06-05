@@ -18,7 +18,11 @@ export const generateTestRoutes = () => {
       .method("get")
       .params(z.object({ bye: z.number() }))
       .handle(() => {}),
-    d: route("/with/{paramName}")
+    d: route("/with/implicit/:paramName")
+      .method("get")
+      .handle(() => {}),
+    e: route("/with/explicit/:paramName")
+      .params(z.object({ paramName: z.number() }))
       .method("get")
       .handle(() => {}),
   };

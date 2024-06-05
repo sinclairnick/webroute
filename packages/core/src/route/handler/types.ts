@@ -2,6 +2,7 @@ import { Parser } from "../parser/types";
 import { MergeObjectsShallow, RemoveNeverKeys, Simplify } from "../../util";
 import { ParseFn } from "../parser";
 import { DataResult, MiddlewareFn } from "@webroute/middleware";
+import { Def } from "./util";
 
 export type Awaitable<T> = Promise<T> | T;
 
@@ -19,7 +20,7 @@ export interface HandlerParams<
   TOutputOut = unknown,
   TReqHeadersIn = unknown,
   TReqHeadersOut = unknown,
-  TMeta = unknown,
+  TMeta extends RouteMeta = RouteMeta,
   TMethods = HttpMethodInput,
   TInferredParams = unknown,
   TState = unknown
@@ -69,38 +70,24 @@ export type HttpVerb =
 
 export type HttpMethodInput = HttpVerb | Uppercase<HttpVerb> | (string & {});
 
+export type ValidatorDef = {
+  parser: ParseFn<unknown>;
+  schema: Parser;
+};
+
 export interface HandlerDefinition<TParams extends HandlerParams> {
   methods?: TParams["Methods"][];
   path?: TParams["Path"];
-  query?: {
-    parser: ParseFn<unknown>;
-    schema: Parser;
-  };
-  params?: {
-    parser: ParseFn<unknown>;
-    schema: Parser;
-  };
-  body?: {
-    parser: ParseFn<unknown>;
-    schema: Parser;
-  };
-  output?: {
-    parser: ParseFn<unknown>;
-    schema: Parser;
-  };
-  headersReq?: {
-    parser: ParseFn<unknown>;
-    schema: Parser;
-  };
+  query?: ValidatorDef;
+  params?: ValidatorDef;
+  body?: ValidatorDef;
+  output?: ValidatorDef;
+  headersReq?: ValidatorDef;
   middleware?: MiddlewareInFn[];
   meta?: TParams["Meta"];
 }
 
-export type ResponseOrLiteral<T> =
-  | Promise<Response>
-  | Response
-  | T
-  | Promise<T>;
+export type ResponseOrLiteral<T> = Awaitable<Response> | Awaitable<T>;
 
 export interface HandlerFunction<TParams extends HandlerParams>
   extends DecoratedRequestHandler<
@@ -118,7 +105,7 @@ export interface AnyCompiledRoute extends CompiledRoute<any> {}
 
 export interface CompiledRoute<TParams extends HandlerParams>
   extends WebRequestHandler {
-  "~def": HandlerDefinition<TParams>;
+  [Def]: HandlerDefinition<TParams>;
 }
 
 export interface WebRequestHandler {

@@ -205,7 +205,25 @@ export interface HandlerBuilder<TParams extends HandlerParams> {
       : TResult & TMutations;
   }>;
 
-  meta(meta: TParams["Meta"]): HandlerBuilder<TParams>;
+  meta<TMeta extends TParams["Meta"]>(
+    meta?: TMeta
+  ): HandlerBuilder<{
+    Path: TParams["Path"];
+    InferredParams: TParams["InferredParams"];
+    Meta: TMeta;
+    QueryIn: TParams["QueryIn"];
+    QueryOut: TParams["QueryOut"];
+    ParamsIn: TParams["ParamsIn"];
+    ParamsOut: TParams["ParamsOut"];
+    BodyIn: TParams["BodyIn"];
+    BodyOut: TParams["BodyOut"];
+    OutputIn: TParams["OutputIn"];
+    OutputOut: TParams["OutputOut"];
+    Methods: TParams["Methods"];
+    HeadersReqIn: TParams["HeadersReqIn"];
+    HeadersReqOut: TParams["HeadersReqOut"];
+    State: TParams["State"];
+  }>;
 
   handle(handler: HandlerFunction<TParams>): CompiledRoute<TParams>;
 }

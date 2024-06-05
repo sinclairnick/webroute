@@ -1,84 +1,92 @@
 import * as v from "valibot";
 import { SchemaParser } from "../parser/types";
-import { ValueConfig, ValueOptions, ValueSchemaMap } from "../typedef/types";
 import { SchemaFormatter } from "../formatter/types";
+import { SchemaDefOptions } from "../def/core";
+import { SchemaDiscriminator } from "../discriminator/types";
 
-type ValibotSchemaMap = ValueSchemaMap<{
-  any: v.AnySchema;
-  array: v.ArraySchema<any, any>;
-  boolean: v.BooleanSchema<any>;
-  function: v.FunctionReference<any, any>;
-  null: v.NullSchema<any>;
-  number: v.NumberSchema<any>;
-  object: v.ObjectSchema<any, any>;
-  string: v.StringSchema<any>;
-  symbol: v.SymbolSchema<any>;
-  undefined: v.UndefinedSchema<any>;
-  intersection: v.IntersectSchema<any, any>;
-  tuple: v.TupleSchema<any, any>;
-  union: v.UnionSchema<any, any>;
-  nullable: v.NullableSchema<any, any>;
-  optional: v.OptionalSchema<any, any>;
-}>;
+export type AnyValibotSchema =
+  | v.AnySchema
+  | v.ArraySchema<any, any>
+  | v.BooleanSchema<any>
+  | v.NullSchema<any>
+  | v.NumberSchema<any>
+  | v.ObjectSchema<any, any>
+  | v.StringSchema<any>
+  | v.SymbolSchema<any>
+  | v.UndefinedSchema<any>
+  | v.IntersectSchema<any, any>
+  | v.TupleSchema<any, any>
+  | v.UnionSchema<any, any>
+  | v.NullableSchema<any, any>
+  | v.OptionalSchema<any, any>
+  | v.DateSchema<any>
+  | v.UnknownSchema
+  | v.EnumSchema<any, any>;
 
-export const ValibotParser = (): SchemaParser<
-  v.BaseSchema<any, any, any>,
-  ValibotSchemaMap
-> => {
+export const ValibotParser = (): SchemaParser<AnyValibotSchema> => {
   return {
-    identifyType(schema): ValueConfig {
-      const opts: ValueOptions = {};
+    identifyType(schema) {
+      const opts: SchemaDefOptions = {};
 
       switch (schema.type) {
-        case "string":
-        case "boolean":
-        case "object":
-        case "number":
-        case "symbol":
-        case "array":
-        case "undefined":
-        case "null":
-        case "union":
-        case "any":
-        case "tuple":
-        case "optional":
-        case "nullable":
-        case "function": {
-          return {
-            ...opts,
-            type: schema.type,
-          };
+        // Container types
+        case "object": {
+          return { ...opts, type: "object", properties: schema.entries };
+        }
+        case "array": {
+          return { ...opts, type: "array", element: schema.item };
+        }
+        case "union": {
+          return { ...opts, type: "union", members: schema.options };
         }
         case "intersect": {
+          return { ...opts, type: "intersection", members: schema.options };
+        }
+        case "tuple": {
+          return { ...opts, type: "tuple", entries: schema.items };
+        }
+
+        // Primitives
+        case "string": {
+          return { ...opts, type: "string" };
+        }
+        case "number": {
+          return { ...opts, type: "number" };
+        }
+        case "boolean": {
+          return { ...opts, type: "boolean" };
+        }
+        case "symbol": {
+          return { ...opts, type: "symbol" };
+        }
+        case "undefined": {
+          return { ...opts, type: "undefined" };
+        }
+        case "null": {
+          return { ...opts, type: "null" };
+        }
+        case "any": {
+          return { ...opts, type: "any" };
+        }
+
+        // Wrapped types
+        case "optional": {
           return {
             ...opts,
-            type: "intersection",
+            innerType: schema.wrapped,
+            type: "unwrap",
+            optional: true,
+          };
+        }
+        case "nullable": {
+          return {
+            ...opts,
+            innerType: schema.wrapped,
+            type: "unwrap",
+            nullable: true,
           };
         }
       }
-
-      return { ...opts, type: "unknown" };
-    },
-    getArrayElement(val) {
-      return val.item;
-    },
-    getObjectEntries(val) {
-      return Object.entries(val.entries);
-    },
-    getOptionalMember(val) {
-      return val.wrapped;
-    },
-    getNullableMember(val) {
-      return val.wrapped;
-    },
-    getIntersectionMembers(val) {
-      return val.options;
-    },
-    getUnionMembers(val) {
-      return val.options;
-    },
-    getTupleEntries(val) {
-      return val.items;
     },
   };
 };
@@ -87,57 +95,89 @@ export const ValibotFormatter = (): SchemaFormatter<
   v.BaseSchema<any, any, any>
 > => {
   return {
-    formatDefault() {
-      return v.any();
-    },
-    applyDecorators(schema, opts) {
-      let s = schema;
+    format(def) {
+      let s: AnyValibotSchema;
 
-      if (opts.optional) {
-        s = v.optional(s, opts.default_);
+      switch (def.type) {
+        // Primitives
+        case "number": {
+          s = v.number();
+          break;
+        }
+        case "boolean": {
+          s = v.boolean();
+          break;
+        }
+        case "string": {
+          s = v.string();
+          break;
+        }
+        case "undefined": {
+          s = v.undefined_();
+          break;
+        }
+        case "null": {
+          s = v.null_();
+          break;
+        }
+        case "any": {
+          s = v.any();
+          break;
+        }
+        case "date": {
+          s = v.date();
+          break;
+        }
+        case "symbol": {
+          s = v.symbol();
+          break;
+        }
+
+        // Containers
+        case "object": {
+          s = v.object(def.properties);
+          break;
+        }
+        case "array": {
+          s = v.array(def.element);
+          break;
+        }
+        case "enum": {
+          s = v.enum_(def.members);
+          break;
+        }
+        case "tuple": {
+          s = v.tuple(def.entries);
+          break;
+        }
+        case "intersection": {
+          s = v.intersect(def.members);
+          break;
+        }
+        case "union": {
+          s = v.union(def.members);
+          break;
+        }
       }
 
-      if (opts.nullable) {
-        s = v.nullable(s, opts.default_);
+      s ??= v.unknown();
+
+      if (def.optional) {
+        s = v.optional(s);
+      }
+      if (def.nullable) {
+        s = v.nullable(s);
       }
 
       return s;
     },
-    formatAny() {
-      return v.any();
-    },
-    formatArray(def) {
-      return v.array(def.element);
-    },
-    formatBoolean(def) {
-      return v.boolean();
-    },
-    formatIntersection(def) {
-      return v.intersect(def.members);
-    },
-    formatNull() {
-      return v.null_();
-    },
-    formatUndefined() {
-      return v.undefined_();
-    },
-    formatNumber() {
-      return v.number();
-    },
-    formatObject(def) {
-      return v.object(Object.fromEntries(def.entries));
-    },
-    formatString() {
-      return v.string();
-    },
-    formatSymbol() {
-      return v.symbol();
-    },
-    formatTuple(def) {
-      return v.tuple(def.entries);
-    },
-    formatUnion(def) {
-      return v.union(def.members);
-    },
   };
 };
+
+export const ValibotDiscriminator =
+  (): SchemaDiscriminator<AnyValibotSchema> => {
+    return {
+      isSchema: (schema): schema is AnyValibotSchema =>
+        typeof schema === "object" && "async" in schema,
+    };
+  };

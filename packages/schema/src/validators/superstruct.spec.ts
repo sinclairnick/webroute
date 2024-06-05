@@ -3,7 +3,11 @@ import { CaseMap, TestCases } from "./common._spec";
 import { createParser } from "../parser/parser";
 import { createFormatter } from "../formatter/formatter";
 import * as S from "superstruct";
-import { SuperstructFormatter, SupertstructParser } from "./superstruct";
+import {
+  AnySuperstructSchema,
+  SuperstructFormatter,
+  SupertstructParser,
+} from "./superstruct";
 
 const schemas = {
   string: S.string(),
@@ -12,6 +16,7 @@ const schemas = {
   objects: S.object({
     a: S.number(),
   }),
+  date: S.date(),
   "nested objects": S.object({
     a: S.object({
       b: S.object({
@@ -22,6 +27,7 @@ const schemas = {
   arrays: S.array(S.string()),
   "nested arrays": S.array(S.array(S.string())),
   any: S.any(),
+  enum: S.enums(["A", "B"]),
 
   // TODO: Superstruct doesn't seem to actually define
   // this information anywhere, declaratively.
@@ -31,35 +37,44 @@ const schemas = {
   // tuples: S.tuple([S.number(), S.boolean()]),
 } satisfies Partial<CaseMap>;
 
-describe("Typebox", () => {
+describe("Superstruct", () => {
   describe("Parser", () => {
     const parser = createParser(SupertstructParser());
 
-    test.each(TestCases)("Works with %s", (key, def) => {
-      const schema = schemas[key as keyof typeof schemas];
+    for (const [key, def] of TestCases) {
+      const schema = schemas[
+        key as keyof typeof schemas
+      ] as AnySuperstructSchema;
+      const title = `Works with ${key}`;
 
       if (!schema) {
-        console.log(`Skipping ${key} test, schema not found.`);
-        return;
+        test.skip(title);
+        continue;
       }
 
-      expect(parser.parse(schema as any)).toEqual(def);
-    });
+      test(title, () => {
+        expect(parser.parse(schema)).toEqual(def);
+      });
+    }
   });
 
   describe("Formatter", () => {
     const formatter = createFormatter(SuperstructFormatter());
 
-    test.each(TestCases)("Works with %s", (key, def) => {
-      const result = formatter.format(def);
+    for (const [key, def] of TestCases) {
       const expected = schemas[key as keyof typeof schemas];
+      const title = `Works with ${key}`;
 
-      if (!expected) return;
+      if (!expected) {
+        test.skip(title);
+        continue;
+      }
 
-      expect(result.type).toEqual(result.type);
-      expect(JSON.stringify(result)).toEqual(JSON.stringify(result));
-    });
+      test(title, () => {
+        const result = formatter.format(def);
+        expect(result.type).toEqual(result.type);
+        expect(JSON.stringify(result)).toEqual(JSON.stringify(expected));
+      });
+    }
   });
 });
-
-console.log(S.intersection([S.number(), S.boolean()]));

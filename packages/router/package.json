@@ -14,7 +14,9 @@
     "radix3": "^1.1.2"
   },
   "devDependencies": {
+    "@webroute/core": "workspace:*",
     "tsup": "^8.0.1",
+    "urlpattern-polyfill": "^10.0.0",
     "vitest": "^1.2.2"
   }
 }

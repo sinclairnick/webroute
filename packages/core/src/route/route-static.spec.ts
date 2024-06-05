@@ -15,7 +15,7 @@ describe("route.", () => {
       const r = route("/posts/:id")
         .method("get")
         .handle(() => {});
-      const operations = route.getOperations(r);
+      const operations = route.getOperationKeys(r);
 
       expectTypeOf(operations).toEqualTypeOf<"GET /posts/:id"[]>();
       expect(operations).toEqual(["GET /posts/:id"]);
@@ -25,7 +25,7 @@ describe("route.", () => {
       const r = route("/posts/:id")
         .method(["get", "post"])
         .handle(() => {});
-      const operations = route.getOperations(r);
+      const operations = route.getOperationKeys(r);
 
       expectTypeOf(operations).toEqualTypeOf<
         ("POST /posts/:id" | "GET /posts/:id")[]

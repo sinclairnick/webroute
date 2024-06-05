@@ -6,6 +6,12 @@ type MethodMap<T> = {
   [key: string]: T[];
 };
 
+/**
+ * Creates a radix web router.
+ *
+ * Route matching is determined by the radix algorithm.
+ * Handlers associated with specific methods are prioritised over wildcard methods.
+ */
 export const createRouter = <T>(
   initialRoutes: RouteInput<T>[]
 ): RequestRouter<T> => {

@@ -11,15 +11,18 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@sinclair/typebox": "^0.32.31",
+    "joi": "^17.13.1",
+    "runtypes": "^6.7.0",
+    "superjson": "^2.2.1",
     "superstruct": "^1.0.4",
     "tsup": "^8.0.1",
     "valibot": "0.31.0-rc.0",
-    "vitest": "^1.2.2",
+    "vitest": "^1.6.0",
     "yup": "^1.4.0",
     "zod": "^3.22.4"
   },
   "dependencies": {
-    "@sinclair/typebox": "^0.32.31",
     "openapi3-ts": "^4.3.2"
   }
 }
