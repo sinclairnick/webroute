@@ -27,7 +27,7 @@ const schemas = {
   enum: Y.mixed().oneOf(["A", "B"]),
 } satisfies Partial<CaseMap>;
 
-describe("Typebox", () => {
+describe("TypeBox", () => {
   describe("Parser", () => {
     const parser = createParser(YupParser());
 

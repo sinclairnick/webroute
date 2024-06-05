@@ -20,6 +20,55 @@ By encoding route path and method information directly into the route, we are de
 
 ---
 
+## Filesystem Routing
+
+Webroute shines in filesystem router contexts, where middleware is either unavailable or especially awkward. Additionally, `route`s are very lightweight, only loading the necessary code for each route invocation.
+
+`webroute` works idiomatically with filesystem routers.
+
+```ts title="posts/route.ts"
+// GET /posts
+export const GET = route("/ignored-path") // <- This pathname will be ignored
+	.method('put') // <- And so will this method
+	.handle(() => {})
+```
+
+## `@webroute/router`
+
+We can use `route`s with `@webroute/router` by registering routes.
+
+```ts
+import { createRadixRouter } from "@webroute/router"
+
+const router = createRadixRouter([{
+		path: "/foo",
+		methods: ["GET"],
+		payload: myRoute
+	}])
+```
+
+Or if we have many routes, we can use the `normalizeRoutes` method.
+
+```ts
+import { normaliseRoutes } from "@webroute/core"
+
+const appRoutes = { myRoute, myOtherRoute }
+const routes = normaliseRoutes(appRoutes)
+
+const router = createRadixRouter(routes)
+
+Bun.serve({
+	fetch(req) {
+		const handler = router.match(req)
+		return handler?.(request) ?? RESPONSE_NOT_FOUND
+	}
+})
+
+```
+
+Learn more about the [Router](/docs/router/overview) package.
+
+
 ## No Routing
 
 <Callout type="warn">
@@ -37,26 +86,6 @@ Bun.serve({
 <Callout title="Helpers">
 The `route.getPath` and `route.getMethods` helpers, found on the `route` export, are helpful for building custom routing.
 </Callout>
-
-## Filesystem Routing
-
-Webroute shines in filesystem router contexts, where middleware is either unavailable or especially awkward. Additionally, `route`s are very lightweight, only loading the necessary code for each route invocation.
-
-`webroute` works idiomatically with filesystem routers.
-
-```ts title="posts/route.ts"
-// GET /posts
-export const GET = route("/ignored-path") // <- This pathname will be ignored
-	.method('put') // <- And so will this method
-	.handle(() => {})
-```
-
-## `@webroute/router`
-
-Another webroute package, `@webroute/router` was built specifically as a basic, no-frills web router. It is extremely lightweight and merely matches an incoming request to one of your routes (or any other function).
-
-Learn more about the [Router](/docs/router/overview) package.
-
 ## Third Party Frameworks
 
 In more sophisticated apps, or if integrating with an existing app, we may wish to use an external router/framework.

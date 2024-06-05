@@ -91,6 +91,8 @@ declare const formatter: (input: unknown) => oas31.SchemaObject
 
 Our spec builder requires a `formatter` which is responsible for transforming our validation schema into JSON Schema, compatible with the OpenAPI spec. You are welcome to use custom formatters, or third-party solutions, like `zod-to-json-schema`.
 
+#### Using with `@webroute/schema`
+
 Alternatively, the `@webroute/schema` package supports this exact functionality across most popular schema libraries.
 
 Check out the [Schema](/docs/schema/overview) package.

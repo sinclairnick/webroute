@@ -4,7 +4,7 @@ import { SchemaFormatter } from "../formatter/types";
 import { SchemaDefOptions } from "../def/core";
 import { SchemaDiscriminator } from "../discriminator/types";
 
-export const TypeboxParser = (): SchemaParser<T.TAnySchema> => {
+export const TypeBoxParser = (): SchemaParser<T.TAnySchema> => {
   return {
     identifyType(schema) {
       const opts: SchemaDefOptions = {};
@@ -68,7 +68,7 @@ export const TypeboxParser = (): SchemaParser<T.TAnySchema> => {
   };
 };
 
-export const TypeboxFormatter = (): SchemaFormatter<T.TAnySchema> => {
+export const TypeBoxFormatter = (): SchemaFormatter<T.TAnySchema> => {
   return {
     format(def) {
       let s: T.TAnySchema;
@@ -159,7 +159,7 @@ export const TypeboxFormatter = (): SchemaFormatter<T.TAnySchema> => {
   };
 };
 
-export const TypeboxDiscriminator = (): SchemaDiscriminator<T.TAnySchema> => {
+export const TypeBoxDiscriminator = (): SchemaDiscriminator<T.TAnySchema> => {
   return {
     isSchema: (schema): schema is T.TAnySchema =>
       typeof schema === "object" && T.Kind in schema,

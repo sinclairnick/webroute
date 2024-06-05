@@ -11,6 +11,7 @@
     "middleware",
     "router",
     "oas",
+    "schema",
     "---About---",
     "acknowledgements"
   ]

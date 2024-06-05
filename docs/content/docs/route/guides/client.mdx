@@ -1,0 +1,25 @@
+---
+title: Client-side Types
+---
+
+We can use our `routes` with `@webroute/client` by using the `ToClient` helper.
+
+This will enable us to easily transform a record of routes into a type-safe client.
+
+
+```ts
+import { ToClient } from "@webroute/core"
+
+// Export to monorepo or npm, perhaps...
+export type AppDef = ToClient.InferApp<typeof appRoutes>;
+```
+
+We can then import this `AppDef` on the client side and use it with `@webroute/client`.
+
+```ts
+const client = createTypedClient<App>()({
+	/**...*/
+})
+```
+
+Learn more about [Client](/docs/client/overview).

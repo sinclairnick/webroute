@@ -1,0 +1,66 @@
+---
+title: OpenAPI
+---
+
+`routes` can join forces with `@webroute/oas` to easily produce highly-customisable OpenAPI Specs (OAS).
+
+By default, routes will automatically carry much useful information for OpenAPI. But to further enrich our APIs, we can use "decorators" from `@webroute/oas`.
+
+[View the oas docs](/docs/oas/overview).
+
+## Leveraging `@webroute/oas`
+
+```ts
+// Enrich our zod User schema with an ID
+const UserSchema = OAS.Schema(
+	z.object({ id: z.string() }),
+	{ id: "User" }
+) // -> #/components/schemas/User
+
+route("/foo")
+	// Add operation-level metadata
+	.query(OAS.Param(UserSchema, { style: "...", explode: false }))
+	.handle(() => {})
+```
+
+## Transform Routes
+
+To build our OpenAPI spec itself, we can either manually format our routes to the correct shape for `createSpec`. Alternatively, we can use the `normaliseRoutes` function to assume the right shape.
+
+```ts
+import { normaliseRoutes } from "@webroute/core"
+
+const appRoutes = { myRoute }
+const routes = normaliseRoutes(appRoutes) // -> { path, methods, ... }[]
+```
+
+## Leveraging `@webroute/schema`
+
+When building our spec we need to tell `createSpec` how to handle our schema objects/functions. `createSpec` accepts a `formatter` argument responsible for converting validation schema -> JSON schema.
+
+We can leverage a third-party converter, such as `zod-to-json-schema`.
+
+Or we could leverage `@webroute/schema`.
+
+```ts
+import { createParser, createFormatter } from "@webroute/schema"
+import { ZodParser } from "@webroute/schema/zod"
+import { TypeBoxFormatter } from "@webroute/schema/typebox"
+
+const parser = createParser(ZodParser())
+const formatter = createFormatter(TypeBoxFormatter())
+
+export const toJsonSchema = (schema: any) => {
+	return formatter.format(parser.parse(schema))
+}
+```
+
+Now we have a `formatter` function which will convert `zod` to `typebox` (which is actually JSON schema).
+
+```ts
+const spec = createSpec({ operations: routes, formatter: toJsonSchema })
+```
+
+Adding OpenAPI to routes is that easy.
+
+Learn more about [Schema](/docs/schema/overview) and [OAS](/docs/oas/overview).

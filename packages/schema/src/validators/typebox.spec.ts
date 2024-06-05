@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { CaseMap, TestCases } from "./common._spec";
 import { createParser } from "../parser/parser";
-import { TypeboxFormatter, TypeboxParser } from "./typebox";
+import { TypeBoxFormatter, TypeBoxParser } from "./typebox";
 import * as T from "@sinclair/typebox";
 import { createFormatter } from "../formatter/formatter";
 
@@ -30,9 +30,9 @@ const schemas = {
   any: T.Any(),
 } satisfies Partial<CaseMap>;
 
-describe("Typebox", () => {
+describe("TypeBox", () => {
   describe("Parser", () => {
-    const parser = createParser(TypeboxParser());
+    const parser = createParser(TypeBoxParser());
 
     test.each(TestCases)("Works with %s", (key, def) => {
       const schema = schemas[key as keyof typeof schemas];
@@ -47,7 +47,7 @@ describe("Typebox", () => {
   });
 
   describe("Formatter", () => {
-    const formatter = createFormatter(TypeboxFormatter());
+    const formatter = createFormatter(TypeBoxFormatter());
 
     test.each(TestCases)("Works with %s", (key, def) => {
       const result = formatter.format(def);
