@@ -31,18 +31,16 @@ export const createSpec = (input: CreateSpecInput) => {
     onCollision,
   } = input;
 
-  const isArray = Array.isArray(operations);
-
   const paths: oas31.PathsObject = {};
   const store = new SchemaStore();
 
   // Create operations from input
   for (const key in operations) {
-    const value = operations[key];
+    const value = (operations as any)[key];
     let path: string;
     let methods: string[];
 
-    if (isArray) {
+    if ("path" in value) {
       path = value.path;
       methods = value.methods;
     } else {
