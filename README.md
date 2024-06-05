@@ -41,7 +41,7 @@ They will work with any framework or runtime that utilises web-standard `Request
 
 ### [Route](https://webroute.vercel.app/docs/route/overview)
 
-![Core Version](https://img.shields.io/npm/v/%40webroute%2Fcore?label=%40webroute%2Fcore)
+![Core Version](https://img.shields.io/npm/v/%40webroute%2Fcore)
 ![Core License](https://img.shields.io/npm/l/%40webroute%2Fcore)
 ![Core Size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fcore)
 
@@ -60,9 +60,9 @@ export const GET = route()
 
 ### [Client](https://webroute.vercel.app/docs/client/overview)
 
-![Client Version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fclient)
-![Client License](https://img.shields.io/npm/l/%40webroute%2Fclient)
-![Client Size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fclient)
+![Client version](https://img.shields.io/npm/v/%40webroute%2Fclient)
+![Client license](https://img.shields.io/npm/l/%40webroute%2Fclient)
+![Client size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fclient)
 
 `@webroute/client` provides helpers for calling APIs on the client-side with full type-safety. This reduces errors and expedites frontend development.
 
@@ -95,12 +95,78 @@ const axiosRes = getPost({ id: 123 }, axiosOpts);
 
 ### [Middleware](https://webroute.vercel.app/docs/route/overview)
 
-![Middleware version](https://img.shields.io/npm/v/%40webroute%2Fclient?label=%40webroute%2Fmiddleware)
-![Client License](https://img.shields.io/npm/l/%40webroute%2Fmiddleware)![Middleware size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fmiddleware)
+![Middleware version](https://img.shields.io/npm/v/%40webroute%2Fmiddleware)
+![Middleware license](https://img.shields.io/npm/l/%40webroute%2Fmiddleware)
+![Middleware size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fmiddleware)
 
 `@webroute/middleware` is a tiny helper for _defining_ framework-agnostic middleware.
 
 Middleware implementations will be added to separate packages in the future.
+
+---
+
+### Router
+
+![Router version](https://img.shields.io/npm/v/%40webroute%2Fschema)
+![Router License](https://img.shields.io/npm/l/%40webroute%2Fschema)
+![Router size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fschema)
+
+`@webroute/router` provides minimal web routers which merely match incoming request to suitable handlers of any form.
+
+```ts
+const router = createRadixRouter(routes);
+
+const handler = router.match(request);
+
+return handler(request);
+```
+
+---
+
+### Schema
+
+![Schema version](https://img.shields.io/npm/v/%40webroute%2Fschema)
+![Schema License](https://img.shields.io/npm/l/%40webroute%2Fschema)
+![Schema size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fschema)
+
+`@webroute/schema` bridges the gaps between modern schema/validation libraries. It' provides interfaces and implementations for converting from schema to e.g. JSON schema, or even to another schema library.
+
+```ts
+const parser = createParser(ZodParser());
+const formatter = createFormatter(JoiFormatter());
+
+const myZodSchema = z.object({ foo: z.number() });
+const parsed = parser.parse(myZodSchema);
+
+// E.g. convert to Joi
+const myJoiSchema = formatter.format(parsed);
+```
+
+---
+
+### OpenAPI Spec (OAS)
+
+![OAS version](https://img.shields.io/npm/v/%40webroute%2Foas)
+![OAS License](https://img.shields.io/npm/l/%40webroute%2Foas)
+![Middleware size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Foas)
+
+`@webroute/oas` provides utilities for creating OpenAPI Specs with any API. It provides an `OAS` utility which helps to decorate API schema and operations with OpenAPI-relevant metadata.
+
+When paired with `@webroute/schema`, OpenAPI specs can be derived while using any modern schema library.
+
+```ts
+import { OAS, createSpec } from "@webroute/oas";
+
+const schemaWithMeta = OAS.Schema(z.object({}), { description: "..." });
+
+const spec = createSpec([
+  {
+    path: "/foo",
+    methods: ["get"],
+    Query: OAS.Param(schemaWithMeta, parameterSpecificConfig),
+  },
+]);
+```
 
 ---
 
