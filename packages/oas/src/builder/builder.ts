@@ -56,7 +56,8 @@ export const createSpec = (input: CreateSpecInput) => {
 
     paths[formattedPath] ??= {};
 
-    for (const method of methods) {
+    for (const _method of methods) {
+      const method = _method as keyof oas31.PathItemObject;
       const operation = createOperation(value, { formatter, store });
 
       if (operation.operationId == null) {
