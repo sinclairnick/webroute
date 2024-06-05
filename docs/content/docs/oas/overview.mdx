@@ -1,0 +1,96 @@
+---
+title: Overview
+---
+import { Callout } from "fumadocs-ui/components/callout"
+
+```ts
+import { OAS, createSpec } from "@webroute/oas"
+```
+
+`@webroute/oas` enables using schema and validation libraries to build OpenAPI Specs. It provides "decorators" which enrich schema with OpenAPI metadata and a spec builder which emits OpenAPI specs which honour these decorations.
+
+## Decorators
+
+<Callout>
+These are *not* TypeScript/JavaScript decorators of the form `@Decorator`. However, similarly, they add semi-hidden metadata to our objects.
+</Callout>
+
+We can add metadata to our schema using the following decorators. We will use `zod` as an example.
+
+```ts
+const User = z.object({
+	id: z.string(),
+	name: z.string()
+})
+
+// Provide a config object
+const UserWithMeta = OAS.Schema(
+	User,
+	{ id: "User", description: "A basic user" }
+) // -> #/components/schemas/User
+
+// Config object will be merged with derived config
+const UserAsResponse = OAS.Response(UserWithMeta, {
+	"201": {
+		description: "201 Success",
+		content: {
+			"application/json": {
+				/**...*/
+			}
+		}
+	}
+}) // -> 200 and 201 defined in spec
+
+// Or, can use a function for custom merging behaviour
+const UserAsBody = OAS.Body(UserWithMeta, (operation, schema) => ({
+	...operation,
+	content: { // Merge old and new `content`
+		...operation.content,
+		"application/xml": {
+			schema // Add the JSON-schema
+		}
+	}
+}))
+```
+
+## Creating specs
+
+We can create specs using a simpler syntax and which leverages any `OAS` decoration we may have applied via the `createSpec` functionality.
+
+The `spec` is based on the highly extensible `openapi3-ts` `OpenApiBuilder`.
+
+```ts
+import { createSpec } from "@webroute/oas"
+
+const operations = [
+	{
+		path: "/foo",
+		methods: ["get"],
+		Query: QuerySchema,
+		Params: ParamSchemaWithDecorators
+	},
+	{
+		path: "/bar",
+		methods: ["post", "put"],
+		Body: BodySchema
+	},
+]
+
+const spec = createSpec({ operations, formatter })
+
+// --- Optionally customize spec here ---
+
+return spec.getSpec()
+```
+
+### Formatter
+
+```ts
+declare const formatter: (input: unknown) => oas31.SchemaObject
+```
+
+Our spec builder requires a `formatter` which is responsible for transforming our validation schema into JSON Schema, compatible with the OpenAPI spec. You are welcome to use custom formatters, or third-party solutions, like `zod-to-json-schema`.
+
+Alternatively, the `@webroute/schema` package supports this exact functionality across most popular schema libraries.
+
+Check out the [Schema](/docs/schema/overview) package.
