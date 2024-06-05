@@ -3,32 +3,30 @@ title: Routing
 description: What about routing? This is the guide for you
 ---
 import { Callout } from 'fumadocs-ui/components/callout';
+import { Accordions, Accordion } from 'fumadocs-ui/components/accordion';
 import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
-import Diagram from "../../../../public/diagram.png"
 
-Since `webroute` is just a small utility, it's intentionally unopinionated about if or how you manage routing.
+`route`s are agnostic to what router is used upstream. Since routes are standlone, we have many options for handling routing.
 
-By intentionally separating these two pieces of functionality, our applications actually become simpler, and the same code becomes usable in many more contexts.
+<Accordions>
+<Accordion title="Why routing-agnostic?">
+Typically web frameworks spread work across routers, handlers and middleware in a way tightly coupled to the given framework. This results in less portable, less scalable and more complex code.
 
-In practice, the routing part of the process is actually pretty basic and doesn't warrant coupling our code like traditional frameworks implore us to do.
+By encoding route path and method information directly into the route, we are decoupling from the router. As a result, we can much more easily switch between routers, frameworks and runtimes with minimal changes.
+
+> As an example, `webroute`s could trivially be migrated from `Hono` to `nextjs` filesystem routing, or vice versa, since there is little to no framework-coupling.
+</Accordion>
+</Accordions>
 
 ---
 
-## Why routing-agnostic?
+## No Routing
 
-Typically web frameworks spread work across routers, handlers and middleware in a way tightly coupled to the given framework. This results in less portable, less scalable and more complex code.
+<Callout type="warn">
+In smaller projects this approach is sufficient. However, as the number of routes or path complexity increases, you'll likely want to use a more sophisticated routing approach.
+</Callout>
 
-By encoding route path and method information directly into the route, we are decoupling the router. As a result, we can much more easily switch between routers, frameworks and runtimes with minimal changes.
-
-> As an example, `webroute`s could trivially be migrated from `Hono` to `nextjs` filesystem routing, or vice versa, since there is little to no framework-coupling.
-
-## Basic Routing
-
-In many cases, you don't actually need a fancy router.
-
-### No Routing
-
-It's completely valid to export a single route and call it a day.
+In many cases, you don't actually need a fancy router at all. It's completely valid to export a single route and call it a day.
 
 ```ts
 Bun.serve({
@@ -36,54 +34,34 @@ Bun.serve({
 });
 ```
 
-### Simple Routing
-
-Alternatively, `webroute`s have a very basic matching utility which can be used to implement a router in one LOC.
-
-```ts
-Bun.serve({
-	fetch: (req) => {
-		// The order in which routes are specified in the `routes` array
-		// would matter here
-		const match = routes.find(r => {
-			const path = route.getPath(r)
-			const methods = route.getMethods(r)
-
-			// TODO: Determine if route matches request
-			return r
-		})
-
-		return match?.(req)
-	}
-})
-```
-
-<Callout>
-
-In smaller projects this approach is sufficient. However, as the number of routes or path complexity increases, you may want to consider using a more sophisticated router for better performance.
-
+<Callout title="Helpers">
+The `route.getPath` and `route.getMethods` helpers, found on the `route` export, are helpful for building custom routing.
 </Callout>
 
-### Filesystem Routing
+## Filesystem Routing
 
-Sometimes you aren't even in control of routing. `webroute` works idiomatically with filesystem routing.
+Webroute shines in filesystem router contexts, where middleware is either unavailable or especially awkward. Additionally, `route`s are very lightweight, only loading the necessary code for each route invocation.
+
+`webroute` works idiomatically with filesystem routers.
 
 ```ts title="posts/route.ts"
 // GET /posts
-export const GET = route("/not-posts") // <- FYI: This path will be ignored
+export const GET = route("/ignored-path") // <- This pathname will be ignored
 	.method('put') // <- And so will this method
 	.handle(() => {})
 ```
 
-<Callout>
-Existing web frameworks typically encourage exporting a single app instance from one filesystem route. However, this circumvents all the benefits of filesystem routing.
-</Callout>
+## `@webroute/router`
 
-### Routing Libraries
+Another webroute package, `@webroute/router` was built specifically as a basic, no-frills web router. It is extremely lightweight and merely matches an incoming request to one of your routes (or any other function).
+
+Learn more about the [Router](/docs/router/overview) package.
+
+## Third Party Frameworks
 
 In more sophisticated apps, or if integrating with an existing app, we may wish to use an external router/framework.
 
-#### One-by-one
+### One-by-one
 
 In the most basic case, we can simply wire up our routes explicitly and manually.
 
@@ -97,7 +75,7 @@ app.on(
 	)
 ```
 
-#### Many at Once
+### Many at Once
 
 We can also perform this iteratively when we have quite a few routes.
 
@@ -128,12 +106,10 @@ Bear in mind most external routers care about route registration order.
 
 ### What about adapters?
 
-Providing adapters is a common and tempting approach for connecting our apps to other tools. However, the adapters themselves are often very thin wrappers akin to the example above.
+As we've seen above, connecting our routes to existing apps is fairly straightforward: merely register the apps path and method(s) with the route itself. Instead of providing and maintaining adapters, we think it's more robust to leave that up to the developer.
 
-Instead, we encourage writing your own adapter. This empowers you to make any customisations you like while also keeping things explicit. It also means you're in full control of updating versions, without having to wait on an adapter being developed.
-
-In short: these types of adapaters increase coupling and are simple enough to write on your own, so you should do that.
+Ultimately, by writing your own "adapter" code, you will retain greater control, with pretty minimal work.
 
 <Callout>
-With that said, we have provided some starting points in [Building Apps](./building-apps).
+More guidance on integrating with existing frameworks and apps can be found in the [Building Apps](./building-apps) section.
 </Callout>

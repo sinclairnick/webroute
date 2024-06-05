@@ -9,6 +9,7 @@
     "route",
     "client",
     "middleware",
+    "router",
     "---About---",
     "acknowledgements"
   ]

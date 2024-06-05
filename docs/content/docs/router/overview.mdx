@@ -1,0 +1,72 @@
+---
+title: Overview
+---
+
+```ts
+import { createRadixRouter, createLinearRouter } from "@webroute/router"
+```
+
+`@webroute/router` exports several routers which simply match handlers to an incoming request.
+
+All router have the shape
+
+```ts
+export type RequestRouter<T> = {
+  match: (request: Request) => T | undefined;
+  matchAll: (request: Request) => T[];
+};
+```
+
+## Example Usage
+
+```ts
+const router = createRouter([
+	{ 
+		path: "/foo",
+		methods: ["GET"],
+		payload: () => "1" // Handler can be any function
+	},
+	{ 
+		path: "/bar",
+		methods: ["POST"],
+		payload: () => "2" // Handler can be any function
+	},
+])
+
+const handler = router.match(new Request("https://myapi.com/bar", { method: "post" }))
+const result = handler?.() // "2"
+```
+
+## Routers
+
+In most cases, you will want to use the faster `radix` router which uses the `radix` algorithm to quickly find route handlers.
+
+### Radix Router
+
+```ts
+import { createRadixRouter } from "@webroute/router"
+
+const router = createRadixRouter([
+		{ 
+			path: "/foo",
+			methods: ["GET"],
+			payload: () => "Some handler" // Handler can be any function
+		},
+	]);
+```
+
+### Linear Router
+
+However, in some instances – like if route registration order is important – you might want to use the linear router.
+
+```ts
+import { createLinearRouter } from "@webroute/router"
+
+const router = createLinearRouter([
+		{ 
+			path: "/foo",
+			methods: ["GET"],
+			payload: () => "Some handler" // Handler can be any function
+		},
+	]);
+```

@@ -5,14 +5,12 @@ import { Callout } from 'fumadocs-ui/components/callout';
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 
 ```ts twoslash
-import { DefineApp, createTypedClient, FromWebroutes, createUrl } from "@webroute/client"
+import { DefineApp, createTypedClient, createUrl } from "@webroute/client"
 ```
 
-The `@webroute/client` package provides a headless, extremely flexible client interface which provides end-to-end typesafety.
+The `@webroute/client` package provides a simple and flexible abstraction for interacting with any REST API type-safely.
 
-**It need not be used in conjunction with `@webroute/core`.**
-
-It can be used with the fetching library of your choice and is designed to expedite client-side development as well as reducing errors and mistakes, by better enforcing your API contract.
+It works with any fetching library of your choice and is designed to expedite client-side development as well as reducing errors and mistakes, by better enforcing your API contract.
 
 ---
 
@@ -30,49 +28,34 @@ type App = DefineApp<{
 }>;
 ```
 
-<Accordions>
-<Accordion title="Using @webroute/core?">
-If you're using `webroute`s on the backend, you can convert this into the appropriate shape via the `FromWebroute` helper.
-
-```ts
-// Define routes in object
-const appRoutes = {
-	PostRoute,
-
-	// Note: Object keys are irrelevant
-	foo: UserRoute,
-	bar: CommentRoute,
-}
-// E.g. export this from your backend in a monorepo, or package via NPM
-type AppRoutes = typeof appRoutes
-
-type App = FromWebroutes.InferApp<AppRoutes>;
-```
-
-<Callout title="Why use objects if the keys don't matter?">
-App routes are defined in an object instead of an array to improve TypeScript inference performance.
-</Callout>
-</Accordion>
-</Accordions>
-
-
 
 ## Typed Client
 
 The typed client is an extremely lightweight, so-called "headless" client-side interface for your API. It is entirely unopinionated about how fetching is done and merely wires up end-to-end type safety, without getting in your way.
 
 
-```ts title="react-app/api-client.ts"
+```ts twoslash title="react-app/api-client.ts"
+// ---cut-start---
+import { DefineApp, createTypedClient } from "@webroute/client"
+
+type App = DefineApp<{
+	"GET /posts": {
+		Query: { limit?: number }
+	}
+}>;
+	// ---cut-end---
 // Create a lightweight client instance
-const client = createTypedClient<App>({
-	fetcher: myFetcher
+const client = createTypedClient<App>()({
+	fetcher: async (config, opts: { foo: string }) => {
+		return { id: "123" }
+	}
 })
 
 // Each API operation is represented as a single, flat key
 // in the form `{METHOD} {path}`
-const getPost = client("GET /post/:id")
+const getPost = client("GET /posts")
 
-getPost({ id: 123 }, fetcherOptions)
+const result = getPost({ query: { limit: 12 } }, { foo: "bar" })
 ```
 
 Our custom fetcher is responsible for executing our request and parsing our response, if need be. It allows for flexible options and return types.

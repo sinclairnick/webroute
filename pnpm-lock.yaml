@@ -60,6 +60,15 @@ importers:
       '@webroute/middleware':
         specifier: workspace:*
         version: link:../packages/middleware
+      '@webroute/oas':
+        specifier: workspace:*
+        version: link:../packages/oas
+      '@webroute/router':
+        specifier: workspace:*
+        version: link:../packages/router
+      '@webroute/schema':
+        specifier: workspace:*
+        version: link:../packages/schema
       autoprefixer:
         specifier: ^10.4.19
         version: 10.4.19(postcss@8.4.38)

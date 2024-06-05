@@ -1,4 +1,4 @@
 {
-	"title": "Guides",
-	"pages": ["basics", "building-apps", "middleware", "..."]
+  "title": "Guides",
+  "pages": ["basics", "middleware", "...", "building-apps", "combining"]
 }

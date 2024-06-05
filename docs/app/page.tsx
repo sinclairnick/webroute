@@ -38,32 +38,34 @@ export default function HomePage() {
           <p>A toolkit for building scalable web-standard APIs</p>
         </div>
 
-        <div className="bg-gray-100 rounded py-2 px-4 w-max mx-auto">
+        <div className="bg-gray-100 dark:bg-gray-800 rounded py-2 px-4 w-max mx-auto">
           <table>
-            <tr>
-              <td>
-                <code>npm i</code>
-              </td>
-              <td />
-            </tr>
-            <tr>
-              <td />
-              <td align="right">
-                <code>@webroute/core</code>
-              </td>
-            </tr>
-            <tr>
-              <td />
-              <td align="right">
-                <code>@webroute/client</code>
-              </td>
-            </tr>
-            <tr>
-              <td />
-              <td align="right">
-                <code>@webroute/middleware</code>
-              </td>
-            </tr>
+            <tbody>
+              <tr>
+                <td>
+                  <code>npm i</code>
+                </td>
+                <td />
+              </tr>
+              <tr>
+                <td />
+                <td align="right">
+                  <code>@webroute/core</code>
+                </td>
+              </tr>
+              <tr>
+                <td />
+                <td align="right">
+                  <code>@webroute/client</code>
+                </td>
+              </tr>
+              <tr>
+                <td />
+                <td align="right">
+                  <code>@webroute/middleware</code>
+                </td>
+              </tr>
+            </tbody>
           </table>
         </div>
 
