@@ -105,7 +105,7 @@ Middleware implementations will be added to separate packages in the future.
 
 ---
 
-### Router
+### [Router](https://webroute.vercel.app/docs/router/overview)
 
 ![Router version](https://img.shields.io/npm/v/%40webroute%2Fschema)
 ![Router License](https://img.shields.io/npm/l/%40webroute%2Fschema)
@@ -123,7 +123,7 @@ return handler(request);
 
 ---
 
-### Schema
+### [Schema](https://webroute.vercel.app/docs/schema/overview)
 
 ![Schema version](https://img.shields.io/npm/v/%40webroute%2Fschema)
 ![Schema License](https://img.shields.io/npm/l/%40webroute%2Fschema)
@@ -144,7 +144,7 @@ const myJoiSchema = formatter.format(parsed);
 
 ---
 
-### OpenAPI Spec (OAS)
+### [OpenAPI Spec (OAS)](https://webroute.vercel.app/docs/oas/overview)
 
 ![OAS version](https://img.shields.io/npm/v/%40webroute%2Foas)
 ![OAS License](https://img.shields.io/npm/l/%40webroute%2Foas)
