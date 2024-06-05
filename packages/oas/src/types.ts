@@ -19,7 +19,7 @@ export type OASDecoratedOperation<T> = T & {
   [$Operation]?: OperationConfig;
 };
 
-export type ConfigFn<T> = (input: T) => T;
+export type ConfigFn<T> = (operation: T, schema: oas31.SchemaObject) => T;
 
 // Schema config
 export type SchemaConfigObject<T> = Omit<oas31.SchemaObject, "schema"> & {
@@ -27,7 +27,7 @@ export type SchemaConfigObject<T> = Omit<oas31.SchemaObject, "schema"> & {
 };
 export type SchemaConfig<T> =
   | SchemaConfigObject<T>
-  | ConfigFn<oas31.SchemaObject>;
+  | ((schema: oas31.SchemaObject) => oas31.SchemaObject);
 
 // Param config
 export type ParamConfigObject = Omit<oas31.ParameterObject, "schema" | "in">;
@@ -66,4 +66,4 @@ export type ResponsesConfig =
 export type OperationConfigObject = oas31.OperationObject;
 export type OperationConfig =
   | OperationConfigObject
-  | ConfigFn<oas31.OperationObject>;
+  | ((operation: oas31.OperationObject) => oas31.OperationObject);

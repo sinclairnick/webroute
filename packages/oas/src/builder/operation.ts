@@ -44,16 +44,17 @@ const formatParameter = (
   ctx: FormatCtx
 ): oas31.ParameterObject => {
   const config = getParamConfig(param);
+  const schema = formatSchema(param, ctx);
   const initial: oas31.ParameterObject = {
     in: type,
     explode: true,
-    schema: formatSchema(param, ctx),
+    schema,
     // TODO: Sort out name?
     name: "",
   };
 
   if (typeof config === "function") {
-    return config(initial);
+    return config(initial, schema);
   }
 
   return { ...initial, ...config };
@@ -67,11 +68,14 @@ const formatBody = (
   const schema = formatSchema(body, ctx);
 
   if (typeof config === "function") {
-    return config({
-      content: {
-        "application/json": { schema },
+    return config(
+      {
+        content: {
+          "application/json": { schema },
+        },
       },
-    });
+      schema
+    );
   }
 
   const { contentType, ...rest } = config ?? {};
@@ -95,17 +99,21 @@ const formatResponses = (
   ctx: FormatCtx
 ): oas31.ResponsesObject => {
   const config: ResponsesConfig | undefined = getResponsesConfig(response);
+  const schema = formatSchema(response, ctx);
 
   if (typeof config === "function") {
-    return config({
-      "200": {
-        content: {
-          "application/json": {
-            schema: formatSchema(response, ctx),
+    return config(
+      {
+        "200": {
+          content: {
+            "application/json": {
+              schema,
+            },
           },
         },
       },
-    });
+      schema
+    );
   }
 
   const { status, contentType, ...rest } = config ?? {};
@@ -114,7 +122,6 @@ const formatResponses = (
   const contentTypes = Array.isArray(contentType)
     ? contentType
     : [contentType ?? "application/json"];
-  const schema = formatSchema(response, ctx);
 
   for (const status of statuses) {
     initial[`${status}`] = {
