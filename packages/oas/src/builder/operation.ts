@@ -64,19 +64,30 @@ const formatBody = (
   ctx: FormatCtx
 ): oas31.RequestBodyObject => {
   const config: RequestBodyConfig | undefined = getBodyConfig(body);
-  const initial: oas31.RequestBodyObject = {
-    content: {
-      "application/json": {
-        schema: formatSchema(body, ctx),
-      },
-    },
-  };
+  const schema = formatSchema(body, ctx);
 
   if (typeof config === "function") {
-    return config(initial);
+    return config({
+      content: {
+        "application/json": { schema },
+      },
+    });
   }
 
-  return { ...initial, ...config };
+  const { contentType, ...rest } = config ?? {};
+
+  const initial: oas31.RequestBodyObject = {
+    content: {},
+  };
+  const _contentType = Array.isArray(contentType)
+    ? contentType
+    : [contentType ?? "application/json"];
+
+  for (const type of _contentType) {
+    initial.content[type] = { schema };
+  }
+
+  return { ...initial, ...rest };
 };
 
 const formatResponses = (
@@ -97,13 +108,12 @@ const formatResponses = (
     });
   }
 
+  const { status, contentType, ...rest } = config ?? {};
   const initial: oas31.ResponsesObject = {};
-  const statuses = Array.isArray(config?.status)
-    ? config.status
-    : [config?.status ?? 200];
-  const contentTypes = Array.isArray(config?.contentType)
-    ? config.contentType
-    : [config?.contentType ?? "application/json"];
+  const statuses = Array.isArray(status) ? status : [status ?? 200];
+  const contentTypes = Array.isArray(contentType)
+    ? contentType
+    : [contentType ?? "application/json"];
   const schema = formatSchema(response, ctx);
 
   for (const status of statuses) {
@@ -119,7 +129,7 @@ const formatResponses = (
     }
   }
 
-  return { ...initial, ...config };
+  return { ...initial, ...rest };
 };
 
 export const createOperation = (
