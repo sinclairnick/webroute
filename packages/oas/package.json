@@ -8,7 +8,7 @@
   "scripts": {
     "test": "vitest",
     "build": "tsup",
-    "publish-pkg": "npm run build && npm publish --access=public",
+    "publish-pkg": "pnpm run build && pnpm publish --access=public",
     "check": "tsc --noEmit"
   },
   "dependencies": {
