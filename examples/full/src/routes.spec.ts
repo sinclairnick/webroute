@@ -20,13 +20,7 @@ describe("Routes", () => {
   });
 
   test("Can override providers", async () => {
-    const r = route()
-      .provide({
-        foo: () => "foo",
-      })
-      .handle((req, c) => c.services.foo());
-
-    const overridden = route.withProviders(r, {
+    const overridden = route.withProviders(appRoutes.routeWithFooProvider, {
       foo: () => "bar",
     });
 

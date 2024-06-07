@@ -44,8 +44,13 @@ const deletePostRoute = authedRoute
     return { token: c.state.token };
   });
 
+const routeWithFooProvider = route()
+  .provide({ foo: () => "foo" })
+  .handle((req, c) => c.services.foo());
+
 export const appRoutes = {
   createPostRoute,
   getPostRoute,
   deletePostRoute,
+  routeWithFooProvider,
 };

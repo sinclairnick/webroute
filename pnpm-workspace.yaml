@@ -6,3 +6,4 @@ packages:
   - "packages/schema"
   - "packages/router"
   - "packages/oas"
+  - "examples/**"
