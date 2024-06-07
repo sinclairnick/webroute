@@ -8,4 +8,5 @@ export default defineConfig({
   outDir: "dist",
   sourcemap: false,
   treeshake: "recommended",
+  external: ["ufo"]
 });

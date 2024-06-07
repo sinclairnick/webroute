@@ -105,16 +105,15 @@ describe("Middleware", () => {
 
   describe("defineMiddleware", () => {
     test("Jwt example", () => {
-      const jwtMiddleware = defineMiddleware(
-        (options: { secret: string }) => (req) => {
+      const jwtMiddleware = () =>
+        defineMiddleware((req) => {
           const bearer = req.headers.get("authorization");
           const token = bearer?.replace("Bearer ", "");
 
           return { token };
-        }
-      );
+        });
 
-      const mid = jwtMiddleware({ secret: "abc" });
+      const mid = jwtMiddleware();
       const headers = new Headers();
       headers.set("Authorization", "Bearer 1234");
       const result = mid(new Request("https://a.com", { headers }));
@@ -123,19 +122,20 @@ describe("Middleware", () => {
     });
 
     test("Powered by example", () => {
-      const poweredBy = defineMiddleware((opts: { name: string }) => () => {
-        return (response) => {
-          const headers = new Headers(response.headers);
+      const poweredBy = (opts: { name: string }) =>
+        defineMiddleware(() => {
+          return (response) => {
+            const headers = new Headers(response.headers);
 
-          headers.set("X-Powered-by", opts.name);
+            headers.set("X-Powered-by", opts.name);
 
-          console.log(headers.get("X-Powered-By"));
+            console.log(headers.get("X-Powered-By"));
 
-          return new Response(response.body, {
-            headers,
-          });
-        };
-      });
+            return new Response(response.body, {
+              headers,
+            });
+          };
+        });
 
       const mid = poweredBy({ name: "Webroute" });
 
@@ -149,47 +149,44 @@ describe("Middleware", () => {
     });
 
     test("Works with empty result", () => {
-      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+      defineMiddleware(<B>(request: Request, bar: B) => {
         return;
       });
     });
 
     test("Works with state result", () => {
-      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+      defineMiddleware(<B>(request: Request, bar: B) => {
         return {};
       });
     });
 
     test("Works with response handler result", () => {
-      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+      defineMiddleware(<B>(request: Request, bar: B) => {
         return () => new Response();
       });
     });
 
     test("Doesn't work with primitives or arrays", () => {
       // @ts-expect-error
-      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+      defineMiddleware(<B>(request: Request, bar: B) => {
         return [];
       });
       // @ts-expect-error
-      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+      defineMiddleware(<B>(request: Request, bar: B) => {
         return 1;
       });
       // @ts-expect-error
-      defineMiddleware(<F>(foo: F) => <B>(request: Request, bar: B) => {
+      defineMiddleware(<B>(request: Request, bar: B) => {
         return true;
       });
     });
 
     test("Works with request handler", () => {
-      const mid = defineMiddleware(
-        <F>(foo: F) =>
-          <B>(request: Request, bar: B) => {
-            return { foo, bar };
-          }
-      );
+      const mid = defineMiddleware(<B>(request: Request, bar: B) => {
+        return { foo: 1, bar: "bar" };
+      });
 
-      const { bar, foo } = mid(1)(new Request("https://google.com"), "");
+      const { bar, foo } = mid(new Request("https://google.com"), "");
       expectTypeOf(foo).toBeNumber();
       expectTypeOf(bar).toBeString();
     });

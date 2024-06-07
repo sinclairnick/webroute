@@ -1,5 +1,14 @@
-import { MakeUnknownOptional } from "@webroute/core";
 import { AppDef, AppRoute } from "./infer";
+
+export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & {};
+
+export type MakeUnknownOptional<T extends Record<any, any>> = Simplify<
+  {
+    [TKey in keyof T as unknown extends T[TKey] ? never : TKey]: T[TKey];
+  } & {
+    [TKey in keyof T as unknown extends T[TKey] ? TKey : never]?: T[TKey];
+  }
+>;
 
 export type FetcherReturn<TResult, TFetcherRes> = {
   [TKey in keyof TFetcherRes]: TKey extends "data"

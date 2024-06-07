@@ -14,6 +14,7 @@ import {
   OperationConfig,
   OASDecoratedOperation,
   $Operation,
+  ParamConfigMap,
 } from "./types";
 
 export namespace OAS {
@@ -21,14 +22,12 @@ export namespace OAS {
     input: T,
     config?: SchemaConfig<T>
   ): OASDecoratedSchema<T> => {
-    return Object.assign(input, {
-      [$Schema]: config,
-    });
+    return Object.assign(input, { [$Schema]: config });
   };
 
   export const Param = <T extends object>(
     input: T,
-    config?: ParamConfig
+    config?: ParamConfigMap<T>
   ): OASDecoratedParam<T> => {
     return Object.assign(input, { [$Param]: config });
   };
@@ -55,22 +54,31 @@ export namespace OAS {
   };
 }
 
-export const getSchemaConfig = (schema: OASDecoratedSchema<any>) => {
+export const getSchemaConfig = (
+  schema: any
+): SchemaConfig<unknown> | undefined => {
+  if (typeof schema !== "object" || schema == null) return;
   return schema[$Schema];
 };
 
-export const getParamConfig = (schema: OASDecoratedParam<any>) => {
-  return schema[$Param];
+export const getParamConfig = (param: any): ParamConfig | undefined => {
+  if (typeof param !== "object" || param == null) return;
+  return param?.[$Param];
 };
 
-export const getBodyConfig = (schema: OASDecoratedRequestBody<any>) => {
-  return schema[$Body];
+export const getBodyConfig = (body: any): RequestBodyConfig | undefined => {
+  if (typeof body !== "object" || body == null) return;
+  return body?.[$Body];
 };
 
-export const getResponsesConfig = (schema: OASDecoratedResponse<any>) => {
-  return schema[$Response];
+export const getResponsesConfig = (
+  response: any
+): ResponsesConfig | undefined => {
+  if (typeof response !== "object" || response == null) return;
+  return response?.[$Response];
 };
 
-export const getOperationConfig = (schema: OASDecoratedOperation<any>) => {
-  return schema[$Operation];
+export const getOperationConfig = (op: any): OperationConfig | undefined => {
+  if (typeof op !== "object" || op == null) return;
+  return op?.[$Operation];
 };

@@ -12,8 +12,7 @@ describe("Webroute", () => {
       myRoute,
     });
 
-    const spec = createSpec({
-      operations: normalised,
+    const spec = createSpec(normalised, {
       formatter: () => ({}),
     }).getSpec();
 

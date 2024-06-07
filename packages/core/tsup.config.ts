@@ -7,6 +7,6 @@ export default defineConfig({
   format: ["cjs", "esm"],
   outDir: "dist",
   sourcemap: false,
-  external: ["zod"],
+  external: ["debug"],
   treeshake: "recommended",
 });

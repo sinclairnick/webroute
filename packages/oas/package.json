@@ -5,13 +5,15 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "test": "vitest",
-    "build": "tsup",
+    "build": "tsup-node",
     "publish-pkg": "pnpm run build && pnpm publish --access=public",
     "check": "tsc --noEmit"
   },
   "dependencies": {
+    "@webroute/schema": "workspace:*",
     "openapi3-ts": "^4.3.2",
     "scule": "^1.3.0"
   },

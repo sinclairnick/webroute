@@ -4,10 +4,6 @@ import {
   OASDecoratedRequestBody,
   OASDecoratedResponse,
   OASDecoratedSchema,
-  OperationConfig,
-  RequestBodyConfig,
-  ResponsesConfig,
-  SchemaConfig,
   SchemaFormatter,
 } from "../types";
 import {
@@ -19,14 +15,18 @@ import {
 } from "../decorators";
 import { SchemaRecord } from "./types";
 import { SchemaStore } from "./store";
+import { getPathParams } from "../util";
 
 type FormatCtx = {
   formatter: SchemaFormatter<any>;
   store: SchemaStore;
 };
 
-const formatSchema = (schema: OASDecoratedSchema<unknown>, ctx: FormatCtx) => {
-  const config: SchemaConfig<unknown> | undefined = getSchemaConfig(schema);
+const formatSchema = (
+  schema: OASDecoratedSchema<unknown> | undefined,
+  ctx: FormatCtx
+) => {
+  const config = getSchemaConfig(schema);
   const jsonSchema = schema ? ctx.formatter(schema) : {};
 
   if (typeof config === "function") {
@@ -40,39 +40,58 @@ const formatSchema = (schema: OASDecoratedSchema<unknown>, ctx: FormatCtx) => {
 
 const formatParameter = (
   type: oas31.ParameterObject["in"],
-  param: OASDecoratedParam<OASDecoratedSchema<unknown>>,
+  param: OASDecoratedParam<OASDecoratedSchema<unknown>> | undefined,
   ctx: FormatCtx
-): oas31.ParameterObject => {
+): oas31.ParameterObject[] => {
   const config = getParamConfig(param);
   const schema = formatSchema(param, ctx);
-  const initial: oas31.ParameterObject = {
-    in: type,
-    explode: true,
-    schema,
-    // TODO: Sort out name?
-    name: "",
-  };
 
-  if (typeof config === "function") {
-    return config(initial, schema);
+  if ("$ref" in schema) {
+    // TODO: How to handle this better?
+    console.warn("Parameter is reference type. Noop");
+    return [];
   }
 
-  return { ...initial, ...config };
+  if (schema.type !== "object") {
+    console.warn(`Schema is not object type. Unable to parse ${type} params.`);
+    return [];
+  }
+
+  const parameters: oas31.ParameterObject[] = [];
+
+  for (const prop in schema.properties) {
+    const value = schema.properties[prop];
+    const propConfig = config?.[prop];
+
+    const initial: oas31.ParameterObject = {
+      in: type,
+      name: prop,
+      schema: value,
+      required: type === "path",
+    };
+
+    if (typeof propConfig === "function") {
+      parameters.push(propConfig(initial, value));
+      continue;
+    }
+
+    parameters.push({ ...initial, ...propConfig });
+  }
+
+  return parameters;
 };
 
 const formatBody = (
-  body: OASDecoratedRequestBody<OASDecoratedSchema<unknown>>,
+  body: OASDecoratedRequestBody<OASDecoratedSchema<unknown>> | undefined,
   ctx: FormatCtx
 ): oas31.RequestBodyObject => {
-  const config: RequestBodyConfig | undefined = getBodyConfig(body);
   const schema = formatSchema(body, ctx);
+  const config = getBodyConfig(body);
 
   if (typeof config === "function") {
     return config(
       {
-        content: {
-          "application/json": { schema },
-        },
+        content: { "application/json": { schema } },
       },
       schema
     );
@@ -95,29 +114,27 @@ const formatBody = (
 };
 
 const formatResponses = (
-  response: OASDecoratedResponse<OASDecoratedSchema<unknown>>,
+  response: OASDecoratedResponse<OASDecoratedSchema<unknown>> | undefined,
   ctx: FormatCtx
 ): oas31.ResponsesObject => {
-  const config: ResponsesConfig | undefined = getResponsesConfig(response);
+  const config = getResponsesConfig(response);
   const schema = formatSchema(response, ctx);
 
   if (typeof config === "function") {
     return config(
       {
         "200": {
-          content: {
-            "application/json": {
-              schema,
-            },
-          },
+          content: { "application/json": { schema } },
         },
       },
       schema
     );
   }
 
-  const { status, contentType, ...rest } = config ?? {};
   const initial: oas31.ResponsesObject = {};
+
+  const { status, contentType, ...rest } = config ?? {};
+
   const statuses = Array.isArray(status) ? status : [status ?? 200];
   const contentTypes = Array.isArray(contentType)
     ? contentType
@@ -143,19 +160,19 @@ export const createOperation = (
   schemas: SchemaRecord,
   ctx: FormatCtx
 ): oas31.OperationObject => {
-  const config: OperationConfig | undefined = getOperationConfig(schemas);
+  const config = getOperationConfig(schemas);
 
   // Setup parameters
   const parameters: oas31.ParameterObject[] = [];
 
   if (schemas.Query) {
-    parameters.unshift(formatParameter("query", schemas.Query, ctx));
+    parameters.push(...formatParameter("query", schemas.Query, ctx));
   }
   if (schemas.Params) {
-    parameters.unshift(formatParameter("path", schemas.Params, ctx));
+    parameters.push(...formatParameter("path", schemas.Params, ctx));
   }
   if (schemas.Headers) {
-    parameters.unshift(formatParameter("header", schemas.Headers, ctx));
+    parameters.push(...formatParameter("header", schemas.Headers, ctx));
   }
 
   // Setup body
@@ -167,10 +184,7 @@ export const createOperation = (
   }
 
   // Setup response
-  let responses: oas31.ResponsesObject = {};
-  if (schemas.Output) {
-    responses = formatResponses(schemas.Output, ctx);
-  }
+  const responses = formatResponses(schemas.Output, ctx);
 
   const initial: oas31.OperationObject = {
     parameters,

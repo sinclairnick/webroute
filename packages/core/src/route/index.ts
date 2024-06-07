@@ -1,17 +1,10 @@
-import { z } from "zod";
 import { createBuilder } from "./handler";
-import {
-  AnyCompiledRoute,
-  CompiledRoute,
-  HandlerParams,
-} from "./handler/types";
+import { AnyCompiledRoute, CompiledRoute, RouteParams } from "./handler/types";
 import { Def } from "./handler/util";
 
 // Export all types
 export type * from "./handler";
 export type * from "./handler/types";
-export type * from "./parser";
-export type * from "./parser/types";
 
 export function route<TPath extends string>(Path?: TPath) {
   return createBuilder<TPath>({ path: Path });
@@ -20,7 +13,7 @@ export function route<TPath extends string>(Path?: TPath) {
 export namespace route {
   export type InferPart<
     TRoute extends AnyCompiledRoute,
-    TPart extends keyof HandlerParams
+    TPart extends keyof RouteParams
   > = TRoute extends CompiledRoute<infer TParams> ? TParams[TPart] : never;
 
   export type InferBodyIn<TRoute extends AnyCompiledRoute> = InferPart<
@@ -78,7 +71,12 @@ export namespace route {
     "Methods"
   >;
 
-  export interface DefinedRouteDef<TParams extends HandlerParams> {
+  export type InferProviders<TRoute extends AnyCompiledRoute> = InferPart<
+    TRoute,
+    "Providers"
+  >;
+
+  export interface DefinedRouteDef<TParams extends RouteParams> {
     ParamsIn: unknown extends TParams["ParamsIn"]
       ? [TParams["InferredParams"]] extends [never]
         ? unknown
@@ -137,5 +135,34 @@ export namespace route {
     route: T
   ): InferMethods<T>[] => {
     return route[Def]["methods"] ?? [];
+  };
+
+  export const getMeta = <T extends AnyCompiledRoute>(
+    route: T
+  ): InferMeta<T> => {
+    return route[Def].meta;
+  };
+
+  export const getProviders = <T extends AnyCompiledRoute>(
+    route: T
+  ): InferProviders<T> => {
+    return route[Def].providers;
+  };
+
+  /**
+   * Partially override a route's providers.
+   *
+   * _This is primarily useful for testing._
+   */
+  export const withProviders = <T extends AnyCompiledRoute>(
+    route: T,
+    providers: Partial<InferProviders<T>>
+  ): T => {
+    route[Def].providers ??= {};
+    for (const key in providers) {
+      route[Def].providers[key] = providers[key];
+    }
+
+    return route;
   };
 }

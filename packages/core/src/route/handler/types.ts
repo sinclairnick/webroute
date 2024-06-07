@@ -1,14 +1,13 @@
-import { Parser } from "../parser/types";
 import { MergeObjectsShallow, RemoveNeverKeys, Simplify } from "../../util";
-import { ParseFn } from "../parser";
 import { DataResult, MiddlewareFn } from "@webroute/middleware";
 import { Def } from "./util";
+import { ParseFn, Parser } from "@webroute/schema";
 
 export type Awaitable<T> = Promise<T> | T;
 
 export interface RouteMeta {}
 
-export interface HandlerParams<
+export interface RouteParams<
   TPath = unknown,
   TQueryIn = unknown,
   TQueryOut = unknown,
@@ -23,7 +22,8 @@ export interface HandlerParams<
   TMeta extends RouteMeta = RouteMeta,
   TMethods = HttpMethodInput,
   TInferredParams = unknown,
-  TState = unknown
+  TState = unknown,
+  TProviders = unknown
 > {
   /** @internal */
   Path: TPath;
@@ -55,9 +55,11 @@ export interface HandlerParams<
   HeadersReqOut: TReqHeadersOut;
   /** @internal */
   State: TState;
+  /** @internal */
+  Providers: TProviders;
 }
 
-export interface AnyHandlerDefinition extends HandlerDefinition<any> {}
+export interface AnyHandlerDefinition extends RouteDefInner<any> {}
 
 export type HttpVerb =
   | "get"
@@ -75,7 +77,7 @@ export type ValidatorDef = {
   schema: Parser;
 };
 
-export interface HandlerDefinition<TParams extends HandlerParams> {
+export interface RouteDefInner<TParams extends RouteParams> {
   methods?: TParams["Methods"][];
   path?: TParams["Path"];
   query?: ValidatorDef;
@@ -85,11 +87,12 @@ export interface HandlerDefinition<TParams extends HandlerParams> {
   headersReq?: ValidatorDef;
   middleware?: MiddlewareInFn[];
   meta?: TParams["Meta"];
+  providers?: TParams["Providers"];
 }
 
 export type ResponseOrLiteral<T> = Awaitable<Response> | Awaitable<T>;
 
-export interface HandlerFunction<TParams extends HandlerParams>
+export interface HandlerFunction<TParams extends RouteParams>
   extends DecoratedRequestHandler<
     TParams["InferredParams"] extends never
       ? TParams["ParamsOut"]
@@ -98,14 +101,15 @@ export interface HandlerFunction<TParams extends HandlerParams>
     TParams["BodyOut"],
     TParams["HeadersReqOut"],
     TParams["OutputIn"],
-    TParams["State"]
+    TParams["State"],
+    TParams["Providers"]
   > {}
 
 export interface AnyCompiledRoute extends CompiledRoute<any> {}
 
-export interface CompiledRoute<TParams extends HandlerParams>
+export interface CompiledRoute<TParams extends RouteParams>
   extends WebRequestHandler {
-  [Def]: HandlerDefinition<TParams>;
+  [Def]: RouteDefInner<TParams>;
 }
 
 export interface WebRequestHandler {
@@ -122,21 +126,54 @@ export interface LazyValidator<T> {
   (): Promise<T>;
 }
 
+export type InputTypeKey = "params" | "query" | "body" | "headers";
+
+export interface ParseInputsFn<
+  TParams = unknown,
+  TQuery = unknown,
+  TBody = unknown,
+  THeaders = unknown
+> {
+  /** Parses the selected input part */
+  <T extends InputTypeKey>(key: T): Promise<
+    {
+      params: TParams;
+      query: TQuery;
+      body: TBody;
+      headers: THeaders;
+    }[T]
+  >;
+
+  /** Parses all inputs and returns as an object */
+  (): Promise<{
+    params: TParams;
+    query: TQuery;
+    body: TBody;
+    headers: THeaders;
+  }>;
+}
+
+export type ServiceMap<TProviders> = TProviders extends AnyProviderMap
+  ? TProviders
+  : Record<string, unknown>;
+
 export type RequestCtx<
   TParams = unknown,
   TQuery = unknown,
   TBody = unknown,
   THeaders = unknown,
-  TState = unknown
-> = Simplify<
-  RemoveNeverKeys<{
-    params: unknown extends TParams ? never : LazyValidator<TParams>;
-    query: unknown extends TQuery ? never : LazyValidator<TQuery>;
-    body: unknown extends TBody ? never : LazyValidator<TBody>;
-    headers: unknown extends THeaders ? never : LazyValidator<THeaders>;
-    state: Simplify<TState>;
-  }>
->;
+  TState = unknown,
+  TProviders = unknown
+> = Simplify<{
+  parse: ParseInputsFn<
+    unknown extends TParams ? Record<string, string | undefined> : TParams,
+    unknown extends TQuery ? Record<string, string | undefined> : TQuery,
+    unknown extends TBody ? unknown : TBody,
+    unknown extends THeaders ? Record<string, string | undefined> : THeaders
+  >;
+  services: ServiceMap<TProviders>;
+  state: Simplify<TState>;
+}>;
 
 export interface DecoratedRequestHandler<
   TParams = unknown,
@@ -144,11 +181,12 @@ export interface DecoratedRequestHandler<
   TBody = unknown,
   THeaders = unknown,
   TOutput = unknown,
-  TState = unknown
+  TState = unknown,
+  TProviders = unknown
 > {
   (
     request: Request,
-    ctx: RequestCtx<TParams, TQuery, TBody, THeaders, TState>
+    ctx: RequestCtx<TParams, TQuery, TBody, THeaders, TState, TProviders>
   ): Awaitable<Response | TOutput>;
 }
 
@@ -160,12 +198,13 @@ export type MiddlewareResult<
   TBody = unknown,
   THeaders = unknown,
   TState = unknown,
+  TProviders = unknown,
   TResult = unknown
 > =
   | Response
   | ((
       response: Response,
-      ctx: RequestCtx<TParams, TQuery, TBody, THeaders, TState>
+      ctx: RequestCtx<TParams, TQuery, TBody, THeaders, TState, TProviders>
     ) => Response)
   | TResult;
 
@@ -175,10 +214,11 @@ export interface UseMiddlewareInput<
   TBody = unknown,
   THeaders = unknown,
   TState = unknown,
+  TProviders = unknown,
   TResult extends DataResult | void = void
 > extends MiddlewareFn<
     TResult,
-    [ctx: RequestCtx<TParams, TQuery, TBody, THeaders, TState>]
+    [ctx: RequestCtx<TParams, TQuery, TBody, THeaders, TState, TProviders>]
   > {}
 
 export interface MiddlewareInFn {
@@ -187,4 +227,12 @@ export interface MiddlewareInFn {
 
 export interface MiddlewareOutFn {
   (response: Response, ctx: RequestCtx): Awaitable<Response>;
+}
+
+export interface ProviderInitializer<TArgs extends any[], TRet> {
+  (...args: TArgs): TRet;
+}
+
+export interface AnyProviderMap {
+  [name: string]: ProviderInitializer<any, any>;
 }

@@ -145,3 +145,14 @@ export const toFramework = <
     }
   };
 };
+
+export const createAdapter = <
+  T extends AnyFrameworkMiddlewareFn = AnyFrameworkMiddlewareFn,
+  TResult extends AnyMiddlewareResult = AnyMiddlewareResult
+>(
+  handlers: ToFrameworkHandlers<T, TResult>
+) => {
+  return (middlware: ToFrameworkMiddlewareFn<T, TResult>) => {
+    return toFramework(middlware, handlers);
+  };
+};

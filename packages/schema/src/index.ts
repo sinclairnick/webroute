@@ -11,8 +11,9 @@ export type * from "./def/schema-def";
 export type * from "./def/core";
 export type * from "./def/schema-def";
 
-export type Infer<T extends Parser> = InferParser<T>["out"];
-export type InferIn<T extends Parser> = InferParser<T>["in"];
+export type Infer<T> = InferParser<T>["out"];
+export type InferIn<T> = InferParser<T>["in"];
+export type InferInOut<T> = InferParser<T>;
 
 export const parse = <T extends Parser>(
   parser: T,
@@ -20,3 +21,5 @@ export const parse = <T extends Parser>(
 ): Infer<T> => {
   return getParseFn(parser)(value);
 };
+export { getParseFn, type ParseFn } from "./validation/validation";
+export type { Parser } from "./validation/types";

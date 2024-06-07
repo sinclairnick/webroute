@@ -1,13 +1,16 @@
-import { getParseFn } from "../parser";
 import {
   AnyHandlerDefinition,
+  AnyProviderMap,
   InferParamsFromPath,
   MiddlewareOutFn,
+  RequestCtx,
   RouteMeta,
+  ServiceMap,
 } from "./types";
 import { Log } from "../../internal/logger";
-import { AnyHandlerBuilder, HandlerBuilder } from "./builder";
-import { Def, createLazyValidators } from "./util";
+import { AnyRouteBuilder, RouteBuilder } from "./builder";
+import { Def, createParseFn } from "./util";
+import { getParseFn } from "@webroute/schema";
 
 function createNewBuilder(
   configA: AnyHandlerDefinition,
@@ -18,7 +21,7 @@ function createNewBuilder(
 
 export function createBuilder<TPath extends string>(
   def: Partial<AnyHandlerDefinition> = {}
-): HandlerBuilder<{
+): RouteBuilder<{
   Path: TPath;
   InferredParams: InferParamsFromPath<TPath>;
   Meta: RouteMeta;
@@ -34,44 +37,45 @@ export function createBuilder<TPath extends string>(
   HeadersReqIn: unknown;
   HeadersReqOut: unknown;
   State: unknown;
+  Providers: unknown;
 }> {
   return {
     "~def": def,
     path(path) {
       return createNewBuilder(def, {
         path: def.path ? `${def.path}${path}` : path,
-      }) as AnyHandlerBuilder;
+      }) as AnyRouteBuilder;
     },
     query(schema) {
       const parser = getParseFn(schema);
 
       return createNewBuilder(def, {
         query: { parser, schema },
-      }) as AnyHandlerBuilder;
+      }) as AnyRouteBuilder;
     },
     params(schema) {
       const parser = getParseFn(schema);
 
       return createNewBuilder(def, {
         params: { parser, schema },
-      }) as AnyHandlerBuilder;
+      }) as AnyRouteBuilder;
     },
     body(schema) {
       const parser = getParseFn(schema);
 
       return createNewBuilder(def, {
         body: { parser, schema },
-      }) as AnyHandlerBuilder;
+      }) as AnyRouteBuilder;
     },
     output(output) {
       const parser = getParseFn(output);
 
       return createNewBuilder(def, {
         output: { parser, schema: output },
-      }) as AnyHandlerBuilder;
+      }) as AnyRouteBuilder;
     },
     meta(meta) {
-      return createNewBuilder(def, { meta }) as AnyHandlerBuilder;
+      return createNewBuilder(def, { meta }) as AnyRouteBuilder;
     },
     method(method) {
       if (Array.isArray(method)) {
@@ -79,12 +83,12 @@ export function createBuilder<TPath extends string>(
 
         return createNewBuilder(def, {
           methods: unique,
-        }) as AnyHandlerBuilder;
+        }) as AnyRouteBuilder;
       }
 
       return createNewBuilder(def, {
         methods: [String(method).toUpperCase()],
-      }) as AnyHandlerBuilder;
+      }) as AnyRouteBuilder;
     },
     headers(schema) {
       return createNewBuilder(def, {
@@ -92,19 +96,28 @@ export function createBuilder<TPath extends string>(
           parser: getParseFn(schema),
           schema,
         },
-      }) as AnyHandlerBuilder;
+      }) as AnyRouteBuilder;
     },
-    use(...handlers) {
+    use(handler) {
       return createNewBuilder(def, {
-        middleware: [...(def.middleware ?? []), ...(handlers as any[])],
-      }) as AnyHandlerBuilder;
+        middleware: [...(def.middleware ?? []), handler],
+      }) as AnyRouteBuilder;
+    },
+    provide(providers) {
+      return createNewBuilder(def, {
+        providers: { ...def.providers, ...providers },
+      }) as AnyRouteBuilder;
     },
     handle(handler) {
       const _handler = async (req: Request) => {
-        const validators = createLazyValidators(req, def);
+        const parse = createParseFn(req, def);
         const middlewareOut: MiddlewareOutFn[] = [];
 
-        const ctx = { ...validators, state: {} };
+        const ctx: RequestCtx = {
+          state: {},
+          services: { ...def.providers },
+          parse,
+        };
 
         let response: Response | undefined;
 

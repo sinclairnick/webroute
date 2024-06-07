@@ -2,22 +2,25 @@
   "name": "@webroute/router",
   "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
   "scripts": {
     "test": "vitest",
-    "build": "tsup",
-		"publish-pkg": "pnpm run build && pnpm publish --access=public"
+    "build": "tsup-node",
+    "publish-pkg": "pnpm run build && pnpm publish --access=public"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "radix3": "^1.1.2"
+    "radix3": "^1.1.2",
+    "urlpattern-polyfill": "^10.0.0"
   },
   "devDependencies": {
     "@webroute/core": "workspace:*",
     "tsup": "^8.0.1",
-    "urlpattern-polyfill": "^10.0.0",
     "vitest": "^1.2.2"
   }
 }

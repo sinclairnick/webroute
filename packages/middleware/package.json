@@ -6,13 +6,15 @@
   "types": "dist/index.d.ts",
   "module": "dist/index.mjs",
   "private": false,
+  "sideEffects": false,
   "scripts": {
     "test": "vitest",
-    "build": "tsup",
+    "build": "tsup-node",
     "publish-pkg": "pnpm run build && pnpm publish --access=public",
     "check": "tsc --noEmit"
   },
   "devDependencies": {
+    "hono": "^4.3.7",
     "tsup": "^8.0.1",
     "vitest": "^1.6.0"
   },

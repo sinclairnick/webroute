@@ -11,9 +11,6 @@ export * from "./to-framework";
  * Alternatively, you can define your middleware using the `satisfies MiddlewareFn` TypeScript syntax.
  *
  */
-export const defineMiddleware = <
-  TOpts extends any[],
-  TMiddleware extends AnyMiddlewareFn
->(
-  fn: (...opt: TOpts) => TMiddleware
-) => fn;
+export const defineMiddleware = <TMiddleware extends AnyMiddlewareFn>(
+  middleware: TMiddleware
+) => middleware;

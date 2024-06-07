@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { route } from ".";
-import { HandlerBuilder } from "./handler/builder";
+import { RouteBuilder } from "./handler/builder";
 import { LazyValidator } from "./handler/types";
 import { z } from "zod";
 
@@ -45,13 +45,13 @@ describe("route().path", () => {
 
     const Path = "/user/:id/posts/:postId/articles/:articleId";
 
-    type R1Path = typeof r1 extends HandlerBuilder<infer TParams>
+    type R1Path = typeof r1 extends RouteBuilder<infer TParams>
       ? TParams["Path"]
       : never;
-    type R2Path = typeof r2 extends HandlerBuilder<infer TParams>
+    type R2Path = typeof r2 extends RouteBuilder<infer TParams>
       ? TParams["Path"]
       : never;
-    type R3Path = typeof r3 extends HandlerBuilder<infer TParams>
+    type R3Path = typeof r3 extends RouteBuilder<infer TParams>
       ? TParams["Path"]
       : never;
 

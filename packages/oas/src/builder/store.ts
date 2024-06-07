@@ -9,7 +9,7 @@ export class SchemaStore {
   ): oas31.SchemaObject | { $ref: string } {
     if (id == null) return schema;
 
-    const $ref = `#/components/schema/id`;
+    const $ref = `#/components/schemas/${id}`;
 
     this.schema[id] ??= schema;
     return { $ref };
@@ -18,4 +18,19 @@ export class SchemaStore {
   getSpec = (): oas31.SchemasObject => {
     return this.schema;
   };
+}
+
+export class OperationIdStore {
+  private ids: Record<string, number> = {};
+
+  /**
+   * Non-idempotent
+   */
+  getUniqueId(id: string) {
+    const existingCount = this.ids[id] ?? 0;
+    // Increment count of operation name
+    this.ids[id] = existingCount + 1;
+
+    return `${id}${existingCount === 0 ? "" : existingCount}`;
+  }
 }

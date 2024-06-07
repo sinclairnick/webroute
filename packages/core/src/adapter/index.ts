@@ -13,7 +13,7 @@ export const normaliseRoutes = (
     const _route = input[key];
 
     const path = route.getPath(_route);
-    const methods = route.getPath(_route);
+    const methods = route.getMethods(_route);
 
     if (path == null) {
       throw new Error(`No path provided for route with key: ${key}`);

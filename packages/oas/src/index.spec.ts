@@ -16,7 +16,7 @@ describe("OAS", () => {
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input);
 
       const spec = result.getSpec();
 
@@ -32,7 +32,7 @@ describe("OAS", () => {
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input);
 
       const spec = result.getSpec();
 
@@ -53,7 +53,7 @@ describe("OAS", () => {
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input);
 
       const spec = result.getSpec();
 
@@ -75,7 +75,7 @@ describe("OAS", () => {
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input);
 
       const spec = result.getSpec();
 
@@ -98,11 +98,7 @@ describe("OAS", () => {
 
       const onCollision = vi.fn();
 
-      const result = createSpec({
-        formatter: (x) => ({}),
-        operations: input,
-        onCollision,
-      });
+      const result = createSpec(input, { onCollision });
 
       const spec = result.getSpec();
 
@@ -120,7 +116,14 @@ describe("OAS", () => {
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input, {
+        formatter: () => ({
+          type: "object",
+          properties: {
+            a: { type: "string" },
+          },
+        }),
+      });
 
       const spec = result.getSpec();
 
@@ -128,26 +131,35 @@ describe("OAS", () => {
       expect(spec.paths?.["/foo"]?.get?.parameters).toHaveLength(1);
       expect(spec.paths?.["/foo"]?.get?.parameters?.[0]).toMatchObject({
         in: "query",
+        name: "a",
       });
     });
 
     test("Handles params", () => {
       const input: OperationsArrayInput = [
         {
-          path: "/foo",
+          path: "/foo/:a",
           methods: ["get"],
           Params: NullSchema,
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input, {
+        formatter: () => ({
+          type: "object",
+          properties: {
+            a: { type: "string" },
+          },
+        }),
+      });
 
       const spec = result.getSpec();
 
-      expect(spec.paths?.["/foo"]?.get?.parameters).toBeDefined();
-      expect(spec.paths?.["/foo"]?.get?.parameters).toHaveLength(1);
-      expect(spec.paths?.["/foo"]?.get?.parameters?.[0]).toMatchObject({
+      expect(spec.paths?.["/foo/{a}"]?.get?.parameters).toBeDefined();
+      expect(spec.paths?.["/foo/{a}"]?.get?.parameters).toHaveLength(1);
+      expect(spec.paths?.["/foo/{a}"]?.get?.parameters?.[0]).toMatchObject({
         in: "path",
+        name: "a",
       });
     });
 
@@ -160,7 +172,14 @@ describe("OAS", () => {
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input, {
+        formatter: () => ({
+          type: "object",
+          properties: {
+            a: { type: "string" },
+          },
+        }),
+      });
 
       const spec = result.getSpec();
 
@@ -168,26 +187,63 @@ describe("OAS", () => {
       expect(spec.paths?.["/foo"]?.get?.parameters).toHaveLength(1);
       expect(spec.paths?.["/foo"]?.get?.parameters?.[0]).toMatchObject({
         in: "header",
+        name: "a",
       });
+    });
+
+    test("Strips extraneous path params", () => {
+      const input: OperationsArrayInput = [
+        {
+          path: "/foo",
+          methods: ["get"],
+          Params: NullSchema,
+        },
+      ];
+
+      const result = createSpec(input, {
+        formatter: () => ({
+          type: "object",
+          properties: {
+            a: { type: "string" },
+          },
+        }),
+      });
+
+      const spec = result.getSpec();
+
+      expect(spec.paths?.["/foo"]?.get?.parameters).toBeUndefined();
     });
 
     test("Handles body", () => {
       const input: OperationsArrayInput = [
         {
           path: "/foo",
-          methods: ["get"],
+          methods: ["post"],
           Body: NullSchema,
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input, {
+        formatter: () => ({
+          type: "object",
+          properties: {
+            a: { type: "string" },
+          },
+        }),
+      });
 
       const spec = result.getSpec();
 
-      expect(spec.paths?.["/foo"]?.get?.requestBody).toBeDefined();
-      expect(spec.paths?.["/foo"]?.get?.requestBody).toMatchObject({
+      expect(spec.paths?.["/foo"]?.post).toBeDefined();
+      expect(spec.paths?.["/foo"]?.post?.requestBody).toBeDefined();
+      expect(spec.paths?.["/foo"]?.post?.requestBody).toMatchObject({
         content: {
-          "application/json": expect.any(Object),
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: { a: { type: "string" } },
+            },
+          },
         },
       });
     });
@@ -201,7 +257,7 @@ describe("OAS", () => {
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input);
 
       const spec = result.getSpec();
 
@@ -224,18 +280,32 @@ describe("OAS", () => {
         {
           path: "/foo",
           methods: ["get"],
-          [type]: OAS.Param(NullSchema, { name: "CUSTOM" }),
+          [type]: OAS.Param(NullSchema, {
+            a: {
+              name: "CUSTOM",
+            },
+          }),
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input, {
+        formatter: () => ({
+          type: "object",
+          properties: {
+            a: { type: "string" },
+          },
+        }),
+        params: {
+          stripExtraneous: false,
+        },
+      });
 
       const spec = result.getSpec();
 
-      expect(spec.paths?.["/foo"]?.get?.parameters).toBeDefined();
-      expect(spec.paths?.["/foo"]?.get?.parameters?.[0]).toMatchObject({
-        name: "CUSTOM",
-      });
+      const params = spec.paths?.["/foo"].get?.parameters;
+
+      expect(params).toBeDefined();
+      expect(params?.[0]).toMatchObject({ name: "CUSTOM" });
     });
 
     test.each(params)("Handles %s decorators (fn)", (type) => {
@@ -243,11 +313,23 @@ describe("OAS", () => {
         {
           path: "/foo",
           methods: ["get"],
-          [type]: OAS.Param(NullSchema, (op) => ({ ...op, name: "CUSTOM" })),
+          [type]: OAS.Param(NullSchema, {
+            a: (op) => ({ ...op, name: "CUSTOM" }),
+          }),
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input, {
+        formatter: () => ({
+          type: "object",
+          properties: {
+            a: { type: "string" },
+          },
+        }),
+        params: {
+          stripExtraneous: false,
+        },
+      });
 
       const spec = result.getSpec();
 
@@ -261,7 +343,7 @@ describe("OAS", () => {
       const input: OperationsArrayInput = [
         {
           path: "/foo",
-          methods: ["get"],
+          methods: ["post"],
           Body: OAS.Body(NullSchema, (op) => ({
             ...op,
             description: "CUSTOM",
@@ -269,12 +351,19 @@ describe("OAS", () => {
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input, {
+        formatter: () => ({
+          type: "object",
+          properties: {
+            a: { type: "string" },
+          },
+        }),
+      });
 
       const spec = result.getSpec();
 
-      expect(spec.paths?.["/foo"]?.get?.requestBody).toBeDefined();
-      expect(spec.paths?.["/foo"]?.get?.requestBody?.description).toBe(
+      expect(spec.paths?.["/foo"]?.post?.requestBody).toBeDefined();
+      expect(spec.paths?.["/foo"]?.post?.requestBody?.description).toBe(
         "CUSTOM"
       );
     });
@@ -295,7 +384,7 @@ describe("OAS", () => {
         },
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input);
 
       const spec = result.getSpec();
 
@@ -320,7 +409,7 @@ describe("OAS", () => {
         ),
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input);
 
       const spec = result.getSpec();
 
@@ -339,7 +428,7 @@ describe("OAS", () => {
         ),
       ];
 
-      const result = createSpec({ formatter: (x) => ({}), operations: input });
+      const result = createSpec(input);
 
       const spec = result.getSpec();
 

@@ -1,6 +1,6 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { route } from ".";
-import { HandlerBuilder } from "./handler/builder";
+import { RouteBuilder } from "./handler/builder";
 import { LazyValidator } from "./handler/types";
 import { z } from "zod";
 
@@ -8,7 +8,7 @@ describe("route().<schema>", () => {
   test("Initially has no type info", () => {
     const result = route();
 
-    type TParams = typeof result extends HandlerBuilder<infer TParams>
+    type TParams = typeof result extends RouteBuilder<infer TParams>
       ? TParams
       : never;
 
@@ -36,7 +36,7 @@ describe("route().<schema>", () => {
     expect(result["~def"].query?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
     expect(() => result["~def"].query?.parser({ a: "1" })).rejects.toThrow();
 
-    type QueryType = typeof result extends HandlerBuilder<infer TParams>
+    type QueryType = typeof result extends RouteBuilder<infer TParams>
       ? TParams["QueryOut"]
       : never;
     expectTypeOf<QueryType>().toEqualTypeOf<{ a: number }>();
@@ -53,7 +53,7 @@ describe("route().<schema>", () => {
     });
     expect(() => result["~def"].params?.parser({ a: "1" })).rejects.toThrow();
 
-    type ParamType = typeof result extends HandlerBuilder<infer TParams>
+    type ParamType = typeof result extends RouteBuilder<infer TParams>
       ? TParams["ParamsOut"]
       : never;
 
@@ -69,7 +69,7 @@ describe("route().<schema>", () => {
     expect(result["~def"].body?.parser({ a: 1 })).resolves.toEqual({ a: 1 });
     expect(() => result["~def"].body?.parser({ a: "1" })).rejects.toThrow();
 
-    type BodyType = typeof result extends HandlerBuilder<infer TParams>
+    type BodyType = typeof result extends RouteBuilder<infer TParams>
       ? TParams["BodyOut"]
       : never;
     expectTypeOf<BodyType>().toEqualTypeOf<{ a: number }>();
@@ -88,7 +88,7 @@ describe("route().<schema>", () => {
       result["~def"].headersReq?.parser({ a: "1" })
     ).rejects.toThrow();
 
-    type BodyType = typeof result extends HandlerBuilder<infer TParams>
+    type BodyType = typeof result extends RouteBuilder<infer TParams>
       ? TParams["HeadersReqOut"]
       : never;
     expectTypeOf<BodyType>().toEqualTypeOf<{ a: number }>();
@@ -105,10 +105,10 @@ describe("route().<schema>", () => {
     });
     expect(() => result["~def"].output?.parser({ a: "1" })).rejects.toThrow();
 
-    type OutputType = typeof result extends HandlerBuilder<infer TParams>
+    type OutputType = typeof result extends RouteBuilder<infer TParams>
       ? TParams["OutputIn"]
       : never;
-    type OutputTypeOut = typeof result extends HandlerBuilder<infer TParams>
+    type OutputTypeOut = typeof result extends RouteBuilder<infer TParams>
       ? TParams["OutputOut"]
       : never;
 
