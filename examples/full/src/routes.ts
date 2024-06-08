@@ -1,4 +1,4 @@
-import { route } from "@webroute/core";
+import { route } from "@webroute/route";
 import { OAS } from "@webroute/oas";
 import z from "zod";
 import { isAuthed } from "./middleware";

@@ -4,6 +4,9 @@
     "docs",
     "packages/*"
   ],
+	"scripts": {
+		"build:packages": "pnpm turbo build --filter '@webroute/**'"
+	},
   "devDependencies": {
     "typescript": "^5.4.5"
   }

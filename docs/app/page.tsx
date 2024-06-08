@@ -47,24 +47,18 @@ export default function HomePage() {
                 </td>
                 <td />
               </tr>
-              <tr>
-                <td />
-                <td align="right">
-                  <code>@webroute/core</code>
-                </td>
-              </tr>
-              <tr>
-                <td />
-                <td align="right">
-                  <code>@webroute/client</code>
-                </td>
-              </tr>
-              <tr>
-                <td />
-                <td align="right">
-                  <code>@webroute/middleware</code>
-                </td>
-              </tr>
+              {["oas", "route", "client", "router", "schema", "middleware"].map(
+                (x) => {
+                  return (
+                    <tr key={x}>
+                      <td />
+                      <td align="right">
+                        <code>@webroute/{x}</code>
+                      </td>
+                    </tr>
+                  );
+                }
+              )}
             </tbody>
           </table>
         </div>

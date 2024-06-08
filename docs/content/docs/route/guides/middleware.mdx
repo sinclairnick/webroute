@@ -16,7 +16,7 @@ For example, traditionally middleware will use something like `app.use(...)` and
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core";
+import { route } from "@webroute/route";
 import { z } from "zod";
 declare function assert(x: any): void;
 declare const isAuthed: boolean;
@@ -66,7 +66,7 @@ Because `webroute` prohibits modifying a `Request` object, this is impossible. I
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core";
+import { route } from "@webroute/route";
 // ---cut-end---
 route()
 	.use((req, { state }) => {
@@ -100,7 +100,7 @@ Any response middleware already initialised _will_ be run. The next section elab
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core";
+import { route } from "@webroute/route";
 declare function getUser(req: Request): { id: number } | undefined;
 // ---cut-end---
 route()
@@ -129,7 +129,7 @@ Our middleware can finally also return a _response handler_. As the name suggest
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core";
+import { route } from "@webroute/route";
 // ---cut-end---
 route()
 	.use((req, { state }) => {
@@ -173,7 +173,7 @@ To retain type-safety, at least, we can simply provide a type argument of the mu
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core";
+import { route } from "@webroute/route";
 // ---cut-end---
 route()
 	.use<{ foo: true }>((req, { state }) => {

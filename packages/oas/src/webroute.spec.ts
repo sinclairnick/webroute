@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { route, normaliseRoutes } from "@webroute/core";
+import { route, normaliseRoutes } from "@webroute/route";
 import { createSpec } from "./builder/builder";
 
 describe("Webroute", () => {

@@ -1,6 +1,6 @@
 import { appRoutes } from "./routes";
 import { openApiRoute } from "./openapi";
-import { normaliseRoutes } from "@webroute/core";
+import { normaliseRoutes } from "@webroute/route";
 import { createRadixRouter } from "@webroute/router";
 
 const allRoutes = {

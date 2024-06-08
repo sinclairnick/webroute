@@ -50,7 +50,7 @@ const router = createRadixRouter([{
 Or if we have many routes, we can use the `normalizeRoutes` method.
 
 ```ts
-import { normaliseRoutes } from "@webroute/core"
+import { normaliseRoutes } from "@webroute/route"
 
 const appRoutes = { myRoute, myOtherRoute }
 const routes = normaliseRoutes(appRoutes)
@@ -111,7 +111,7 @@ We can also perform this iteratively when we have quite a few routes.
 ```ts title="hono-example.ts" twoslash
 // ---cut-start---
 import { Hono } from "hono"
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 const routes = [
 	route().handle(() => {})
 ]

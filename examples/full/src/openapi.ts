@@ -2,7 +2,7 @@ import { createSpec } from "@webroute/oas";
 import { createParser, createFormatter } from "@webroute/schema";
 import { ZodParser } from "@webroute/schema/zod";
 import { TypeBoxFormatter } from "@webroute/schema/typebox";
-import { normaliseRoutes, route } from "@webroute/core";
+import { normaliseRoutes, route } from "@webroute/route";
 import { appRoutes } from "./routes";
 
 const zodParser = createParser(ZodParser());

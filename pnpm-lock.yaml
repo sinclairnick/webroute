@@ -54,15 +54,15 @@ importers:
       '@webroute/client':
         specifier: workspace:*
         version: link:../packages/client
-      '@webroute/core':
-        specifier: workspace:*
-        version: link:../packages/core
       '@webroute/middleware':
         specifier: workspace:*
         version: link:../packages/middleware
       '@webroute/oas':
         specifier: workspace:*
         version: link:../packages/oas
+      '@webroute/route':
+        specifier: workspace:*
+        version: link:../packages/route
       '@webroute/router':
         specifier: workspace:*
         version: link:../packages/router
@@ -96,15 +96,15 @@ importers:
       '@webroute/client':
         specifier: workspace:*
         version: link:../../packages/client
-      '@webroute/core':
-        specifier: workspace:*
-        version: link:../../packages/core
       '@webroute/middleware':
         specifier: workspace:*
         version: link:../../packages/middleware
       '@webroute/oas':
         specifier: workspace:*
         version: link:../../packages/oas
+      '@webroute/route':
+        specifier: workspace:*
+        version: link:../../packages/route
       '@webroute/router':
         specifier: workspace:*
         version: link:../../packages/router
@@ -144,7 +144,44 @@ importers:
         specifier: ^3.22.4
         version: 3.23.8
 
-  packages/core:
+  packages/middleware:
+    devDependencies:
+      hono:
+        specifier: ^4.3.7
+        version: 4.3.7
+      tsup:
+        specifier: ^8.0.1
+        version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.12.12)
+
+  packages/oas:
+    dependencies:
+      '@webroute/schema':
+        specifier: workspace:*
+        version: link:../schema
+      openapi3-ts:
+        specifier: ^4.3.2
+        version: 4.3.2
+      scule:
+        specifier: ^1.3.0
+        version: 1.3.0
+    devDependencies:
+      '@webroute/route':
+        specifier: workspace:*
+        version: link:../route
+      tsup:
+        specifier: ^8.0.1
+        version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.12.12)
+      zod:
+        specifier: ^3.22.4
+        version: 3.23.8
+
+  packages/route:
     dependencies:
       '@webroute/middleware':
         specifier: workspace:*
@@ -172,43 +209,6 @@ importers:
         specifier: ^3.22.4
         version: 3.23.8
 
-  packages/middleware:
-    devDependencies:
-      hono:
-        specifier: ^4.3.7
-        version: 4.3.7
-      tsup:
-        specifier: ^8.0.1
-        version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.12.12)
-
-  packages/oas:
-    dependencies:
-      '@webroute/schema':
-        specifier: workspace:*
-        version: link:../schema
-      openapi3-ts:
-        specifier: ^4.3.2
-        version: 4.3.2
-      scule:
-        specifier: ^1.3.0
-        version: 1.3.0
-    devDependencies:
-      '@webroute/core':
-        specifier: workspace:*
-        version: link:../core
-      tsup:
-        specifier: ^8.0.1
-        version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
-      vitest:
-        specifier: ^1.6.0
-        version: 1.6.0(@types/node@20.12.12)
-      zod:
-        specifier: ^3.22.4
-        version: 3.23.8
-
   packages/router:
     dependencies:
       radix3:
@@ -218,9 +218,9 @@ importers:
         specifier: ^10.0.0
         version: 10.0.0
     devDependencies:
-      '@webroute/core':
+      '@webroute/route':
         specifier: workspace:*
-        version: link:../core
+        version: link:../route
       tsup:
         specifier: ^8.0.1
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)

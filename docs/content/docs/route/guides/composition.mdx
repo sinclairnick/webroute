@@ -14,7 +14,7 @@ To avoid repeating common path param elements, we might sometimes wish to add pa
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 // ---cut-end---
 const apiRoute = route("/api")
 
@@ -34,7 +34,7 @@ Composing middleware is simple and powerful using `webroute`s. It makes it easie
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 // ---cut-end---
 // Define base route with auth middleware
@@ -67,7 +67,7 @@ Middleware can be chained too.
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 const authedRoute = route() .use(() => ({ token: "" }))
 declare function isAdmin(token: string): boolean
@@ -105,7 +105,7 @@ While middleware and paths benefit from composition the most, schema and methods
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 // ---cut-end---
 
@@ -122,8 +122,8 @@ const paperRoute = paginatedRoute
 	.query(z.object({
 		page: z.enum(["A4", "A3", "A2"])
 	}))
-	.handle(async (req, { query }) => {
-		const { page, ...rest } = await query()
+	.handle(async (req, { parse }) => {
+		const { page, ...rest } = await parse("query")
 		//      ^^^^
 		//               ^^^^
 	})

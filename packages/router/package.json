@@ -19,7 +19,7 @@
     "urlpattern-polyfill": "^10.0.0"
   },
   "devDependencies": {
-    "@webroute/core": "workspace:*",
+    "@webroute/route": "workspace:*",
     "tsup": "^8.0.1",
     "vitest": "^1.2.2"
   }

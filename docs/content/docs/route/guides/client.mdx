@@ -8,7 +8,7 @@ This will enable us to easily transform a record of routes into a type-safe clie
 
 
 ```ts
-import { ToClient } from "@webroute/core"
+import { ToClient } from "@webroute/route"
 
 // Export to monorepo or npm, perhaps...
 export type AppDef = ToClient.InferApp<typeof appRoutes>;

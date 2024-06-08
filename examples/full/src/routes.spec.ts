@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { appRoutes } from "./routes";
 import { ZodError } from "zod";
-import { route } from "@webroute/core";
+import { route } from "@webroute/route";
 
 describe("Routes", () => {
   test("GET /post errors on non-numeric id param", () => {

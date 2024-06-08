@@ -11,22 +11,22 @@ import { Callout } from 'fumadocs-ui/components/callout';
 <Tabs items={["npm", "pnpm", "yarn", "bun"]} defaultIndex={0}>
   <Tab value="npm">
 		```
-		npm install @webroute/core
+		npm install @webroute/route
 		```
 	</Tab>
   <Tab value="pnpm">
 		```
-		pnpm install @webroute/core
+		pnpm install @webroute/route
 		```
 	</Tab>
   <Tab value="yarn">
 		```
-		yarn add @webroute/core
+		yarn add @webroute/route
 		```
 	</Tab>
   <Tab value="bun">
 		```
-		bun add @webroute/core
+		bun add @webroute/route
 		```
 	</Tab>
 </Tabs>
@@ -45,7 +45,7 @@ const PostRoute = route("/posts/:id")
 We might implement this like so
 
 ```ts twoslash
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 // ---cut-start---
 import { z } from "zod"
 type Post = { id:number, name:string, authorId:number }
@@ -56,12 +56,12 @@ const getPostFromDb = async (id:number): Promise<Post> => {
 
 const PostRoute = route("/posts/:id")
 					.params(z.object({ id: z.number() }))
-					.handle(async (req, { params }) => {
+					.handle(async (req, { parse }) => {
 						// Validate and parse the params
-						const { id } = await params()
+						const { params } = await parse()
 						//      ^^
 
-						const post = await getPostFromDb(id)
+						const post = await getPostFromDb(params.id)
 
 						return post
 					})
@@ -80,7 +80,7 @@ As applications grow, we often want to use middleware to handle the flow of requ
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 type Post = { id:number, name:string, authorId:number }
 const getPostFromDb = async (id:number): Promise<Post> => {
@@ -101,8 +101,8 @@ Now we could reuse the base route for any of our authed routes. If we wanted to 
 ```ts
 const postRoute = authedRoute.path("/posts/:id")
 					.params(z.object({ id: z.number() }))
-					.handle(async (req, { params }) => {
-						const { id } = await params()
+					.handle(async (req, { parse }) => {
+						const { id } = await parse("params")
 						const post = await getPostFromDb(id)
 						return post
 					})

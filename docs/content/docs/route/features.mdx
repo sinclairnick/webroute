@@ -55,7 +55,7 @@ Define route information declaratively, not imperatively. This encourages settin
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 // ---cut-end---
 // Define route w/ middleware
 const authedRoute = route()
@@ -100,12 +100,11 @@ route()
 	.headers(HeadersSchema)
 	.body(BodySchema)
 	.output(ResponseSchema)
-	.handle(async (req, ctx) => {
-		const { query, params, headers, body } = ctx
+	.handle(async (req, c) => {
 		try {
 			// Validation is only run here.
 			// This avoids unnecessary work and enables custom error handling
-			const { /**...*/ } = await query() 
+			const { query, params, headers, body } = c.parse()
 		} catch(e) {
 			// TODO: Handle this error in a special way
 		}

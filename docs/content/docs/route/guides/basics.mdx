@@ -5,7 +5,7 @@ description: Learn the basic API of routes
 import { Callout } from 'fumadocs-ui/components/callout';
 
 ```ts
-import { route } from "@webroute/core" 
+import { route } from "@webroute/route" 
 ```
 
 A `webroute` is ultimately a declaration of an API endpoint, including validation, headers, middleware and the request handler.
@@ -69,16 +69,16 @@ The below examples will use Zod schema, but you may use whatever validation you 
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 // ---cut-end---
 // GET /posts/123
 route("/posts/:id")
 	.method("get")
 	.params(z.object({ id: z.number() }))
-	.handle(async (req, { params }) => {
+	.handle(async (req, { parse }) => {
 		// Run the parsing/validation, lazily
-		const { id } = await params()
+		const { id } = await parse("params")
 		//      ^?
 	})
 ```
@@ -87,7 +87,7 @@ route("/posts/:id")
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 // ---cut-end---
 // GET /posts?limit=1&offset=2
@@ -98,9 +98,9 @@ route("/posts")
 		limit: z.number().optional(),
 		offset: z.number().optional() 
 	}))
-	.handle(async (req, { query }) => {
+	.handle(async (req, { parse }) => {
 		// Run the parsing/validation, lazily
-		const { limit, offset } = await query()
+		const { limit, offset } = await parse("query")
 		//      ^^^^^  
 		//             ^?
 	})
@@ -110,7 +110,7 @@ route("/posts")
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 // ---cut-end---
 // GET /posts -H "Authorization: Bearer eYon...."
@@ -129,7 +129,7 @@ route("/posts/:id")
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 // ---cut-end---
 // POST /login -D { "email": "...", "password": "..." }
@@ -140,9 +140,9 @@ route("/login")
 		email: z.string().email(),
 		password: z.string().min(10, "Password too short") 
 	}))
-	.handle(async (req, { body }) => {
+	.handle(async (req, { parse }) => {
 		// Run the parsing/validation, lazily
-		const { email, password } = await body()
+		const { email, password } = await parse("body")
 		//      ^^^^^
 		//             ^?
 	})
@@ -152,7 +152,7 @@ route("/login")
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 declare function formatMoney(x :any): string
 // ---cut-end---
@@ -169,13 +169,53 @@ route("/balance")
 	})
 ```
 
+## Providers
+
+Providers enable injecting services into the handler context via arbitrary initialisation functions.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/route"
+declare class MyService {
+	doSomething: () => any
+}
+// ---cut-end---
+
+route()
+	.provide({
+		myService: () => new MyService()
+	})
+	.handle((req, c) => {
+		c.services.myService().doSomething()
+	})
+```
+
+## Middleware
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/route"
+// ---cut-end---
+
+route()
+	.use(req => {
+		return { userId: "123" } // Adds to state
+	})
+	.handle((req, c) => {
+		c.state.userId
+	})
+```
+Middleware allows composing common functionality, with complete type-safety.
+
+
+
 ## Route Utilities
 
 The `route` object also exposes some type utilities for type inference and extracting route data.
 
 ```ts title="example-route.ts" twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 // ---cut-end---
 // Define some route
@@ -192,7 +232,7 @@ const myRoute = route("/post/:id")
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 const myRoute = route("/post/:id")
 	.method(["put", "post"])
@@ -214,7 +254,7 @@ const operations = route.getOperationKeys(myRoute);
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/core"
+import { route } from "@webroute/route"
 import { z } from "zod"
 const myRoute = route("/post/:id")
 	.method(["put", "post"])

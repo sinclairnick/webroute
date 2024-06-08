@@ -28,7 +28,7 @@ route("/foo")
 To build our OpenAPI spec itself, we can either manually format our routes to the correct shape for `createSpec`. Alternatively, we can use the `normaliseRoutes` function to assume the right shape.
 
 ```ts
-import { normaliseRoutes } from "@webroute/core"
+import { normaliseRoutes } from "@webroute/route"
 
 const appRoutes = { myRoute }
 const routes = normaliseRoutes(appRoutes) // -> { path, methods, ... }[]

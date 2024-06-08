@@ -45,7 +45,7 @@ They will work with any framework or runtime that utilises web-standard `Request
 ![Core License](https://img.shields.io/npm/l/%40webroute%2Fcore)
 ![Core Size](https://img.shields.io/bundlephobia/minzip/%40webroute%2Fcore)
 
-The `@webroute/core` package primarily exports the `route` builder. This enables building routes which support declaring and composing input/output schema, headers, middleware and paths all at once. The result is a single standard request handler which can be used anywhere.
+The `@webroute/route` package primarily exports the `route` builder. This enables building routes which support declaring and composing input/output schema, headers, middleware and paths all at once. The result is a single standard request handler which can be used anywhere.
 
 ```ts
 export const GET = route()

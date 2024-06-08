@@ -15,7 +15,7 @@
   "dependencies": {
     "@sinclair/typebox": "^0.32.31",
     "@webroute/client": "workspace:*",
-    "@webroute/core": "workspace:*",
+    "@webroute/route": "workspace:*",
     "@webroute/middleware": "workspace:*",
     "@webroute/oas": "workspace:*",
     "@webroute/router": "workspace:*",

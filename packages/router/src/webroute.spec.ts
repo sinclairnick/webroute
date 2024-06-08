@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { route, normaliseRoutes } from "@webroute/core";
+import { route, normaliseRoutes } from "@webroute/route";
 import { createLinearRouter, createRadixRouter } from ".";
 
 describe("Webroute", () => {

@@ -1,6 +1,6 @@
 packages:
   - "docs"
-  - "packages/core"
+  - "packages/route"
   - "packages/client"
   - "packages/middleware"
   - "packages/schema"
