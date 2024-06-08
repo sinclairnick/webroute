@@ -2,11 +2,11 @@ import { MiddlewareHandler } from "hono";
 import { createAdapter } from "../src";
 
 export const toHono = createAdapter(
-  ([req, next]: Parameters<MiddlewareHandler>) => {
+  ([c, next]: Parameters<MiddlewareHandler>) => {
     return {
       onData(data) {
         for (const key in data) {
-          req.set(key, data[key]);
+          c.set(key, data[key]);
         }
         next();
       },
@@ -18,7 +18,7 @@ export const toHono = createAdapter(
       },
       async onResponseHandler(handler) {
         await next();
-        return handler(req.res);
+        return handler(c.res);
       },
     };
   }
