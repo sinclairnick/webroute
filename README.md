@@ -2,23 +2,29 @@
 
 <h1>Webroute</h1>
 
-<p><b>Webroute is a suite of independent tools for building server-side apps and APIs, based on the <a href="https://common-min-api.proposal.wintercg.org/">WinterCG Minimum Common Web API</a>.</b></p>
+<p><b>Building blocks for REST APIs.</b></p>
+<p><b>Built on standards, designed for interoperability.</b></p>
 
 </div>
 
 <img src="./static/webroute-cover.jpg"/>
 
-## Philosophy
-
-Webroute adheres to a philosophy where tools should be interoperable to avoid repeating the same effort time and time again. As such, the various packages provided are isolated, independent and will play nicely with the tools of today _and tomorrow_.
+Webroute is a set of building blocks which can combine to form a fully fledged web framework. Each tool is decoupled from the next, meaning they are all independently useful. But they can also be stacked, leaving you with a strong foundation for quickly building backend web apps that are more future-proofed.
 
 **View the [documentation](https://webroute.vercel.app).**
 
+## Why not a framework?
+
+Given the immense range of how modern apps are deployed, from microservices to monoliths to serverless, Webroute has been designed to be selectively adopted, only using the relevant parts to your situation.
+
+
 ## Compatibility
+
+Webroute can be used standalone, slot into existing apps or integrated alongside other frameworks, without awkwardness.
 
 ### Frameworks:
 
-- ✅ Express (via adapter)
+- ✅ Hono
 - ✅ NextJS
 - ✅ Remix
 - ✅ SolidStart
