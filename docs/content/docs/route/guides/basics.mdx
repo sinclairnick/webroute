@@ -118,9 +118,9 @@ import { z } from "zod"
 route("/posts/:id")
 	.method("get")
 	.headers(z.object({ Authorization: z.string().regex(/Bearer [a-zA-Z0-9]+/) }))
-	.handle(async (req, { headers }) => {
+	.handle(async (req, { parse }) => {
 		// Run the parsing/validation, lazily
-		const { Authorization } = await headers()
+		const { Authorization } = await parse("headers")
 		//      ^?
 	})
 ```
@@ -176,21 +176,26 @@ Providers enable injecting services into the handler context via arbitrary initi
 ```ts twoslash
 // ---cut-start---
 import { route } from "@webroute/route"
-declare class MyService {
-	doSomething: () => any
-}
+declare class MyService { doSomething: () => any }
+declare const DIContainer: { get: (x: string) => any }
 // ---cut-end---
 
 route()
 	.provide({
-		myService: () => new MyService()
+		myService: () => new MyService(),
+		// Use arbitrary params
+		another: (req: Request) => DIContainer.get("thing") // Use a DI framework?
 	})
 	.handle((req, c) => {
 		c.services.myService().doSomething()
+
+		c.services.another(req)
 	})
 ```
 
 ## Middleware
+
+Middleware enables composing common functionality, with complete type-safety.
 
 ```ts twoslash
 // ---cut-start---
@@ -205,15 +210,16 @@ route()
 		c.state.userId
 	})
 ```
-Middleware allows composing common functionality, with complete type-safety.
 
-
+Learn more about [Middleware](./middleware).
 
 ## Route Utilities
 
 The `route` object also exposes some type utilities for type inference and extracting route data.
 
-```ts title="example-route.ts" twoslash
+The following examples reference the below route definition
+
+```ts title="example-route.ts" twoslash include main
 // ---cut-start---
 import { route } from "@webroute/route"
 import { z } from "zod"

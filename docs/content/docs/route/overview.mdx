@@ -30,9 +30,9 @@ export const GET = route()
 	.body(z.object({ name: z.string() }))
 
 	// Handle the request...
-	.handle(async (req, { state, body }) => {
+	.handle(async (req, { state, parse }) => {
 		const { userId } = state
-		const { name } = await body() // Lazily validate body
+		const { name } = await parse("body") // Lazily validate body
 
 		return { ok: true } // Sends as JSON
 		// or: return Response.json(...)

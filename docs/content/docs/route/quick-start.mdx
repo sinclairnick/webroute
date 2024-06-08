@@ -59,7 +59,8 @@ const PostRoute = route("/posts/:id")
 					.handle(async (req, { parse }) => {
 						// Validate and parse the params
 						const { params } = await parse()
-						//      ^^
+						//      ^?
+
 
 						const post = await getPostFromDb(params.id)
 
