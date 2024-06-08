@@ -49,7 +49,7 @@ export default function HomePage() {
           <h1 className="text-4xl font-medium mb-4">
             <pre>webroute</pre>
           </h1>
-          <p>A toolkit for building scalable web-standard APIs</p>
+          <p>Building blocks for modern web-standard REST APIs</p>
 
           <Link
             href="/docs"
