@@ -1,30 +1,44 @@
 import Link from "next/link";
-import { CodeBlock, Pre } from "fumadocs-ui/components/codeblock";
-import { PropsWithChildren, ReactNode } from "react";
-import {
-  Atom,
-  Component,
-  GlobeLock,
-  Lock,
-  NotebookPen,
-  Shapes,
-} from "lucide-react";
 
-const Card = ({
-  title,
-  icon,
-  children,
-}: PropsWithChildren<{ title: string; icon?: ReactNode }>) => {
-  return (
-    <div className="flex flex-col py-8 pb-8 px-8 gap-y-2 text-start flex-1">
-      <div className="flex flex-row items-center gap-x-2">
-        {icon}
-        <h4 className="text-lg font-medium">{title}</h4>
-      </div>
-      <p className="max-w-[400px] text-start">{children}</p>
-    </div>
-  );
-};
+const Data = [
+  {
+    name: "Route",
+    npm: "route",
+    href: "/docs/route/overview",
+    about: "A powerful web-standard route-builder",
+  },
+  {
+    name: "Client",
+    npm: "client",
+    href: "/docs/client/overview",
+    about: "Interact with any REST API with full type-safety",
+  },
+  {
+    name: "Middleware",
+    npm: "middleware",
+    href: "/docs/middleware/overview",
+    about: "A spec for defining middleware reusable across frameworks",
+  },
+  {
+    name: "Router",
+    npm: "router",
+    href: "/docs/router/overview",
+    about: "Basic router matching for web Requests",
+  },
+  {
+    name: "OpenAPI",
+    npm: "oas",
+    href: "/docs/oas/overview",
+    about:
+      "Helpers for building OpenAPI definitions with schema/validation libraries",
+  },
+  {
+    name: "Schema",
+    npm: "schema",
+    href: "/docs/schema/overview",
+    about: "Utilities for wrangling the diverse schema library ecosystem",
+  },
+];
 
 export default function HomePage() {
   return (
@@ -36,40 +50,34 @@ export default function HomePage() {
             <pre>webroute</pre>
           </h1>
           <p>A toolkit for building scalable web-standard APIs</p>
-        </div>
 
-        <div className="bg-gray-100 dark:bg-gray-800 rounded py-2 px-4 w-max mx-auto">
-          <table>
-            <tbody>
-              <tr>
-                <td>
-                  <code>npm i</code>
-                </td>
-                <td />
-              </tr>
-              {["oas", "route", "client", "router", "schema", "middleware"].map(
-                (x) => {
-                  return (
-                    <tr key={x}>
-                      <td />
-                      <td align="right">
-                        <code>@webroute/{x}</code>
-                      </td>
-                    </tr>
-                  );
-                }
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        <div>
           <Link
             href="/docs"
-            className="underline text-lg font-medium text-blue-500"
+            className="underline text-lg font-medium text-blue-500 mt-4"
           >
             View docs
           </Link>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2">
+          {Data.map((x, i) => {
+            return (
+              <Link
+                key={i}
+                href={x.href}
+                className="w-full px-4 py-4 rounded-md border text-black dark:text-white flex flex-col gap-y-4 items-start hover:border-black dark:hover:border-white duration-100"
+              >
+                <div className="flex flex-col items-start gap-y-2">
+                  <h2 className="text-xl font-medium">{x.name}</h2>
+                  <p className="opacity-60 text-left">{x.about}</p>
+                </div>
+                <p className="text-sm">
+                  <span className="opacity-50">@webroute/</span>
+                  <span className="font-medium">{x.npm}</span>
+                </p>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </main>
