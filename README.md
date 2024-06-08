@@ -12,7 +12,7 @@
 
 Webroute adheres to a philosophy where tools should be interoperable to avoid repeating the same effort time and time again. As such, the various packages provided are isolated, independent and will play nicely with the tools of today _and tomorrow_.
 
-**Find more via the [documentation](https://webroute.vercel.app).**
+**View the [documentation](https://webroute.vercel.app).**
 
 ## Compatibility
 
