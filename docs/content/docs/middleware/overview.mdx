@@ -1,45 +1,115 @@
 ---
 title: Overview
 ---
+
 import { Callout } from "fumadocs-ui/components/callout";
 
 ```ts
 import { defineMiddleware, MiddlewareFn } from "@webroute/middleware";
 ```
 
-The `webroute` approach to middleware differs to traditional middleware because it intentionally avoids framework-specific code. As a consequence, the traditional callback-based approach to middleware is _inverted_: middleware should provide _us_ with callbacks instead of the other way around.
+Unlike traditional middleware paradigms, `@webroute/middleware` intentionally avoids _framework-specific_ code, such as `next()` or `req.user = user`. Moreover, it promotes a more functional approach, using return values to infer information about how state changes, returning early `Responses` or registering `Response` handlers.
 
-This carries many benefits as detailed in [Motivation](./motivation).
-
-
-<Callout>
-The package is _not_ where you'll find a list of usable middleware. Instead, it acts as the foundation for building framework-agnostic middleware.
-</Callout>
+As a result, we can define middleware once, and use it with any web-standard framework. Learn more about this approach in [Motivation](./motivation).
 
 ---
 
 ## MiddlewareFn
 
-`webroute` middleware is essentially anything that conforms to the following type signature. It should not rely on any framework-specific code too.
+`webroute` middleware is the core interface that everything else is built on. Essentially anything that conforms to the following type signature is considered a webroute-compatible middleware. Additionally, it should not rely on any framework-specific code.
 
 ```ts
-type DataResult = Record<PropertyKey, unknown>
-type ResponseHandler = (response: Response) => Response
+type DataResult = Record<PropertyKey, unknown>;
+type ResponseHandler = (response: Response) => Response;
 
-type MiddlewareFn = (request: Request) => DataResult | ResponseHandler | undefined;
+type MiddlewareFn = (
+  request: Request
+) => DataResult | ResponseHandler | undefined;
 // (and/or as Promise)
 ```
 
-In a nutshell, middleware can return data, a response or a response handler. Any functions here can be async, naturally. Middleware functions can also take any number of additional arguments.
+In a nutshell, middleware can return:
 
-While in theory these arguments _could_ support e.g. a `next()` function, this would defeat the purpose of this approach.
+- nothing
+- data
+- a `Response` - to exit early
+- a `Response` handler, which is called on the egress journey
 
-The `MiddlewareFn` type merely enforces the above.
+Any functions here can be async and can take any number of additional arguments. Unlike traditional middleware which is perfectly coupled with frameworks, this approach to middleware is more akin to calling a utility function, and then wiring up the various response types to the framework.
 
-## Define Middleware
+<Callout>
+  One could, therefore, provide a `next()` parameter to middleware. But this
+  would defeat the purpose of this approach, and unduly couple the middleware to
+  a given framework or assumption.
+</Callout>
 
-We can define a middleware using the `defineMiddleware` function. Ultimately, this ensures our middleware is adhering to the `MiddlewareFn` signature, while still etaining all the type information.
+The `MiddlewareFn` type merely exists to enforces the above rules.
+
+## `defineMiddleware`
+
+We can define middleware using the `defineMiddleware` function. Ultimately, this ensures our middleware is adhering to the `MiddlewareFn` signature, while still etaining all the type information.
 
 ```ts
-const defineMiddleware(() => {/**...*/})
+const timeMiddleware = defineMiddleware((req, extraParam) => {
+  const start = Date.now();
+
+  return (res: Response) => {
+    const diff = Date.now() - start;
+
+    console.log("Request took", diff, "ms");
+
+    return res;
+  };
+});
 ```
+
+## `createAdapter`
+
+The `createAdapter` function allows us to declaratively define how webroute middleware can slot into an existing framework. Once an adapter has been defined, any webroute-comptaible middleware can be used with that framework, i.e. adapters only need to be defined once, not for each middleware implementation.
+
+For example, a Hono adapter might look like this.
+
+```ts twoslash
+import { MiddlewareHandler, Hono } from "hono";
+import { createAdapter, defineMiddleware } from "@webroute/middleware";
+//---cut-start---
+const timeMiddleware = defineMiddleware((req, ip: string) => {
+  const start = Date.now();
+
+  return (res: Response) => {
+    const diff = Date.now() - start;
+
+    console.log(`Request took ${diff}ms, from IP: ${ip}`);
+
+    return res;
+  };
+});
+//---cut-end---
+
+export const toHono = createAdapter<MiddlewareHandler>((c, next) => {
+  return {
+    async onData(data) {
+      c.set("state", { ...c.get("state"), ...data });
+      next();
+    },
+    async onEmpty() {
+      next();
+    },
+    async onResponse(response) {
+      return response;
+    },
+    async onResponseHandler(handler) {
+      await next();
+      return handler(c.res);
+    },
+  };
+});
+
+// Wire up `Request` and any other params
+const honoTimeMiddleware = toHono(c => timeMiddleware(c.req.raw, c.get("req-ip")))
+
+const app = new Hono()
+app.use("*", honoTimeMiddleware)
+```
+
+In the future, we may distribute these adapters as packages, unless snippets suffice.

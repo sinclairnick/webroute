@@ -145,10 +145,14 @@ importers:
         version: 3.23.8
 
   packages/middleware:
-    devDependencies:
+    optionalDependencies:
       hono:
         specifier: ^4.3.7
         version: 4.3.7
+    devDependencies:
+      '@hattip/compose':
+        specifier: ^0.0.45
+        version: 0.0.45
       tsup:
         specifier: ^8.0.1
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
@@ -596,6 +600,12 @@ packages:
 
   '@hapi/topo@5.1.0':
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
+
+  '@hattip/compose@0.0.45':
+    resolution: {integrity: sha512-Xrxk2kx6htAoR/fBQEnhhqfjBdHFBi2UtiFuhD6qSSwEaD2jTGkyDzYAmVqPIO0ZSvIlIBBpGKdXip4JhdBMww==}
+
+  '@hattip/core@0.0.45':
+    resolution: {integrity: sha512-4BK9dPU7sLvmP9sUq048uSaKFvQY2Qa6D0xQteQBIiDYuTdbopcUQLETM1sdkUeUtFxHPwPu/NclfJAC5INarw==}
 
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
@@ -3412,6 +3422,12 @@ snapshots:
     dependencies:
       '@hapi/hoek': 9.3.0
     optional: true
+
+  '@hattip/compose@0.0.45':
+    dependencies:
+      '@hattip/core': 0.0.45
+
+  '@hattip/core@0.0.45': {}
 
   '@isaacs/cliui@8.0.2':
     dependencies:
