@@ -13,7 +13,12 @@
     "publish-pkg": "pnpm run build && pnpm publish --access=public",
     "check": "tsc --noEmit"
   },
+  "optionalDependencies": {
+    "hono": "^4.3.7",
+    "@hattip/compose": "^0.0.45"
+  },
   "devDependencies": {
+    "@hattip/compose": "^0.0.45",
     "hono": "^4.3.7",
     "tsup": "^8.0.1",
     "vitest": "^1.6.0"

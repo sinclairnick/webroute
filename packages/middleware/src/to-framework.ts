@@ -37,7 +37,7 @@ export type ToFrameworkHandlers<
    * next() // Next should be called, if necessary
    * ```
    */
-  onData: (data: Extract<TResult, DataResult>) => ReturnType<T>;
+  onData: (data: Extract<TResult, DataResult>) => Awaitable<ReturnType<T>>;
 
   /**
    * Called when a response is returned from the middleware.
@@ -55,7 +55,7 @@ export type ToFrameworkHandlers<
    * res.json(await response.json())
    * ```
    */
-  onResponse: (response: Response) => ReturnType<T>;
+  onResponse: (response: Response) => Awaitable<ReturnType<T>>;
 
   /**
    * Called when a response handler is returned from the middleware.
@@ -72,7 +72,7 @@ export type ToFrameworkHandlers<
    */
   onResponseHandler: (
     handler: (response: Response) => Awaitable<Response>
-  ) => ReturnType<T>;
+  ) => Awaitable<ReturnType<T>>;
 
   /**
    * Called when the middleware throws an error.
@@ -84,13 +84,17 @@ export type ToFrameworkHandlers<
    * throw error;
    * ```
    */
-  onError?: (error: unknown) => ReturnType<T>;
+  onError?: (error: unknown) => Awaitable<ReturnType<T>>;
 };
 
 export type ToFrameworkMiddlewareFn<
   T extends AnyFrameworkMiddlewareFn = AnyFrameworkMiddlewareFn,
   TResult extends AnyMiddlewareResult = AnyMiddlewareResult
 > = (...args: Parameters<T>) => Awaitable<TResult>;
+
+export type AdaptedMiddleware<
+  T extends AnyFrameworkMiddlewareFn = AnyFrameworkMiddlewareFn
+> = (...args: Parameters<T>) => Promise<Awaited<ReturnType<T>>>;
 
 /**
  * An optional utility for converting middleware to a format another framework
@@ -104,8 +108,8 @@ export const toFramework = <
 >(
   middlware: ToFrameworkMiddlewareFn<T, TResult>,
   handlers: ToFrameworkHandlers<T, TResult>
-) => {
-  return async (...args: Parameters<T>) => {
+): AdaptedMiddleware<T> => {
+  const adapter = async (...args: Parameters<T>) => {
     const {
       onData,
       onEmpty,
@@ -121,29 +125,31 @@ export const toFramework = <
 
       // onEmpty
       if (result == null) {
-        return onEmpty();
+        return await onEmpty();
       }
 
       // onRespose
       if (result instanceof Response) {
-        return onResponse(result);
+        return await onResponse(result);
       }
 
       switch (typeof result) {
         // onData
         case "object": {
-          return onData(result as any);
+          return await onData(result as any);
         }
 
         // onResponseHandler
         case "function": {
-          return onResponseHandler(result);
+          return await onResponseHandler(result);
         }
       }
     } catch (e) {
-      return onError(e);
+      return await onError(e);
     }
   };
+
+  return adapter as AdaptedMiddleware<T>;
 };
 
 export const createAdapter = <

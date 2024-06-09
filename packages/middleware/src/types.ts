@@ -24,7 +24,7 @@ export type ResponseHandler<TRest extends any[] = any[]> = (
 export type MiddlewareResult<
   T extends DataResult | void = void,
   TRest extends any[] = any[]
-> = Response | T | ResponseHandler<TRest>;
+> = Response | T | ResponseHandler<TRest> | undefined;
 
 /**
  *
