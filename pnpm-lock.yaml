@@ -146,13 +146,13 @@ importers:
 
   packages/middleware:
     optionalDependencies:
+      '@hattip/compose':
+        specifier: ^0.0.45
+        version: 0.0.45
       hono:
         specifier: ^4.3.7
         version: 4.3.7
     devDependencies:
-      '@hattip/compose':
-        specifier: ^0.0.45
-        version: 0.0.45
       tsup:
         specifier: ^8.0.1
         version: 8.0.2(postcss@8.4.38)(typescript@5.4.5)
@@ -3426,8 +3426,10 @@ snapshots:
   '@hattip/compose@0.0.45':
     dependencies:
       '@hattip/core': 0.0.45
+    optional: true
 
-  '@hattip/core@0.0.45': {}
+  '@hattip/core@0.0.45':
+    optional: true
 
   '@isaacs/cliui@8.0.2':
     dependencies:
