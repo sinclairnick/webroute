@@ -24,7 +24,7 @@ describe("route().execution", () => {
     const _route = route()
       .query(schema)
       .handle(async (_, c) => {
-        query = await c.query();
+        query = await c.parse("query");
         return null;
       });
 
@@ -43,7 +43,7 @@ describe("route().execution", () => {
     const _route = route("/:a")
       .params(schema)
       .handle(async (_, c) => {
-        return c.params();
+        return c.parse("params");
       });
 
     const req = new Request("https://google.com/1");
@@ -62,7 +62,7 @@ describe("route().execution", () => {
     const _route = route()
       .body(schema)
       .handle(async (_, c) => {
-        return c.body();
+        return c.parse("body");
       });
 
     const req = new Request("https://google.com", {
@@ -103,7 +103,7 @@ describe("route().execution", () => {
     const _route = route()
       .headers(schema)
       .handle((_, c) => {
-        return c.headers();
+        return c.parse("headers");
       });
 
     const headers = new Headers();

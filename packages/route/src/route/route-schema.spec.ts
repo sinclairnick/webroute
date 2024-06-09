@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { route } from ".";
 import { RouteBuilder } from "./handler/builder";
-import { LazyValidator } from "./handler/types";
+import { InferParseInputsFn, LazyValidator } from "./handler/types";
 import { z } from "zod";
 
 describe("route().<schema>", () => {
@@ -121,9 +121,8 @@ describe("route().<schema>", () => {
 
     type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
     type ReqParam = Parameters<HandlerFn>[1];
+    type Result = InferParseInputsFn<ReqParam["parse"]>;
 
-    expectTypeOf<ReqParam["headers"]>().toMatchTypeOf<
-      LazyValidator<{ auth: boolean }>
-    >();
+    expectTypeOf<Result["Headers"]>().toMatchTypeOf<{ auth: boolean }>();
   });
 });

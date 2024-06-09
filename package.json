@@ -5,7 +5,8 @@
     "packages/*"
   ],
 	"scripts": {
-		"build:packages": "pnpm turbo build --filter '@webroute/**'"
+		"build:packages": "turbo build --filter '@webroute/**'",
+		"check": "turbo check"
 	},
   "devDependencies": {
     "typescript": "^5.4.5"

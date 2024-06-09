@@ -8,6 +8,7 @@
     "test": {
       "dependsOn": ["^build"]
     },
+    "check": {},
     "publish-pkg": {}
   }
 }

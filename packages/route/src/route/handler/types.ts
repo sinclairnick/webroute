@@ -153,6 +153,21 @@ export interface ParseInputsFn<
   }>;
 }
 
+export type InferParseInputsFn<T extends ParseInputsFn> =
+  T extends ParseInputsFn<
+    infer TParams,
+    infer TQuery,
+    infer TBody,
+    infer THeaders
+  >
+    ? {
+        Params: TParams;
+        Query: TQuery;
+        Body: TBody;
+        Headers: THeaders;
+      }
+    : never;
+
 export type ServiceMap<TProviders> = TProviders extends AnyProviderMap
   ? TProviders
   : Record<string, unknown>;

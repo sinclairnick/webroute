@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { route } from ".";
 import { RouteBuilder } from "./handler/builder";
-import { LazyValidator } from "./handler/types";
+import { InferParseInputsFn, LazyValidator } from "./handler/types";
 import { z } from "zod";
 
 describe("route().path", () => {
@@ -11,9 +11,9 @@ describe("route().path", () => {
     type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
     type ReqParam = Parameters<HandlerFn>[1];
 
-    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<
-      LazyValidator<{ id: string }>
-    >();
+    type Result = InferParseInputsFn<ReqParam["parse"]>;
+
+    expectTypeOf<Result["Params"]>().toEqualTypeOf<{ id: string }>();
   });
 
   test("route Path string inference params is concat w schema", () => {
@@ -21,10 +21,12 @@ describe("route().path", () => {
 
     type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
     type ReqParam = Parameters<HandlerFn>[1];
+    type Result = InferParseInputsFn<ReqParam["parse"]>;
 
-    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<
-      LazyValidator<{ id: string; another: number }>
-    >();
+    expectTypeOf<Result["Params"]>().toEqualTypeOf<{
+      id: string;
+      another: number;
+    }>();
   });
 
   test("route Path string inference prefers schema type", () => {
@@ -32,10 +34,9 @@ describe("route().path", () => {
 
     type HandlerFn = Parameters<(typeof _route)["handle"]>[0];
     type ReqParam = Parameters<HandlerFn>[1];
+    type Result = InferParseInputsFn<ReqParam["parse"]>;
 
-    expectTypeOf<ReqParam["params"]>().toEqualTypeOf<
-      LazyValidator<{ id: number }>
-    >();
+    expectTypeOf<Result["Params"]>().toEqualTypeOf<{ id: number }>();
   });
 
   test("Handles recursively updating Path", () => {
