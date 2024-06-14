@@ -1,7 +1,7 @@
 {
   "name": "@webroute/oas",
-  "description": "",
-  "version": "0.3.0",
+  "description": "OpenAPI tools for defining and inferring OpenAPI specs",
+  "version": "0.4.0",
   "author": {
     "name": "Nick Sinclair",
     "email": "nicksinclair@xtra.co.nz",

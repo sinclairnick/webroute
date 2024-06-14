@@ -1,7 +1,7 @@
 {
   "name": "@webroute/client",
-  "description": "",
-  "version": "0.25.0",
+  "description": "Unopinionated utilities for interacting with REST APIs on the client-side",
+  "version": "0.26.0",
   "author": {
     "name": "Nick Sinclair",
     "email": "nicksinclair@xtra.co.nz",
@@ -18,7 +18,13 @@
     "zod": "^3.22.4"
   },
   "homepage": "https://webroute.vercel.app",
-  "keywords": [],
+  "keywords": [
+    "web",
+    "webroute",
+    "client",
+    "type-safe",
+    "inference"
+  ],
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
