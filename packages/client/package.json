@@ -1,18 +1,13 @@
 {
   "name": "@webroute/client",
-  "version": "0.25.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "module": "dist/index.mjs",
-  "private": false,
-  "sideEffects": false,
-  "scripts": {
-    "test": "vitest",
-    "build": "tsup-node",
-    "publish-pkg": "pnpm run build && pnpm publish --access=public",
-    "check": "tsc --noEmit"
+  "version": "0.25.0",
+  "author": {
+    "name": "Nick Sinclair",
+    "email": "nicksinclair@xtra.co.nz",
+    "url": "https://github.com/sinclairnick"
   },
+  "bugs": "https://github.com/sinclairnick/webroute/issues",
   "dependencies": {
     "@webroute/common": "workspace:*",
     "ufo": "^1.5.3"
@@ -22,7 +17,19 @@
     "vitest": "^1.2.2",
     "zod": "^3.22.4"
   },
+  "homepage": "https://webroute.vercel.app",
   "keywords": [],
-  "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "private": false,
+  "repository": "https://github.com/sinclairnick/webroute",
+  "scripts": {
+    "build": "tsup-node",
+    "check": "tsc --noEmit",
+    "publish-pkg": "pnpm run build && pnpm publish --access=public",
+    "test": "vitest"
+  },
+  "sideEffects": false,
+  "types": "dist/index.d.ts"
 }

@@ -3,19 +3,12 @@
 // Injects common data into the various package.json files
 import fs from "node:fs";
 
-const packages = [
-  "client",
-  "middleware",
-  "common",
-  "route",
-  "oas",
-  "router",
-  "schema",
-];
+const packages = ["client", "middleware", "route", "oas", "router", "schema"];
 
 const main = async () => {
   const promises = packages.map(async (name) => {
-    const pkgPath = `packages/${name}/package.json`;
+    const prefix = `./packages/${name}`;
+    const pkgPath = `${prefix}/package.json`;
 
     // PACKAGE.JSON
     const raw = await fs.promises.readFile(pkgPath, "utf-8");
@@ -40,11 +33,11 @@ const main = async () => {
 
     const output = JSON.stringify(json, null, 2);
 
-    // await fs.promises.writeFile(pkgPath, JSON.stringify(json, null, 2));
+    await fs.promises.writeFile(pkgPath, output);
 
     // LICENSE
     const license = await fs.promises.readFile("./LICENSE", "utf-8");
-    await fs.promises.writeFile(`${name}/LICENSE`, license);
+    await fs.promises.writeFile(`${prefix}/LICENSE`, license);
 
     // README
     const readme = [
@@ -53,14 +46,17 @@ const main = async () => {
       "This package is part of the `webroute` project.",
       "",
       `[View package documentation](https://webroute.vercel.app/docs/${name})`,
+      "",
       `[View documentation](https://webroute.vercel.app/docs/${name})`,
+      "",
       "[View project README](https://github.com/sinclairnick/webroute/README.md)",
       "",
       "## License",
+      "",
       "All source code is [MIT licensed](./LICENSE)",
     ].join("\n");
 
-    await fs.promises.writeFile(`${name}/README.md`, readme);
+    await fs.promises.writeFile(`${prefix}/README.md`, readme);
   });
 
   await Promise.all(promises);

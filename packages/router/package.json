@@ -1,29 +1,13 @@
 {
   "name": "@webroute/router",
-  "version": "0.2.0",
   "description": "Lightweight, flexible routing for matching web requests to any handler",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
-  "sideEffects": false,
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "test": "vitest",
-    "build": "tsup-node",
-    "publish-pkg": "pnpm run build && pnpm publish --access=public"
+  "version": "0.2.0",
+  "author": {
+    "name": "Nick Sinclair",
+    "email": "nicksinclair@xtra.co.nz",
+    "url": "https://github.com/sinclairnick"
   },
-  "keywords": [
-    "web",
-    "webroute",
-    "router",
-    "routing",
-    "web-standards",
-    "radix"
-  ],
-  "author": "Nick Sinclair",
-  "license": "MIT",
+  "bugs": "https://github.com/sinclairnick/webroute/issues",
   "dependencies": {
     "radix3": "^1.1.2",
     "urlpattern-polyfill": "^10.0.0"
@@ -32,5 +16,28 @@
     "@webroute/route": "workspace:*",
     "tsup": "^8.0.1",
     "vitest": "^1.2.2"
-  }
+  },
+  "files": [
+    "dist"
+  ],
+  "homepage": "https://webroute.vercel.app",
+  "keywords": [
+    "radix",
+    "router",
+    "routing",
+    "web",
+    "web-standards",
+    "webroute"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "repository": "https://github.com/sinclairnick/webroute",
+  "scripts": {
+    "build": "tsup-node",
+    "publish-pkg": "pnpm run build && pnpm publish --access=public",
+    "test": "vitest"
+  },
+  "sideEffects": false,
+  "types": "dist/index.d.ts"
 }

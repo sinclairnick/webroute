@@ -1,15 +1,15 @@
 {
   "name": "@webroute/fs",
-  "version": "0.1.0",
   "description": "",
+  "version": "0.1.0",
+  "author": "",
+  "dependencies": {
+    "@webroute/route": "workspace:*"
+  },
+  "keywords": [],
+  "license": "ISC",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-	"dependencies": {
-		"@webroute/route": "workspace:*"
-	},
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  }
 }

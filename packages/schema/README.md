@@ -1,16 +1,13 @@
-# Schema
+# @webroute/schema
 
-Supported validators
+This package is part of the `webroute` project.
 
-| Library         | Parse | Format | Validate |
-| --------------- | ----- | ------ | -------- |
-| Zod             | ✅    | ✅     |          |
-| Valibot         | ✅    | ✅     |          |
-| Typebox         | ✅    | ✅     |          |
-| Superstruct     | ✅    | ✅     |          |
-| AJV             |       |        |          |
-| ArkType         |       |        |          |
-| Class Validator |       |        |          |
-| IO TS           |       |        |          |
-| JOI             |       |        |          |
-| Yup             |       |        |          |
+[View package documentation](https://webroute.vercel.app/docs/schema)
+
+[View documentation](https://webroute.vercel.app/docs/schema)
+
+[View project README](https://github.com/sinclairnick/webroute/README.md)
+
+## License
+
+All source code is [MIT licensed](./LICENSE)
