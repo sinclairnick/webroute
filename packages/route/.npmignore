@@ -1,9 +1,0 @@
-.prettierrc
-pnpm-lock.yaml
-tsconfig.json
-tsup.config.ts
-src
-static
-__test__
-.prettierrc
-README.md

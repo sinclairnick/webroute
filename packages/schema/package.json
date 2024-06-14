@@ -1,11 +1,14 @@
 {
   "name": "@webroute/schema",
   "version": "0.2.0",
-  "description": "",
+  "description": "Utilities for transforming between popular schema libraries, including JSON schema.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
       "default": "./dist/index.js",
@@ -53,9 +56,18 @@
     "build": "tsup-node",
     "publish-pkg": "pnpm run build && pnpm publish --access=public"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "web",
+    "webroute",
+    "schema",
+    "universal",
+    "web-standards",
+    "zod",
+    "joi",
+    "typebox"
+  ],
+  "author": "Nick Sinclair",
+  "license": "MIT",
   "optionalDependencies": {
     "@sinclair/typebox": "^0.32.31",
     "joi": "^17.13.1",
@@ -78,8 +90,5 @@
     "vitest": "^1.6.0",
     "yup": "^1.4.0",
     "zod": "^3.22.4"
-  },
-  "dependencies": {
-    "openapi3-ts": "^4.3.2"
   }
 }

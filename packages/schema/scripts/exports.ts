@@ -20,6 +20,9 @@ const main = async () => {
       import: `./dist/${name}.mjs`,
       types: `./${name}.d.ts`,
     };
+
+    _pkg.files.push(`name.js`);
+    _pkg.files.push(`name.d.ts`);
   }
 
   await write("./package.json", JSON.stringify(_pkg, null, 2));

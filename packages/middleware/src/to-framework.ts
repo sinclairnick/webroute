@@ -1,6 +1,5 @@
+import { Awaitable } from "@webroute/common";
 import { DataResult, MiddlewareResult } from "./types";
-
-type Awaitable<T> = Promise<T> | T;
 
 export type AnyMiddlewareResult = MiddlewareResult<DataResult, any[]>;
 

@@ -1,3 +1,5 @@
+import type { Awaitable } from "@webroute/common";
+
 /**
  * Data or state produced in the middleware.
  *
@@ -7,8 +9,6 @@
 export type DataResult =
   // This value param must be unknown otherwise arbitrary functions are accepted
   Record<PropertyKey, unknown>;
-
-export type Awaitable<T> = T | Promise<T>;
 
 export type ResponseHandler<TRest extends any[] = any[]> = (
   response: Response,

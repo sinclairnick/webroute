@@ -17,13 +17,21 @@
     "hono": "^4.3.7",
     "@hattip/compose": "^0.0.45"
   },
+  "dependencies": {
+    "@webroute/common": "workspace:*"
+  },
   "devDependencies": {
     "@hattip/compose": "^0.0.45",
     "hono": "^4.3.7",
     "tsup": "^8.0.1",
     "vitest": "^1.6.0"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "universal",
+    "middleware",
+    "web",
+    "webroute"
+  ],
+  "author": "Nick Sinclair",
   "license": "MIT"
 }

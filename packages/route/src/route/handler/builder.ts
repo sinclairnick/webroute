@@ -9,7 +9,7 @@ import {
   HttpMethodInput,
   UseMiddlewareInput,
 } from "./types";
-import { MergeObjectsShallow } from "../../util";
+import { MergeObjectsShallow } from "@webroute/common";
 
 export type AnyRouteBuilder = RouteBuilder<any>;
 

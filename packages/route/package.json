@@ -7,6 +7,9 @@
   "module": "dist/index.mjs",
   "private": false,
   "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "vitest",
     "build": "tsup-node",
@@ -27,8 +30,9 @@
     "zod": "^3.22.4"
   },
   "dependencies": {
-    "debug": "^4.3.4",
+    "@webroute/common": "workspace:*",
     "@webroute/middleware": "workspace:*",
-    "@webroute/schema": "workspace:*"
+    "@webroute/schema": "workspace:*",
+    "debug": "^4.3.4"
   }
 }

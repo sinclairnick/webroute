@@ -1,5 +1,5 @@
 import { AnyCompiledRoute, route } from "../route";
-import { Simplify } from "../util";
+import { Simplify } from "@webroute/common";
 import { DenormalisedInput } from "./types";
 
 export namespace ToClient {

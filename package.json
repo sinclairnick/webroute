@@ -1,14 +1,18 @@
 {
   "name": "root",
+  "packageManager": "pnpm@9.1.3",
   "workspaces": [
     "docs",
     "packages/*"
   ],
-	"scripts": {
-		"build:packages": "turbo build --filter '@webroute/**'",
-		"check": "turbo check"
-	},
+  "scripts": {
+    "build:packages": "turbo build --filter '@webroute/**'",
+    "format:pkg-json": "./scripts/common-pkg.mjs",
+    "check": "turbo check"
+  },
   "devDependencies": {
+    "pkg-types": "^1.1.1",
+    "syncpack": "^12.3.2",
     "typescript": "^5.4.5"
   }
 }

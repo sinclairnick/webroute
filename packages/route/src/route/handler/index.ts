@@ -1,11 +1,9 @@
 import {
   AnyHandlerDefinition,
-  AnyProviderMap,
   InferParamsFromPath,
   MiddlewareOutFn,
   RequestCtx,
   RouteMeta,
-  ServiceMap,
 } from "./types";
 import { Log } from "../../internal/logger";
 import { AnyRouteBuilder, RouteBuilder } from "./builder";

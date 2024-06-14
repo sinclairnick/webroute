@@ -1,19 +1,29 @@
 {
   "name": "@webroute/router",
   "version": "0.2.0",
-  "description": "",
+  "description": "Lightweight, flexible routing for matching web requests to any handler",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "sideEffects": false,
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "vitest",
     "build": "tsup-node",
     "publish-pkg": "pnpm run build && pnpm publish --access=public"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "web",
+    "webroute",
+    "router",
+    "routing",
+    "web-standards",
+    "radix"
+  ],
+  "author": "Nick Sinclair",
+  "license": "MIT",
   "dependencies": {
     "radix3": "^1.1.2",
     "urlpattern-polyfill": "^10.0.0"

@@ -1,9 +1,5 @@
 packages:
   - "docs"
-  - "packages/route"
-  - "packages/client"
-  - "packages/middleware"
-  - "packages/schema"
-  - "packages/router"
-  - "packages/oas"
+  - "packages/**"
+  - "!packages/fs"
   - "examples/**"

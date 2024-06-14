@@ -18,7 +18,10 @@ export type OASDecoratedResponse<T> = T & { [$Response]?: ResponsesConfig };
 export type OASDecoratedOperation<T> = T & { [$Operation]?: OperationConfig };
 export type OASDecoratedSkip<T> = T & { [$Skip]?: boolean };
 
-export type ConfigFn<T> = (config: T, schema: oas31.SchemaObject) => T;
+export type ConfigFn<T> = (
+  config: T,
+  schema: oas31.SchemaObject | oas31.ReferenceObject
+) => T;
 
 // Schema config
 export type SchemaConfigObject<T> = Omit<oas31.SchemaObject, "schema"> & {

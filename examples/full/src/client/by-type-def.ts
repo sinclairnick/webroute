@@ -1,6 +1,6 @@
 import type { ToClient } from "@webroute/route";
 import type { AxiosRequestConfig } from "axios";
-import { appRoutes } from "./routes";
+import { appRoutes } from "../backend/routes";
 import { createTypedClient, createUrl } from "@webroute/client";
 import axios from "axios";
 

@@ -1,4 +1,4 @@
-import { MergeObjectsShallow, RemoveNeverKeys, Simplify } from "../../util";
+import { MergeObjectsShallow, Simplify } from "@webroute/common";
 import { DataResult, MiddlewareFn } from "@webroute/middleware";
 import { Def } from "./util";
 import { ParseFn, Parser } from "@webroute/schema";

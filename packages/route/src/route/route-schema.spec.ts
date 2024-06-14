@@ -1,7 +1,7 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { route } from ".";
 import { RouteBuilder } from "./handler/builder";
-import { InferParseInputsFn, LazyValidator } from "./handler/types";
+import { InferParseInputsFn } from "./handler/types";
 import { z } from "zod";
 
 describe("route().<schema>", () => {

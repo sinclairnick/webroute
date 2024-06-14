@@ -61,7 +61,9 @@ export const getSchemaConfig = (
   return schema[$Schema];
 };
 
-export const getParamConfig = (param: any): ParamConfig | undefined => {
+export const getParamConfig = (
+  param: any
+): ParamConfigMap<Record<string, unknown>> | undefined => {
   if (typeof param !== "object" || param == null) return;
   return param?.[$Param];
 };

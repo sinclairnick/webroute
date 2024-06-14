@@ -45,6 +45,8 @@ const deletePostRoute = authedRoute
   });
 
 const routeWithFooProvider = route()
+  .path("/foo")
+  .method("get")
   .provide({ foo: () => "foo" })
   .handle((req, c) => c.services.foo());
 

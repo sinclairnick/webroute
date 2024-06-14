@@ -1,14 +1,5 @@
 import { AppDef, AppRoute } from "./infer";
-
-export type Simplify<T> = { [KeyType in keyof T]: T[KeyType] } & {};
-
-export type MakeUnknownOptional<T extends Record<any, any>> = Simplify<
-  {
-    [TKey in keyof T as unknown extends T[TKey] ? never : TKey]: T[TKey];
-  } & {
-    [TKey in keyof T as unknown extends T[TKey] ? TKey : never]?: T[TKey];
-  }
->;
+import type { FormatOptionals } from "@webroute/common";
 
 export type FetcherReturn<TResult, TFetcherRes> = {
   [TKey in keyof TFetcherRes]: TKey extends "data"
@@ -48,7 +39,7 @@ export type TypedClient<
   ? TEndpoint extends AppRoute
     ? TFetcher extends Fetcher<infer TOpts, infer TResponse>
       ? (
-          config: MakeUnknownOptional<{
+          config: FormatOptionals<{
             params: TEndpoint["Params"];
             body: TEndpoint["Body"];
             query: TEndpoint["Query"];
