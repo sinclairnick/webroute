@@ -1,0 +1,35 @@
+on:
+  push:
+    tags:
+      - "*"
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Extract package name
+        run: |
+          TAG_NAME="${GITHUB_REF#refs/tags/}"
+
+          # Split the tag into two parts by the first slash
+          PKG_NAME="${TAG_NAME%%/*}"
+
+          # Set environment variables for subsequent steps
+          echo "PKG_NAME=$PKG_NAME" >> $GITHUB_ENV
+      - name: Install packages
+        run: pnpm i
+      - name: Build package
+        run: pnpm build --filter ...$PKG_NAME
+      - uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: "packages/${{ env.PKG_NAME }}"
