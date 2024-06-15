@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "bun": "^1.1.13",
     "vitest": "^1.6.0"
   },
   "peerDependencies": {
@@ -16,9 +17,9 @@
   "dependencies": {
     "@sinclair/typebox": "^0.32.31",
     "@webroute/client": "*",
-    "@webroute/route": "*",
     "@webroute/middleware": "*",
     "@webroute/oas": "*",
+    "@webroute/route": "*",
     "@webroute/router": "*",
     "@webroute/schema": "*",
     "axios": "^1.7.2",
