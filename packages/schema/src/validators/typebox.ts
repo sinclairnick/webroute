@@ -36,6 +36,16 @@ export const TypeBoxParser = (): SchemaParser<T.TAnySchema> => {
           return { ...opts, type: "intersection", members: schema.allOf ?? [] };
         }
         case "Union": {
+          if (schema[T.Hint] === "Enum") {
+            const members: Record<PropertyKey, any> = {};
+
+            for (const item of schema.anyOf) {
+							const key = item.const
+              members[key] = key
+            }
+
+            return { ...opts, type: "enum", members };
+          }
           return { ...opts, type: "union", members: schema.anyOf ?? [] };
         }
 
@@ -51,6 +61,9 @@ export const TypeBoxParser = (): SchemaParser<T.TAnySchema> => {
         }
         case "Symbol": {
           return { ...opts, type: "symbol" };
+        }
+        case "Date": {
+          return { ...opts, type: "date" };
         }
         case "Null": {
           return { ...opts, type: "null" };

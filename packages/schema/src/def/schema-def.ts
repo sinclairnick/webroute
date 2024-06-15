@@ -28,7 +28,7 @@ export type IntersectionDef = {
 
 export type EnumDef = {
   type: "enum";
-  members: Record<string, string>;
+  members: Record<string, any>;
 } & SchemaDefOptions;
 
 export type FunctionDef = {

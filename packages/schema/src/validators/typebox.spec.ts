@@ -28,6 +28,8 @@ const schemas = {
   unions: T.Union([T.Number(), T.Boolean()]),
   tuples: T.Tuple([T.Number(), T.Boolean()]),
   any: T.Any(),
+  date: T.Date(),
+  enum: T.Enum({ A: "A", B: "B" }),
 } satisfies Partial<CaseMap>;
 
 describe("TypeBox", () => {

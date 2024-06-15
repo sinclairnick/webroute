@@ -46,6 +46,13 @@ export const ValibotParser = (): SchemaParser<AnyValibotSchema> => {
         case "tuple": {
           return { ...opts, type: "tuple", entries: schema.items };
         }
+        case "enum": {
+          return {
+            ...opts,
+            type: "enum",
+            members: Object.fromEntries(schema.options.map((x) => [x, x])),
+          };
+        }
 
         // Primitives
         case "string": {
@@ -53,6 +60,9 @@ export const ValibotParser = (): SchemaParser<AnyValibotSchema> => {
         }
         case "number": {
           return { ...opts, type: "number" };
+        }
+        case "date": {
+          return { ...opts, type: "date" };
         }
         case "boolean": {
           return { ...opts, type: "boolean" };
