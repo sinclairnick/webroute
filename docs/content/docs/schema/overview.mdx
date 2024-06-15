@@ -33,8 +33,11 @@ Currently the following libraries are supported.
 
 > Bear in mind, you will need to install the underlying libraries to use any associated `@webroute/schema` functionality.
 
+## Unified parsing and inference
 
-## `parse`
+The `@webroute/schema` package provides parsing and inference tools, regardless of what schema library you're using. These can be imported via the root `@webroute/schema` module.
+
+### `parse`
 
 To parse any given schema, we can use the `parse` function.
 
@@ -44,7 +47,7 @@ import { parse } from "@webroute/schema"
 const parsed = parse(SomeSchema, value)
 ```
 
-## `Infer`ence
+### `Infer`ence
 
 Similarly, we can use the `Infer` type utility to infer the result type of a schema.
 
@@ -58,11 +61,40 @@ We can use the `InferIn` helper to infer the `Input` type (if the schema applies
 export type UserBeforeTransforms = InferIn<typeof UserSchema>;
 ```
 
-## Transformation
+## Converting to/from different formats
+
+Under the `@webroute/schema/<library>` packages, you can find helpers for the given validator library.
+
+For example, we can import the `zod` helpers via.
+
+```ts
+import { ZodParser, ZodFormatter, ZodDiscriminator, ZodJsonSchemaFormatter } from "@webroute/schema/zod"
+```
+
+### Usage
+
+```ts
+// Parse zod to it's underlying schema definition
+const parser = createParser(ZodParser())
+
+const def = parser.parse(SomeZodSchema)
+
+// Format it back into zod, or another format
+const formatter = createFormatter(ZodFormatter())
+
+const BackToZodSchema = formatter.format(def)
+
+// Convert into JSON schema
+const toJsonSchema = ZodJsonSchemaFormatter()
+
+const jsonSchema = toJsonSchema(SomeZodSchema)
+```
 
 <Callout>
 Given the nature and complexity of schema/validation libraries, conversions tend to be a _somewhat lossy_ process, meaning perfect transformations are not always possible.
 </Callout>
+
+You can find more about what `parser`s, `formatter`s, `discriminator`s below.
 
 ### Parser
 
@@ -125,4 +157,11 @@ const formatter = createFormatter(TypeBoxFormatter())
 export const toJsonSchema = (schema: any) => {
 	return formatter.format(parser.parse(schema))
 }
+```
+
+Alternatively, we can import this out-of-the-box with the `<library>JsonSchemaFormatter` functions.
+
+```ts
+// e.g.
+import { ZodJsonSchemaFormatter } from "@webroute/schema/zod"
 ```
