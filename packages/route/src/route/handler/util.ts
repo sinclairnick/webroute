@@ -59,9 +59,9 @@ export const createParseFn = (
 
   const headers = cached(async () => {
     const map: Record<string, any> = {};
-    for (const [key, value] of req.headers.entries()) {
+    req.headers.forEach((value, key) => {
       map[key] = value;
-    }
+    });
 
     return def.headersReq?.parser(map) ?? map;
   });
