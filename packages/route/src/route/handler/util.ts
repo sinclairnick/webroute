@@ -12,9 +12,9 @@ export const createParseFn = (
 
   const query = cached(async () => {
     const map: Record<string, any> = {};
-    for (const [key, value] of url.searchParams.entries()) {
+    url.searchParams.forEach((value, key) => {
       map[key] = value;
-    }
+    });
 
     return def.query?.parser(map) ?? map;
   });
