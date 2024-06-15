@@ -15,12 +15,12 @@
   },
   "dependencies": {
     "@sinclair/typebox": "^0.32.31",
-    "@webroute/client": "workspace:*",
-    "@webroute/route": "workspace:*",
-    "@webroute/middleware": "workspace:*",
-    "@webroute/oas": "workspace:*",
-    "@webroute/router": "workspace:*",
-    "@webroute/schema": "workspace:*",
+    "@webroute/client": "*",
+    "@webroute/route": "*",
+    "@webroute/middleware": "*",
+    "@webroute/oas": "*",
+    "@webroute/router": "*",
+    "@webroute/schema": "*",
     "axios": "^1.7.2",
     "zod": "^3.22.4"
   }
