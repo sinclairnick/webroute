@@ -2,19 +2,26 @@
   "name": "@webroute/common",
   "description": "",
   "version": "1.0.0",
-  "author": "",
+  "author": {
+    "name": "Nick Sinclair",
+    "email": "nicksinclair@xtra.co.nz",
+    "url": "https://github.com/sinclairnick"
+  },
+  "bugs": "https://github.com/sinclairnick/webroute/issues",
   "devDependencies": {
     "tsup": "^8.0.1",
     "typescript": "^5.4.5"
   },
+  "homepage": "https://webroute.vercel.app",
   "keywords": [],
-  "license": "ISC",
+  "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "private": false,
+  "repository": "https://github.com/sinclairnick/webroute",
   "scripts": {
     "build": "tsup-node",
-		"publish-pkg": "pnpm run build && pnpm publish --access=public"
+    "publish-pkg": "pnpm run build && pnpm publish --access=public"
   },
   "types": "dist/index.d.ts"
 }

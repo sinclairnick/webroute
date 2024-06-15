@@ -3,7 +3,15 @@
 // Injects common data into the various package.json files
 import fs from "node:fs";
 
-const packages = ["client", "middleware", "route", "oas", "router", "schema"];
+const packages = [
+  "client",
+  "middleware",
+  "route",
+  "oas",
+  "router",
+  "schema",
+  "common",
+];
 
 const main = async () => {
   const promises = packages.map(async (name) => {
@@ -38,6 +46,8 @@ const main = async () => {
     // LICENSE
     const license = await fs.promises.readFile("./LICENSE", "utf-8");
     await fs.promises.writeFile(`${prefix}/LICENSE`, license);
+
+    if (name === "common") return;
 
     // README
     const readme = [

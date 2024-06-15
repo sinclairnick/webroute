@@ -19,11 +19,11 @@
   },
   "homepage": "https://webroute.vercel.app",
   "keywords": [
-    "web",
-    "webroute",
     "client",
+    "inference",
     "type-safe",
-    "inference"
+    "web",
+    "webroute"
   ],
   "license": "MIT",
   "main": "dist/index.js",

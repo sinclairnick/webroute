@@ -10,7 +10,7 @@
   "scripts": {
     "build:packages": "turbo build --filter '@webroute/**'",
     "check": "turbo check",
-    "format:pkg-json": "./scripts/common-pkg.mjs",
+    "format:pkg-json": "./scripts/common-pkg.mjs && syncpack format",
     "test": "turbo test"
   },
   "workspaces": [
