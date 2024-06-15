@@ -26,6 +26,20 @@ export default function RootDocsLayout({ children }: { children: ReactNode }) {
           githubUrl: "https://github.com/sinclairnick/webroute",
         }}
         sidebar={{ defaultOpenLevel: 0 }}
+        links={[
+          {
+            text: "Documentation",
+            url: "/docs",
+            external: false,
+            type: "main",
+          },
+          {
+            text: "Example",
+            url: "https://stackblitz.com/github/sinclairnick/webroute/tree/main/examples/full",
+            external: true,
+            type: "main",
+          },
+        ]}
       >
         {children}
       </DocsLayout>
