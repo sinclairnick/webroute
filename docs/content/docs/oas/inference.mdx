@@ -4,21 +4,30 @@ title: Inference
 
 import { Callout } from "fumadocs-ui/components/callout"
 
-We can derive the types of any OpenAPI schema using the inference helpers provided by `@webroute/oas`.
+We can infer the types of any OpenAPI spec using the inference helpers provided by `@webroute/oas`, **without any code generation**.
 
 ```ts
 import { ParseSpec } from "@webroute/oas"
 import Spec from "./openapi-spec.json"
 
-// A record of e.g `GET /pets/{petId} -> { Query, Params, Output, ...}
 type AppDef = ParseSpec<typeof Spec>;
+//   ^? e.g.
+//	{
+// 			"GET /pets/{petId}": {
+//				Query,
+// 				Params,
+// 				Output,
+// 				...
+//		 	 },
+//			...
+// 	}
 ```
 
-Unlike every other OpenAPI tool, this **does not require any code generation**. Instead, we've opted directly interface at the typescript level, entailing less lock-in and greater flexibility.
+This way our OpenAPI spec is _directly_ transformed into TypeScript form, without any intermediary build or generation steps required.
 
 ## Setup
 
-To enable correct type inference, we should place our OpenAPI spec into a `.d.ts` file:
+To ensure correct type inference, we should place our OpenAPI spec into a `.d.ts` file:
 
 ```ts
 // openapi-spec.json.d.ts
@@ -32,3 +41,23 @@ This helps TypeScript infer the correct types for literal types, like `{ type: "
 <Callout>
 The TypeScript team are actively discussing ways to support strongly-typed JSON import types [here](https://github.com/microsoft/TypeScript/issues/54488).
 </Callout>
+
+## Client
+
+We can use this alongside `@webroute/client` as a "headless", type-safe client
+
+```ts
+import { createTypedClient } from "@webroute/client"
+
+const client = createTypedClient<AppDef>()({
+	// ...config
+})
+
+const getPet = client("GET /pets/{petId}")
+
+const pet = await getPet({
+	// ...args
+})
+```
+
+Learn more in the [client docs](/docs/client/openapi).
