@@ -3,6 +3,7 @@ import { SchemaParser } from "../parser/types";
 import { SchemaFormatter } from "../formatter/types";
 import { SchemaDefOptions } from "../def/core";
 import { SchemaDiscriminator } from "../discriminator/types";
+import { createJsonSchemaFormatter } from "../util";
 
 export type AnySuperstructSchema = S.Struct<any, any>;
 
@@ -157,3 +158,6 @@ export const SuperstructDiscriminator =
         typeof schema === "object" && "refiner" in schema,
     };
   };
+
+export const SuperstructJsonSchemaFormatter = () =>
+  createJsonSchemaFormatter(SupertstructParser());

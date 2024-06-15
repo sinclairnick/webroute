@@ -21,6 +21,7 @@ import {
 } from "runtypes";
 import { RuntypeBase } from "runtypes/lib/runtype";
 import { SchemaDiscriminator } from "../discriminator/types";
+import { createJsonSchemaFormatter } from "../util";
 
 type AnyRuntypesSchema =
   | RuntypeBase
@@ -198,3 +199,6 @@ export const RuntypesDiscriminator =
         typeof schema === "object" && "reflect" in schema,
     };
   };
+
+export const RuntypesJsonSchemaFormatter = () =>
+  createJsonSchemaFormatter(RuntypesParser());

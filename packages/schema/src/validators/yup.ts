@@ -3,6 +3,7 @@ import { SchemaFormatter } from "../formatter/types";
 import { SchemaDefOptions } from "../def/core";
 import * as Y from "yup";
 import { SchemaDiscriminator } from "../discriminator/types";
+import { createJsonSchemaFormatter } from "../util";
 
 export type AnyYupSchema =
   | Y.AnyObjectSchema
@@ -147,3 +148,6 @@ export const YupDiscriminator = (): SchemaDiscriminator<AnyYupSchema> => {
       typeof schema === "object" && "__isYupSchema__" in schema,
   };
 };
+
+export const YupJsonSchemaFormatter = () =>
+  createJsonSchemaFormatter(YupParser());

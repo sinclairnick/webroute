@@ -3,6 +3,7 @@ import { SchemaFormatter } from "../formatter/types";
 import { SchemaDefOptions } from "../def/core";
 import * as J from "joi";
 import { SchemaDiscriminator } from "../discriminator/types";
+import { createJsonSchemaFormatter } from "../util";
 
 export type AnyJoiSchema =
   | J.AnySchema
@@ -186,3 +187,6 @@ export const JoiDiscriminator = (): SchemaDiscriminator<AnyJoiSchema> => {
       typeof schema === "object" && "_flags" in schema,
   };
 };
+
+export const JoiJsonSchemaFormatter = () =>
+  createJsonSchemaFormatter(JoiParser());

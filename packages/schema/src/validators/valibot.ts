@@ -3,6 +3,7 @@ import { SchemaParser } from "../parser/types";
 import { SchemaFormatter } from "../formatter/types";
 import { SchemaDefOptions } from "../def/core";
 import { SchemaDiscriminator } from "../discriminator/types";
+import { createJsonSchemaFormatter } from "../util";
 
 export type AnyValibotSchema =
   | v.AnySchema
@@ -181,3 +182,6 @@ export const ValibotDiscriminator =
         typeof schema === "object" && "async" in schema,
     };
   };
+
+export const ValibotJsonSchemaFormatter = () =>
+  createJsonSchemaFormatter(ValibotParser());
