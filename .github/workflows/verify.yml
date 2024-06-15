@@ -1,0 +1,26 @@
+name: Verify
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.1.3
+      - name: Install packages
+        run: pnpm i
+      - name: Build packages
+        run: pnpm build:packages
+      - name: Run tests
+        run: pnpm test
+      - name: Type check
+        run: pnpm check
