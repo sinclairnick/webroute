@@ -13,7 +13,8 @@
   "module": "dist/index.mjs",
   "private": false,
   "scripts": {
-    "build": "tsup-node"
+    "build": "tsup-node",
+		"publish-pkg": "pnpm run build && pnpm publish --access=public"
   },
   "types": "dist/index.d.ts"
 }
