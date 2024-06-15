@@ -28,7 +28,7 @@ jobs:
       - name: Install packages
         run: pnpm i
       - name: Build package
-        run: pnpm build --filter $PKG_NAME...
+        run: pnpm turbo build --filter $PKG_NAME...
       - uses: JS-DevTools/npm-publish@v3
         with:
           token: ${{ secrets.NPM_TOKEN }}
