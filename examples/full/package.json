@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
-    "dev": "bun src/backend/index.ts"
+    "dev": "bun src/backend/index.ts",
+		"publish-pkg": "pnpm run build && pnpm publish --access=public"
   },
   "devDependencies": {
     "@types/bun": "latest",
