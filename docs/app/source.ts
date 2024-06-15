@@ -16,7 +16,7 @@ export const { getPage, getPages, pageTree } = loader({
     },
   }),
   icon(icon) {
-    if (icon in icons)
+    if (icon && icon in icons)
       return create({ icon: icons[icon as keyof typeof icons] });
   },
 });

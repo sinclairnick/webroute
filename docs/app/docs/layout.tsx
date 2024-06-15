@@ -14,8 +14,8 @@ export default function RootDocsLayout({ children }: { children: ReactNode }) {
               <p className="text-blue-600 dark:text-blue-200">Webroute</p>
             </div>
           ),
-          githubUrl: "https://github.com/sinclairnick/webroute",
         }}
+        githubUrl="https://github.com/sinclairnick/webroute"
         sidebar={{ defaultOpenLevel: 0 }}
         links={[
           {
