@@ -32,6 +32,14 @@
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.mjs",
+			"require": "./dist/index.mjs"
+		}
+
+	},
   "private": false,
   "repository": "https://github.com/sinclairnick/webroute",
   "scripts": {
