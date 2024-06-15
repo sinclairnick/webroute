@@ -1,5 +1,12 @@
 {
   "title": "Schema",
-  "pages": ["..."],
-	"icon": "Cuboid"
+  "pages": [
+    "overview",
+    "universal",
+    "transformation",
+    "libraries",
+    "json-schema",
+    "..."
+  ],
+  "icon": "Cuboid"
 }

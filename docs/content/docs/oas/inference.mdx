@@ -1,0 +1,34 @@
+---
+title: Inference
+---
+
+import { Callout } from "fumadocs-ui/components/callout"
+
+We can derive the types of any OpenAPI schema using the inference helpers provided by `@webroute/oas`.
+
+```ts
+import { ParseSpec } from "@webroute/oas"
+import Spec from "./openapi-spec.json"
+
+// A record of e.g `GET /pets/{petId} -> { Query, Params, Output, ...}
+type AppDef = ParseSpec<typeof Spec>;
+```
+
+Unlike every other OpenAPI tool, this **does not require any code generation**. Instead, we've opted directly interface at the typescript level, entailing less lock-in and greater flexibility.
+
+## Setup
+
+To enable correct type inference, we should place our OpenAPI spec into a `.d.ts` file:
+
+```ts
+// openapi-spec.json.d.ts
+export default {
+	// ...The raw JSON openAPI spec
+}
+```
+
+This helps TypeScript infer the correct types for literal types, like `{ type: "object" }` instead of `{ type: string }`. It also makes our OpenAPI spec "real" source code now, which will _not_ be bundled into JavaScript outputs.
+
+<Callout>
+The TypeScript team are actively discussing ways to support strongly-typed JSON import types [here](https://github.com/microsoft/TypeScript/issues/54488).
+</Callout>

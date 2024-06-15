@@ -1,0 +1,29 @@
+---
+title: OpenAPI
+---
+
+We can create typed clients from OpenAPI specs **without any code generation**.
+
+However we must place our OpenAPI spec into a `.d.ts` declaration file like so
+
+```ts
+// spec.json.d.ts
+export default {
+	// ...OpenAPI spec JSON
+}
+```
+
+To learn more about this, view the [OAS docs](/docs/oas/inference).
+
+We can then use `@webroute/oas` with `@webroute/client`.
+
+```ts
+import { ParseSpec } from "@webroute/oas"
+import Spec from "./spec.json"
+
+type AppDef = ParseSpec<typeof Spec>;
+
+const client = createTypedClient<AppDef>()({
+	// ...
+})
+```

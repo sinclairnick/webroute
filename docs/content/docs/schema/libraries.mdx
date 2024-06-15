@@ -1,0 +1,60 @@
+---
+title: Library Support
+---
+
+import { Callout } from "fumadocs-ui/components/callout"
+
+`@webroute/schema` currently supports the following libraries.
+
+|             | Infer | Parse | Parser | Formatter | Discriminator | JSON Schema |
+| ----------- | ----- | ----- | ------ | --------- | ------------- | ----------- |
+| Zod         | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
+| Yup         | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
+| Joi         | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
+| Valibot     | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
+| TypeBox     | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
+| Superstruct | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
+| Runtypes    | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
+
+<Callout title="Installation">
+Bear in mind the actual validation library must be installed to work properly.
+
+For example: `@webroute/schema/zod` -> `npm i zod` 
+</Callout>
+
+## Usage
+
+Under the `@webroute/schema/<library>` packages, you can find helpers for the given validator library.
+
+For example, we can import the `zod` helpers via.
+
+```ts
+import { ZodParser, ZodFormatter, ZodDiscriminator, ZodJsonSchemaFormatter } from "@webroute/schema/zod"
+```
+
+### Parsing
+
+```ts
+const parser = createParser(ZodParser())
+
+// Parse zod to it's underlying schema definition
+const def = parser.parse(SomeZodSchema)
+```
+
+### Formatting
+
+```ts
+const formatter = createFormatter(ZodFormatter())
+
+// Format it back into zod, or another format
+const BackToZodSchema = formatter.format(def)
+```
+
+### JSON Schema
+```ts
+const toJsonSchema = ZodJsonSchemaFormatter()
+
+// Convert into JSON schema
+const jsonSchema = toJsonSchema(SomeZodSchema)
+```
+

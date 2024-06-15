@@ -4,164 +4,36 @@ title: Overview
 
 import { Callout } from "fumadocs-ui/components/callout"
 
+The JS/TS ecosystem has a wide range of schema and validation libraries. Each library has strengths and weaknesses, and caters to different use cases and preferences.
+
+Instead of providing yet another schema library, `@webroute/schema` enables supporting existing libraries by unifying tooling and empowering downstream tools to be schema-agnostic.
+
+## Parse and Infer
 
 ```ts
-import { createParser, createFormatter, parse, Infer } from "@webroute/schema";
-// Existing implementations:
-import {/**..*/} from "@webroute/schema/zod";
-import {/**..*/} from "@webroute/schema/yup";
-import {/**..*/} from "@webroute/schema/joi";
-import {/**..*/} from "@webroute/schema/superstruct";
-import {/**..*/} from "@webroute/schema/valibot";
-import {/**..*/} from "@webroute/schema/typebox";
-import {/**..*/} from "@webroute/schema/runtypes";
+import { Infer, parse } from "@webroute/schema"
+
+type Schema = Infer<typeof AnySchema>;
+
+const parsed = parse(AnySchema, value):
 ```
 
-`@webroute/schema` aims to (somewhat) unify the diverse ecosystem of schema and validation libraries. It enables converting schemas from one format to another, including JSONSchema and other validation libraries.
+## Convert Between Schemas
 
-Currently the following libraries are supported.
-
-|             | Infer | Parse | Parser | Formatter | Discriminator | JSON Schema |
-| ----------- | ----- | ----- | ------ | --------- | ------------- | ----------- |
-| Zod         | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
-| Yup         | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
-| Joi         | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
-| Valibot     | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
-| TypeBox     | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
-| Superstruct | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
-| Runtypes    | ✅    | ✅    | ✅     | ✅        | ✅            | ✅          |
-
-> Bear in mind, you will need to install the underlying libraries to use any associated `@webroute/schema` functionality.
-
-## Unified parsing and inference
-
-The `@webroute/schema` package provides parsing and inference tools, regardless of what schema library you're using. These can be imported via the root `@webroute/schema` module.
-
-### `parse`
-
-To parse any given schema, we can use the `parse` function.
+`@webroute/schema` provides flexible tools for converting popular schema libraries to and from each other, and even into JSON schema.
 
 ```ts
-import { parse } from "@webroute/schema"
+import { createParser, createFormatter } from "@webroute/schema"
+import { ZodParser } from "@webroute/schema/zod"
+import { JoiFormatter, JoiJsonSchemaFormatter } from "@webroute/schema/joi"
 
-const parsed = parse(SomeSchema, value)
-```
+const parser = createParser(ZodParser());
+const formatter = createFormatter(JoiFormatter());
+const joiToJsonSchema = JoiJsonSchemaFormatter()
 
-### `Infer`ence
-
-Similarly, we can use the `Infer` type utility to infer the result type of a schema.
-
-```ts
-export type User = Infer<typeof UserSchema>; // Type AFTER transforms
-```
-
-We can use the `InferIn` helper to infer the `Input` type (if the schema applies transforms).
-
-```ts
-export type UserBeforeTransforms = InferIn<typeof UserSchema>;
-```
-
-## Converting to/from different formats
-
-Under the `@webroute/schema/<library>` packages, you can find helpers for the given validator library.
-
-For example, we can import the `zod` helpers via.
-
-```ts
-import { ZodParser, ZodFormatter, ZodDiscriminator, ZodJsonSchemaFormatter } from "@webroute/schema/zod"
-```
-
-### Usage
-
-```ts
-// Parse zod to it's underlying schema definition
-const parser = createParser(ZodParser())
-
-const def = parser.parse(SomeZodSchema)
-
-// Format it back into zod, or another format
-const formatter = createFormatter(ZodFormatter())
-
-const BackToZodSchema = formatter.format(def)
-
-// Convert into JSON schema
-const toJsonSchema = ZodJsonSchemaFormatter()
-
-const jsonSchema = toJsonSchema(SomeZodSchema)
-```
-
-<Callout>
-Given the nature and complexity of schema/validation libraries, conversions tend to be a _somewhat lossy_ process, meaning perfect transformations are not always possible.
-</Callout>
-
-You can find more about what `parser`s, `formatter`s, `discriminator`s below.
-
-### Parser
-
-Parsers convert a schema into an abstract "schema def". This is somewhat similar to JSON schema, but simpler and easier to work with.
-
-```ts
-const parser = createParser(MyCustomParser)
-
-// or, e.g.
-const parser = createParser(ZodParser())
-
-const schemaDef = parser.parse(Schema)
-```
-
-
-### Formatter
-
-`Formatter`s are used to convert schema defs into another form. For example, given a schema def, a `zod` formatter would convert the def into usable `zod` schema.
-
-```ts
-const formatter = createFormatter(ZodFormatter)
-
-const zodSchema = formatter.format(schemaDef)
-zodSchema.parse(value)
-```
-
-### Discriminator
-
-`Discriminator`s are used determine if a schema is of a particular library.
-
-
-```ts
-const isZodSchema = ZodDiscriminator().isSchema(maybeZodSchema)
-```
-
-### JSON Schema
-
-Since we have a `formatter` for [TypeBox](https://github.com/sinclairzx81/typebox), we get JSON schema transformation for free.
-
-TypeBox is built atop JSON schema, so any `parsers` can subsequently be formatted into TypeBox form.
-
-```ts
-import { createFormatter, createParser } from "@webroute/schema"
-import { TypeBoxFormatter } from "@webroute/schema/typebox"
-
-const parser = createParser(/** TODO: Add parser */)
-const schemaDef = parser.parse(Schema)
-
-const formatter = createFormatter(TypeBoxFormatter())
-
-const jsonSchema = formatter.format(schemaDef)
-```
-
-This could be easily abstracted into a simple function like so:
-
-```ts
-const parser = createParser(/** TODO: Add parser */)
-const formatter = createFormatter(TypeBoxFormatter())
-
-export const toJsonSchema = (schema: any) => {
-	return formatter.format(parser.parse(schema))
-}
-```
-
-Alternatively, we can import this out-of-the-box with the `<library>JsonSchemaFormatter` functions.
-
-```ts
-// e.g.
-import { ZodJsonSchemaFormatter } from "@webroute/schema/zod"
+// Convert from zod schema to Joi schema
+const def = parser.parse(MyZodSchema)
+const MyJoiSchema = parser.parse(def)
+// Convert this to JSON Schema
+const jsonSchema = joiToJsonSchema(MyJoiSchema)
 ```

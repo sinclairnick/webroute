@@ -1,0 +1,97 @@
+---
+title: Server-side
+---
+
+import { Callout } from "fumadocs-ui/components/callout"
+
+We can use the server-side helpers to decorate OpenAPI schema and generate specs from these.
+
+## Decorators
+
+<Callout>
+These are *not* TypeScript/JavaScript decorators of the form `@Decorator`. However, similarly, they add semi-hidden metadata to our objects.
+</Callout>
+
+We can add metadata to regular JS/TS schema using the following decorators. We will use `zod` as an example.
+
+```ts
+const User = z.object({
+	id: z.string(),
+	name: z.string()
+})
+
+// Provide a config object
+const UserWithMeta = OAS.Schema(
+	User,
+	{ id: "User", description: "A basic user" }
+) // -> #/components/schemas/User
+
+// Config object will be merged with derived config
+const UserAsResponse = OAS.Response(UserWithMeta, {
+	"201": {
+		description: "201 Success",
+		content: {
+			"application/json": {
+				/**...*/
+			}
+		}
+	}
+}) // -> 200 and 201 defined in spec
+
+// Or, can use a function for custom merging behaviour
+const UserAsBody = OAS.Body(UserWithMeta, (operation, schema) => ({
+	...operation,
+	content: { // Merge old and new `content`
+		...operation.content,
+		"application/xml": {
+			schema // Add the JSON-schema
+		}
+	}
+}))
+```
+
+## Spec Generation
+
+We can generate OpenAPI specs by passing a list of routes to the `createSpec` function.
+
+```ts
+import { createSpec } from "@webroute/oas"
+
+const operations = [
+	{
+		path: "/foo",
+		methods: ["get"],
+		Query: QuerySchema,
+		Params: ParamSchemaWithDecorators
+	},
+	{
+		path: "/bar",
+		methods: ["post", "put"],
+		Body: BodySchema
+	},
+]
+
+const spec = createSpec(operations)
+```
+
+The `spec` is based on the highly extensible `openapi3-ts` `OpenApiBuilder`.
+
+### OAS Decorators
+
+The `createSpec` function respects any metadata we have defined via the `OAS` decorators.
+
+### Schema Conversion
+
+Our spec generator needs to know how to convert our given schema, which could be anything, into a JSON Schema format compatible with OpenAPI specs.
+
+This is configured via the `formatter` option which should convert a given schema into JSON Schema form.
+
+```ts
+createSpec(operations, { formatter: (schema) => toJsonSchema(schema) })
+```
+
+You are welcome to BYO formatter. For example, might want to use `zod-to-json-schema` or `@gcornut/valibot-json-schema`.
+
+Alternatively, the `@webroute/schema` package supports converting most popular schema libraries into JSON Schema.
+
+View the [documentation](/docs/schema/overview) for the schema package.

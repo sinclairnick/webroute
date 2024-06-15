@@ -1,0 +1,29 @@
+---
+title: Universal
+---
+
+The `@webroute/schema` package provides parsing and inference tools, regardless of what schema library you're using. These can be imported via the root `@webroute/schema` module.
+
+### `parse`
+
+To parse any given schema, we can use the `parse` function.
+
+```ts
+import { parse } from "@webroute/schema"
+
+const parsed = parse(SomeSchema, value)
+```
+
+### `Infer`ence
+
+Similarly, we can use the `Infer` type utility to infer the result type of a schema.
+
+```ts
+export type User = Infer<typeof UserSchema>; // Type AFTER transforms
+```
+
+We can use the `InferIn` helper to infer the `Input` type (if the schema applies transforms).
+
+```ts
+export type UserBeforeTransforms = InferIn<typeof UserSchema>;
+```

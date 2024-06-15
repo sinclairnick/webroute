@@ -1,5 +1,5 @@
 {
   "title": "Client",
-  "pages": ["..."],
-	"icon": "Tv2"
+  "pages": ["overview", "openapi", "..."],
+  "icon": "Tv2"
 }
