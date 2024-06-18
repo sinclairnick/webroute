@@ -1,4 +1,4 @@
-import { route } from "../route";
+import { Route } from "../route";
 import { Def } from "../route/handler/util";
 import { DenormalisedInput, NormalisedOperation } from "./types";
 
@@ -12,8 +12,8 @@ export const normaliseRoutes = (
   for (const key in input) {
     const _route = input[key];
 
-    const path = route.getPath(_route);
-    const methods = route.getMethods(_route);
+    const path = Route.getPath(_route);
+    const methods = Route.getMethods(_route);
 
     if (path == null) {
       throw new Error(`No path provided for route with key: ${key}`);

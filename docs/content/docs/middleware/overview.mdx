@@ -3,10 +3,9 @@ title: Overview
 ---
 
 import { Callout } from "fumadocs-ui/components/callout";
+import { Install } from "@/components/ui/install";
 
-```ts
-import { defineMiddleware, MiddlewareFn } from "@webroute/middleware";
-```
+<Install name="@webroute/middleware" />
 
 Unlike traditional middleware paradigms, `@webroute/middleware` intentionally avoids _framework-specific_ code, such as `next()` or `req.user = user`. Moreover, it promotes a more functional approach, using return values to infer information about how state changes, returning early `Responses` or registering `Response` handlers.
 
@@ -106,10 +105,12 @@ export const toHono = createAdapter<MiddlewareHandler>((c, next) => {
 });
 
 // Wire up `Request` and any other params
-const honoTimeMiddleware = toHono(c => timeMiddleware(c.req.raw, c.get("req-ip")))
+const honoTimeMiddleware = toHono((c) =>
+  timeMiddleware(c.req.raw, c.get("req-ip"))
+);
 
-const app = new Hono()
-app.use("*", honoTimeMiddleware)
+const app = new Hono();
+app.use("*", honoTimeMiddleware);
 ```
 
 In the future, we may distribute these adapters as packages, unless snippets suffice.

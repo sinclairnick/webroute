@@ -163,25 +163,6 @@ describe("route().use", () => {
       });
   });
 
-  test("Return value replaces existing state", async () => {
-    const _route = route()
-      .use(() => {
-        return { a: "a" };
-      })
-      .use((_, { state }) => {
-        return { b: "b" };
-      })
-      .handle((req, { state }) => {
-        return state;
-      });
-
-    const req = new Request("https://google.com");
-    const res = await _route(req);
-    const data = await res.json();
-
-    expect(data).toEqual({ b: "b" });
-  });
-
   test("Supports response middleware", async () => {
     const _route = route()
       .use((_, { state }) => {

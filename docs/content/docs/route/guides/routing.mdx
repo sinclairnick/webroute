@@ -2,9 +2,10 @@
 title: Routing
 description: What about routing? This is the guide for you
 ---
-import { Callout } from 'fumadocs-ui/components/callout';
-import { Accordions, Accordion } from 'fumadocs-ui/components/accordion';
-import { ImageZoom } from 'fumadocs-ui/components/image-zoom';
+
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordions, Accordion } from "fumadocs-ui/components/accordion";
+import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 
 `route`s are agnostic to what router is used upstream. Since routes are standlone, we have many options for handling routing.
 
@@ -15,6 +16,7 @@ Typically web frameworks spread work across routers, handlers and middleware in 
 By encoding route path and method information directly into the route, we are decoupling from the router. As a result, we can much more easily switch between routers, frameworks and runtimes with minimal changes.
 
 > As an example, `webroute`s could trivially be migrated from `Hono` to `nextjs` filesystem routing, or vice versa, since there is little to no framework-coupling.
+
 </Accordion>
 </Accordions>
 
@@ -29,8 +31,8 @@ Webroute shines in filesystem router contexts, where middleware is either unavai
 ```ts title="posts/route.ts"
 // GET /posts
 export const GET = route("/ignored-path") // <- This pathname will be ignored
-	.method('put') // <- And so will this method
-	.handle(() => {})
+  .method("put") // <- And so will this method
+  .handle(() => {});
 ```
 
 ## `@webroute/router`
@@ -38,54 +40,58 @@ export const GET = route("/ignored-path") // <- This pathname will be ignored
 We can use `route`s with `@webroute/router` by registering routes.
 
 ```ts
-import { createRadixRouter } from "@webroute/router"
+import { createRadixRouter } from "@webroute/router";
 
-const router = createRadixRouter([{
-		path: "/foo",
-		methods: ["GET"],
-		payload: myRoute
-	}])
+const router = createRadixRouter([
+  {
+    path: "/foo",
+    methods: ["GET"],
+    payload: myRoute,
+  },
+]);
 ```
 
 Or if we have many routes, we can use the `normalizeRoutes` method.
 
 ```ts
-import { normaliseRoutes } from "@webroute/route"
+import { normaliseRoutes } from "@webroute/route";
 
-const appRoutes = { myRoute, myOtherRoute }
-const routes = normaliseRoutes(appRoutes)
+const appRoutes = { myRoute, myOtherRoute };
+const routes = normaliseRoutes(appRoutes);
 
-const router = createRadixRouter(routes)
+const router = createRadixRouter(routes);
 
 Bun.serve({
-	fetch(req) {
-		const handler = router.match(req)
-		return handler?.(request) ?? RESPONSE_NOT_FOUND
-	}
-})
-
+  fetch(req) {
+    const handler = router.match(req);
+    return handler?.(request) ?? RESPONSE_NOT_FOUND;
+  },
+});
 ```
 
 Learn more about the [Router](/docs/router/overview) package.
 
-
 ## No Routing
 
 <Callout type="warn">
-In smaller projects this approach is sufficient. However, as the number of routes or path complexity increases, you'll likely want to use a more sophisticated routing approach.
+  In smaller projects this approach is sufficient. However, as the number of
+  routes or path complexity increases, you'll likely want to use a more
+  sophisticated routing approach.
 </Callout>
 
 In many cases, you don't actually need a fancy router at all. It's completely valid to export a single route and call it a day.
 
 ```ts
 Bun.serve({
-  fetch: myRoute(req)
+  fetch: myRoute(req),
 });
 ```
 
 <Callout title="Helpers">
-The `route.getPath` and `route.getMethods` helpers, found on the `route` export, are helpful for building custom routing.
+  The `Route.getPath` and `Route.getMethods` helpers, found on the `route`
+  export, are helpful for building custom routing.
 </Callout>
+
 ## Third Party Frameworks
 
 In more sophisticated apps, or if integrating with an existing app, we may wish to use an external router/framework.
@@ -95,13 +101,13 @@ In more sophisticated apps, or if integrating with an existing app, we may wish 
 In the most basic case, we can simply wire up our routes explicitly and manually.
 
 ```ts title="hono-example.ts"
-const app = new Hono()
+const app = new Hono();
 
 app.on(
-	route.getMethods(myRoute), // METHODS
-	route.getPath(myRoute),    // PATH
-	myRoute                    // HANDLER
-	)
+  Route.getMethods(myRoute), // METHODS
+  Route.getPath(myRoute), // PATH
+  myRoute // HANDLER
+);
 ```
 
 ### Many at Once
@@ -110,21 +116,19 @@ We can also perform this iteratively when we have quite a few routes.
 
 ```ts title="hono-example.ts" twoslash
 // ---cut-start---
-import { Hono } from "hono"
-import { route } from "@webroute/route"
-const routes = [
-	route().handle(() => {})
-]
+import { Hono } from "hono";
+import { route, Route } from "@webroute/route";
+const routes = [route().handle(() => {})];
 // ---cut-end---
-const app = new Hono()
+const app = new Hono();
 
 // For every route, map each method to the route handler
-for(const r of routes) {
-	app.on(route.getMethods(r), route.getPath(r), c => r(c.req.raw))
+for (const r of routes) {
+  app.on(Route.getMethods(r), Route.getPath(r), (c) => r(c.req.raw));
 }
 
 // This is a completely valid, production ready "hono adapter"
-export default app
+export default app;
 ```
 
 <Callout>
@@ -140,5 +144,6 @@ As we've seen above, connecting our routes to existing apps is fairly straightfo
 Ultimately, by writing your own "adapter" code, you will retain greater control, with pretty minimal work.
 
 <Callout>
-More guidance on integrating with existing frameworks and apps can be found in the [Building Apps](./building-apps) section.
+  More guidance on integrating with existing frameworks and apps can be found in
+  the [Building Apps](./building-apps) section.
 </Callout>

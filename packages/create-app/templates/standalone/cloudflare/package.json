@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "dev": "wrangler dev",
+    "publish": "wrangler deploy"
+  },
+  "dependencies": {
+    "@webroute/router": "latest"
+  },
+  "devDependencies": {
+    "wrangler": "latest"
+  }
+}

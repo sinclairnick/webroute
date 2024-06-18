@@ -9,6 +9,7 @@ import { Log } from "../../internal/logger";
 import { AnyRouteBuilder, RouteBuilder } from "./builder";
 import { Def, createParseFn } from "./util";
 import { getParseFn } from "@webroute/schema";
+import { fixRequestClone, fixResponseClone } from "../patch";
 
 function createNewBuilder(
   configA: AnyHandlerDefinition,
@@ -107,7 +108,9 @@ export function createBuilder<TPath extends string>(
       }) as AnyRouteBuilder;
     },
     handle(handler) {
-      const _handler = async (req: Request) => {
+      const _handler = async (_req: Request) => {
+        const req = fixRequestClone(_req);
+
         const parse = createParseFn(req, def);
         const middlewareOut: MiddlewareOutFn[] = [];
 
@@ -143,7 +146,7 @@ export function createBuilder<TPath extends string>(
 
             if (typeof result === "object") {
               // Otherwise modify state
-              ctx.state = result;
+              ctx.state = { ...ctx.state, ...result };
             }
           }
         }
@@ -154,10 +157,14 @@ export function createBuilder<TPath extends string>(
           const result = await handler(req, ctx as any);
 
           // Assign response, depending on handler return type
+
+          // If return type is response
           if (result instanceof Response) {
             Log("Result is response");
             response = result;
-          } else {
+          }
+          // Otherwise is a data type
+          else {
             Log("Parsing result.");
             const parsed = def.output
               ? await def.output?.parser(result)
@@ -168,13 +175,20 @@ export function createBuilder<TPath extends string>(
           }
         }
 
+        response = fixResponseClone(response);
+
         // --- RES MIDDLEWARE ---
         // Run through outgoing middleware
         if (middlewareOut.length > 0) {
           // Iterate through middleware out backwards
           for (let i = middlewareOut.length - 1; i >= 0; i--) {
             const middleware = middlewareOut[i];
-            response = await middleware(response, ctx);
+            const result = await middleware(response, ctx);
+
+            // Set response if one was returned
+            if (result) {
+              response = fixResponseClone(result);
+            }
           }
         }
 

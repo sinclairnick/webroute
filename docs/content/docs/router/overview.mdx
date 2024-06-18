@@ -2,13 +2,13 @@
 title: Overview
 ---
 
-```ts
-import { createRadixRouter, createLinearRouter } from "@webroute/router"
-```
+import { Install } from "@/components/ui/install";
+
+<Install name="@webroute/router" />
 
 `@webroute/router` exports several routers which simply match handlers to an incoming request.
 
-All router have the shape
+All routers have the shape:
 
 ```ts
 export type RequestRouter<T> = {
@@ -21,20 +21,22 @@ export type RequestRouter<T> = {
 
 ```ts
 const router = createRouter([
-	{ 
-		path: "/foo",
-		methods: ["GET"],
-		payload: () => "1" // Handler can be any function
-	},
-	{ 
-		path: "/bar",
-		methods: ["POST"],
-		payload: () => "2" // Handler can be any function
-	},
-])
+  {
+    path: "/foo",
+    methods: ["GET"],
+    payload: () => "1", // Handler can be any function
+  },
+  {
+    path: "/bar",
+    methods: ["POST"],
+    payload: () => "2", // Handler can be any function
+  },
+]);
 
-const handler = router.match(new Request("https://myapi.com/bar", { method: "post" }))
-const result = handler?.() // "2"
+const handler = router.match(
+  new Request("https://myapi.com/bar", { method: "post" })
+);
+const result = handler?.(); // "2"
 ```
 
 ## Routers
@@ -44,15 +46,15 @@ In most cases, you will want to use the faster `radix` router which uses the `ra
 ### Radix Router
 
 ```ts
-import { createRadixRouter } from "@webroute/router"
+import { createRadixRouter } from "@webroute/router";
 
 const router = createRadixRouter([
-		{ 
-			path: "/foo",
-			methods: ["GET"],
-			payload: () => "Some handler" // Handler can be any function
-		},
-	]);
+  {
+    path: "/foo",
+    methods: ["GET"],
+    payload: () => "Some handler", // Handler can be any function
+  },
+]);
 ```
 
 ### Linear Router
@@ -60,13 +62,13 @@ const router = createRadixRouter([
 However, in some instances – like if route registration order is important – you might want to use the linear router.
 
 ```ts
-import { createLinearRouter } from "@webroute/router"
+import { createLinearRouter } from "@webroute/router";
 
 const router = createLinearRouter([
-		{ 
-			path: "/foo",
-			methods: ["GET"],
-			payload: () => "Some handler" // Handler can be any function
-		},
-	]);
+  {
+    path: "/foo",
+    methods: ["GET"],
+    payload: () => "Some handler", // Handler can be any function
+  },
+]);
 ```

@@ -2,16 +2,16 @@
 title: Overview
 ---
 
-import { Callout } from "fumadocs-ui/components/callout"
+import { Callout } from "fumadocs-ui/components/callout";
+import { Install } from "@/components/ui/install";
 
-```ts
-import { OAS, createSpec, ParseSpec } from "@webroute/oas"
-```
+<Install name="@webroute/route" />
 
 `@webroute/oas` provides utilities for building and consuming OpenAPI specs.
 
 <Callout>
-All `@webroute/oas` functionality leverages the fantastic work by the `openapi3-ts` package.
+  All `@webroute/oas` functionality leverages the fantastic work by the
+  `openapi3-ts` package.
 </Callout>
 
 ### Server-side
@@ -19,13 +19,10 @@ All `@webroute/oas` functionality leverages the fantastic work by the `openapi3-
 When creating our APIs, we add metadata to our schema, which is then interpreted by `createSpec`, to enrich our OpenAPI specs without any awkward APIs.
 
 ```ts
-const DecoratedSchema = OAS.Schema(
-	UserSchema,
-	{
-		id: "User",
-		description: "A public user object"
-	}
-)
+const DecoratedSchema = OAS.Schema(UserSchema, {
+  id: "User",
+  description: "A public user object",
+});
 ```
 
 Read more about [decorators](/docs/oas/decorators).
@@ -35,7 +32,7 @@ Read more about [decorators](/docs/oas/decorators).
 `@webroute/oas` enables directly parsing an OpenAPI spec into useful typescript types, _without any code generation_.
 
 ```ts
-import spec from "openapi-spec.json"
+import spec from "openapi-spec.json";
 
 type AppSpec = ParseSpec<typeof spec>;
 ```

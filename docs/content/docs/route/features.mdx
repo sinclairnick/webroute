@@ -135,13 +135,13 @@ Built on web-standards, `webroute`s don't do anything funky, opaque or complex. 
 
 ```ts
 route()
-.use((req, {state}) => {
-	const newState = { ...state, user: { id: 1 } }
+.use((req) => {
+	const update = { user: { id: 1 } }
 
 	// Type-safe mutations
-	return newState;
+	return update;
 })
-.handle((req, { state }) => {
+.handle((req) => {
 	// Instead of adding arbitrary properties to the request object
 	req.user = {}
 })

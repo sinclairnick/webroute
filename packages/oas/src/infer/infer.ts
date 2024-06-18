@@ -10,6 +10,9 @@ export type SchemaObjectOrRef = oas31.SchemaObject | oas31.ReferenceObject;
 export type BodyObjectOrRef = oas31.RequestBodyObject | oas31.ReferenceObject;
 export type ResponseObjectOrRef = oas31.ResponseObject | oas31.ReferenceObject;
 
+/**
+ * Parses an OAS union type.
+ */
 export type ParseUnion<
   T extends oas31.SchemaObject,
   TRef extends oas31.ComponentsObject
@@ -20,6 +23,9 @@ export type ParseUnion<
   ? ParseSchema<$Head, TRef> | ParseUnion<{ anyOf: $Tail }, TRef>
   : never; // If this is `unknown` it breaks the union
 
+/**
+ * Parses an OAS intersection type.
+ */
 export type ParseIntersection<
   T extends oas31.SchemaObject,
   TRef extends oas31.ComponentsObject
@@ -30,6 +36,9 @@ export type ParseIntersection<
   ? ParseSchema<$Head, TRef> & ParseSchema<{ allOf: $Tail }, TRef>
   : unknown; // If this is `never` then it breaks intersection
 
+/**
+ * Parses an OAS object type.
+ */
 export type ParseObject<
   T extends oas31.SchemaObject,
   TRef extends oas31.ComponentsObject
@@ -48,6 +57,8 @@ export type ParseObject<
   : {};
 
 /**
+ * Parses an OAS array type.
+ *
  * To avoid excessively deep types, array modifiers like min/max length
  * are ignored.
  */
@@ -58,6 +69,9 @@ export type ParseArray<
   ? ParseSchema<T["items"], TRef>[]
   : unknown[];
 
+/**
+ * Parses an OAS string type.
+ */
 export type ParseString<T extends oas31.SchemaObject> = T["enum"] extends any[]
   ? T["enum"] extends [
       infer $Head extends string,
@@ -73,6 +87,9 @@ export type ParseNumber<T extends oas31.SchemaObject> = number;
 
 export type ParseNull<T extends oas31.SchemaObject> = null;
 
+/**
+ * Parses an OAS schema object to it's TypeScript counterpart.
+ */
 type ParseSchemaObject<
   T extends oas31.SchemaObject,
   TRef extends oas31.ComponentsObject
@@ -94,6 +111,9 @@ type ParseSchemaObject<
   ? ParseIntersection<T, TRef>
   : unknown;
 
+/**
+ * Parses an OAS schema reference to it's (dereferenced) TypeScript counterpart.
+ */
 export type ParseSchemaReference<
   T extends oas31.ReferenceObject,
   TRef extends oas31.ComponentsObject
@@ -105,6 +125,9 @@ export type ParseSchemaReference<
     : unknown
   : unknown;
 
+/**
+ * Parses an OAS schema object or reference to it's TypeScript counterpart.
+ */
 export type ParseSchema<
   T extends SchemaObjectOrRef,
   TRef extends oas31.ComponentsObject
@@ -120,6 +143,9 @@ type FormatIn<T extends string> = T extends "path"
   ? "Headers"
   : Capitalize<T>;
 
+/**
+ * Parses a single OAS parameter reference.
+ */
 export type ParseParameterReference<
   T extends oas31.ReferenceObject,
   TRef extends oas31.ComponentsObject
@@ -131,6 +157,9 @@ export type ParseParameterReference<
     : {}
   : {};
 
+/**
+ * Parses a single OAS parameter object.
+ */
 export type ParseParameterObject<
   T extends oas31.ParameterObject,
   TRef extends oas31.ComponentsObject
@@ -146,6 +175,9 @@ export type ParseParameterObject<
     : {};
 };
 
+/**
+ * Parses a single OAS parameter.
+ */
 export type ParseParameter<
   T extends oas31.ParameterObject | oas31.ReferenceObject,
   TRef extends oas31.ComponentsObject
@@ -161,6 +193,9 @@ export type AnyParsedParams = {
   Query?: unknown;
 };
 
+/**
+ * Parses an OAS parameters array.
+ */
 export type ParseParameters<
   T extends (oas31.ParameterObject | oas31.ReferenceObject)[] | undefined,
   TRef extends oas31.ComponentsObject,
@@ -186,6 +221,9 @@ export type ParseParameters<
       Query: TParsed["Query"];
     };
 
+/**
+ * Parses the schema corresponding to an OAS body or response reference.
+ */
 export type ParseBodyOrResponseReference<
   T extends oas31.ReferenceObject,
   TType extends "responses" | "requestBodies",
@@ -204,6 +242,9 @@ export type ParseBodyOrResponseReference<
     : never
   : never;
 
+/**
+ * Parses the schema corresponding to an OAS body or response object.
+ */
 export type ParseBodyOrResponseObject<
   T extends oas31.RequestBodyObject | oas31.ResponseObject,
   TRef extends oas31.ComponentsObject
@@ -215,6 +256,9 @@ export type ParseBodyOrResponseObject<
   ? ParseSchema<$Schema, TRef>
   : never;
 
+/**
+ * Parses a single request body object of an OAS definition.
+ */
 export type ParseBody<
   T extends BodyObjectOrRef | undefined,
   TRef extends oas31.ComponentsObject
@@ -226,6 +270,9 @@ export type ParseBody<
       | (T["required"] extends true ? never : undefined)
   : unknown;
 
+/**
+ * Parses a single response object of an OAS definition.
+ */
 export type ParseResponse<
   T extends ResponseObjectOrRef,
   TRef extends oas31.ComponentsObject
@@ -235,6 +282,9 @@ export type ParseResponse<
   ? ParseBodyOrResponseObject<T, TRef>
   : {};
 
+/**
+ * Parses a responses object of an OAS definition.
+ */
 export type ParseResponses<
   T extends oas31.ResponsesObject | undefined,
   TRef extends oas31.ComponentsObject
@@ -246,6 +296,9 @@ export type ParseResponses<
     : never
   : never;
 
+/**
+ * Parses a single operation of an OAS definition.
+ */
 export type ParseOperation<
   T extends oas31.OperationObject,
   TRef extends oas31.ComponentsObject
@@ -256,6 +309,9 @@ export type ParseOperation<
   } & ParseParameters<T["parameters"], TRef>
 >;
 
+/**
+ * Parses a single path of an OAS definition.
+ */
 export type ParsePath<
   T extends oas31.OpenAPIObject,
   TPath extends keyof T["paths"]
@@ -266,6 +322,12 @@ export type ParsePath<
     : {};
 };
 
+/**
+ * Parses an OAS definition from it's type declaration.
+ *
+ * Note: this requires the spec be placed into a `.d.ts` file
+ * to achieve the necessary type strictness.
+ */
 export type ParseSpec<T extends oas31.OpenAPIObject> = Simplify<
   UnionToIntersection<
     {

@@ -7,14 +7,16 @@ Converting to JSON schema has especially poor and haphazard support across the e
 For example, using `zod`
 
 ```ts
-import { ZodJsonSchemaFormatter } from "@webroute/schema/zod"
+import { ZodJsonSchemaFormatter } from "@webroute/schema/zod";
 
-const toJsonSchema = ZodJsonSchemaFormatter()
+const toJsonSchema = ZodJsonSchemaFormatter();
 
-const jsonSchema = toJsonSchema(z.object({
-	a: z.number()
-}))
-// { 
+const jsonSchema = toJsonSchema(
+  z.object({
+    a: z.number(),
+  })
+);
+// {
 // 		type: "object",
 // 		properties: {
 // 			a: { type: "number" }
@@ -30,24 +32,24 @@ Since we have a `formatter` for [TypeBox](https://github.com/sinclairzx81/typebo
 TypeBox is built atop JSON schema, so any `parsers` can subsequently be formatted into TypeBox form.
 
 ```ts
-import { createFormatter, createParser } from "@webroute/schema"
-import { TypeBoxFormatter } from "@webroute/schema/typebox"
+import { createFormatter, createParser } from "@webroute/schema";
+import { TypeBoxFormatter } from "@webroute/schema/typebox";
 
 // Parse the schema
-const parser = createParser(/** TODO: Add parser */)
-const schemaDef = parser.parse(Schema)
+const parser = createParser(/** TODO: Add parser */);
+const schemaDef = parser.parse(Schema);
 
 // Format to TypeBox
-const formatter = createFormatter(TypeBoxFormatter())
+const formatter = createFormatter(TypeBoxFormatter());
 
-const jsonSchema = formatter.format(schemaDef)
+const jsonSchema = formatter.format(schemaDef);
 ```
 
 Alternatively, we can import this out-of-the-box with the `<library>JsonSchemaFormatter` functions.
 
 ```ts
 // e.g.
-import { ZodJsonSchemaFormatter } from "@webroute/schema/zod"
+import { ZodJsonSchemaFormatter } from "@webroute/schema/zod";
 ```
 
 This is especially helpful in conjunction with the `@webroute/oas` [package](/docs/oas/overview).

@@ -38,4 +38,4 @@ export type MergeObjectsShallow<A, B> = Simplify<
 >;
 
 /** An awaitable version of the response type */
-export type Awaitable<T> = T extends Promise<any> ? T : T | Promise<T>; // Avoids nested promises
+export type Awaitable<T> = T | Promise<T>;

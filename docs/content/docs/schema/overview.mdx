@@ -2,7 +2,10 @@
 title: Overview
 ---
 
-import { Callout } from "fumadocs-ui/components/callout"
+import { Callout } from "fumadocs-ui/components/callout";
+import { Install } from "@/components/ui/install";
+
+<Install name="@webroute/schema" />
 
 The JS/TS ecosystem has a wide range of schema and validation libraries. Each library has strengths and weaknesses, and caters to different use cases and preferences.
 
@@ -23,17 +26,17 @@ const parsed = parse(AnySchema, value):
 `@webroute/schema` provides flexible tools for converting popular schema libraries to and from each other, and even into JSON schema.
 
 ```ts
-import { createParser, createFormatter } from "@webroute/schema"
-import { ZodParser } from "@webroute/schema/zod"
-import { JoiFormatter, JoiJsonSchemaFormatter } from "@webroute/schema/joi"
+import { createParser, createFormatter } from "@webroute/schema";
+import { ZodParser } from "@webroute/schema/zod";
+import { JoiFormatter, JoiJsonSchemaFormatter } from "@webroute/schema/joi";
 
 const parser = createParser(ZodParser());
 const formatter = createFormatter(JoiFormatter());
-const joiToJsonSchema = JoiJsonSchemaFormatter()
+const joiToJsonSchema = JoiJsonSchemaFormatter();
 
 // Convert from zod schema to Joi schema
-const def = parser.parse(MyZodSchema)
-const MyJoiSchema = parser.parse(def)
+const def = parser.parse(MyZodSchema);
+const MyJoiSchema = parser.parse(def);
 // Convert this to JSON Schema
-const jsonSchema = joiToJsonSchema(MyJoiSchema)
+const jsonSchema = joiToJsonSchema(MyJoiSchema);
 ```

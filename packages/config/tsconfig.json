@@ -8,9 +8,6 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
-    "moduleResolution": "Bundler",
-    "lib": ["ESNext", "DOM"]
-  },
-  "include": [],
-  "exclude": []
+    "moduleResolution": "Bundler"
+  }
 }

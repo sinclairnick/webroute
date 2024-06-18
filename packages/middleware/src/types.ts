@@ -10,10 +10,10 @@ export type DataResult =
   // This value param must be unknown otherwise arbitrary functions are accepted
   Record<PropertyKey, unknown>;
 
-export type ResponseHandler<TRest extends any[] = any[]> = (
+export type ResponseHandler<TRest extends any[] = []> = (
   response: Response,
   ...rest: TRest
-) => Awaitable<Response>;
+) => Awaitable<Response | undefined | void>;
 
 /**
  * Could be empty, a state update value (primitive, object or array value), or a response handler.
@@ -49,4 +49,7 @@ export type InferMiddlewareFnResult<T extends MiddlewareFn> = Awaited<
   ReturnType<T>
 >;
 
-export type AnyMiddlewareFn = MiddlewareFn<DataResult | void, any[]>;
+export type AnyMiddlewareFn = MiddlewareFn<
+  DataResult | void | undefined,
+  any[]
+>;

@@ -26,6 +26,6 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "content/docs/route/overview.mdx"
-  ],
+, "scripts/gen-ref.mjs"  ],
   "exclude": ["node_modules"]
 }

@@ -1,0 +1,291 @@
+---
+title: Quick Start
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+This guide covers how to combine the various packages of Webroute to produce a fully-functioning server-side app.
+
+The resulting app will have strong type-safety, client-side types, automatic OpenAPI spec definitions and validation.
+
+---
+
+**Preface**
+
+While this guide combines many Webroute packages, bear in mind they can all be used independently. As such, most steps are entirely optional.
+
+## Routes
+
+```sh
+npm i @webroute/route
+```
+
+[Package Documentation](/docs/route/overview).
+
+First, we will define a "route". In webroute terms, a route is a REST endpoint that also defines things like validation and even middleware.
+
+### Defining a Route
+
+To begin, we'll create a single route, designed to create a blog post.
+
+```ts
+import { route } from "@webroute/route";
+
+const createPost = async () => {
+  // Create post somehow...
+  return { id: "123" };
+};
+
+const createPostRoute = route("/post")
+  .method("post")
+  .handle(() => {
+    return createPost();
+  });
+```
+
+Our `createPostRoute` is merely a `(request: Request) => Response` handler, and can be used nearly anywhere.
+
+### Adding Validation
+
+We want to validate the input to ensure the necessary data has been provided. We can provide a schema or validator to do this.
+
+```ts {2-4, 8}
+// For example, using zod
+const CreatePostInput = z.object({
+  title: z.string(),
+});
+
+const createPostRoute = route("/post")
+  // ...snip
+  .body(CreatePostInput); // <-- Register our schema
+// ...snip
+```
+
+### Collect Routes
+
+It's useful to have a single reference point for all of our routes, especially for the following steps.
+
+```ts
+export const AppRoutes = {
+  createPostRoute,
+};
+```
+
+## Middleware
+
+```sh
+npm i @webroute/middleware
+```
+
+[Package Documentation](/docs/middleware/overview).
+
+### Adding Auth Middleware
+
+We will want to ensure only logged in people can create posts. Instead of running a check within each route handler, we can define a middleware function.
+
+```ts
+import { defineMiddleware } from "@webroute/middleware";
+
+const isValid = (token: string) => {
+  // Somehow determine validity
+  return true;
+};
+
+export const isAuthed = () =>
+  defineMiddleware((request) => {
+    const bearer = request.headers.get("Bearer");
+    const token = bearer?.replace("Bearer ", "");
+
+    if (token == null || !isValid(token)) {
+      return Response.json({ code: "UNAUTHORIZED" }, { status: 401 });
+    }
+
+    return { token };
+  });
+```
+
+Now we can register this with a route.
+
+```ts
+const authedRoute = route().use(isAuthed());
+
+// Extend from authedRoute
+const createPostRoute = authedRoute.path("/post");
+// ...snip
+```
+
+## Routing
+
+```sh
+npm i @webroute/router
+```
+
+[Package Documentation](/docs/router/overview).
+
+Our `createPostRoute` can be run anywhere web-standards are supported. In some instances we may not need any routing, for example when using `nextjs`.
+
+In our case, we will use a regular router to match incoming requests.
+
+```ts
+import { createRadixRouter } from "@webroute/router";
+import { AppRoutes } from "./routes";
+
+const router = createRadixRouter(AppRoutes);
+```
+
+This router allows us to match handler based on an incoming request. Therefore, our router can also be used anywhere web-standard requests are supported.
+
+```ts
+const handleRequest = (request: Request) => {
+  const handler = router.match(request);
+
+  if (handler) {
+    return handler(request); // Handlers will always return Response
+  }
+
+  return Response.json({ code: "NOT_FOUND" }, { status: 404 });
+};
+```
+
+Our `handleRequest` handler can now be used with many frameworks and runtimes. For example with `bun` we would use it like so.
+
+```ts
+Bun.serve({
+  fetch: handleRequest,
+});
+```
+
+## Client
+
+```sh
+npm i @webroute/client
+```
+
+[Package Documentation](/docs/client/overview).
+
+We can interface with our app with type-safety on the client side.
+
+On the server-side, we can export our `AppDef` for future consumption on the client side.
+
+```ts title="routes.ts"
+export type AppDef = ToClient.InferApp<typeof appRoutes>;
+```
+
+We can either package our types into an `npm` module, or import directly if using a monorepo.
+
+```ts title="client.ts"
+import { createTypedClient, createUrl } from "@webroute/client";
+
+export const client = createTypedClient<AppDef>()({
+  fetcher: async (config, options?: AxiosRequestConfig) => {
+    const url = createUrl(config);
+
+    return axios(url, { data: config.body, ...options });
+  },
+});
+```
+
+Alternatively, we can [generate a client](/docs/oas/inference) using OpenAPI types.
+
+## OpenAPI
+
+> This step is very much optional
+
+```sh
+npm i @webroute/oas
+```
+
+[Package Documentation](/docs/oas/overview).
+
+## Generate an OpenAPI Spec
+
+Using the `@webroute/oas` package, we can create OpenAPI specs for our routes.
+
+```ts
+import { createSpec } from "@webroute/oas";
+
+const routes = normaliseRoutes(appRoutes);
+export const spec = createSpec(routes);
+```
+
+However, by default `createSpec` doesn't know how to convert the schema library (i.e. `zod`) into the required JSON Schema format. To resolve this, we can set the `formatter` option.
+
+```sh
+npm i @webroute/schema
+npm i typebox // For JSON Schema conversion
+npm i zod // Or whatever schema library you\'re using
+```
+
+```ts
+import { ZodJsonSchemaFormatter } from "@webroute/schema/zod";
+
+export const spec = createSpec(routes, {
+  formatter: ZodJsonSchemaFormatter(),
+  onCollision(operation) {
+    console.log("Collision detected", operation);
+  },
+});
+```
+
+This formatter is flexible, so we can use any library we like.
+
+```ts
+import { zodToJsonSchema } from "zod-to-json-schema";
+
+export const spec = createSpec(routes, {
+  formatter: (zodSchema) => {
+    return zodToJsonSchema(zodSchema);
+  },
+});
+```
+
+### OpenAPI Customisations
+
+We may also want to add some additional metadata which will be added to our OpenAPI spec, which we'll generate later.
+
+We can do this for both the schema and the route.
+
+```ts
+import { OAS } from "@webroute/oas";
+
+const CreatePostInput = OAS.Schema(
+  ///...snip,
+  { id: "CreatePostInput", required: false } // <-- OpenAPI will recognize this as it's name
+);
+
+const createPostRoute = OAS.Operation(
+  // ...snip,
+  { operationId: "CreatePost" }
+);
+```
+
+### Client from OpenAPI
+
+For several reasons, we may not want to emit a type definition for our app: perhaps monorepos and `npm` packages are too much hassle.
+
+Instead, we can derive a typed client from our OpenAPI spec (or any for that matter), without requiring any code generation.
+
+We need to place our spec in `.d.ts` file to ensure types are correctly setup for inference.
+
+```ts title="spec.d.ts"
+export default {
+  // ...OpenAPI Spec Json
+};
+```
+
+We can then infer our `AppDef` from this.
+
+```ts
+import { ParseSpec } from "@webroute/oas";
+import type Spec from "./spec";
+
+type AppDef = ParseSpec<typeof Spec>;
+
+const client = createTypedClient<AppDef>()({
+  // ...
+});
+```
+
+## Summary
+
+We've created a fully-fledged server-side app which runs in nearly every JS runtime and framework. For a complete implementation, please view the [full example](https://stackblitz.com/github/sinclairnick/webroute/tree/main/examples/full).

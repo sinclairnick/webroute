@@ -1,5 +1,5 @@
 import { Awaitable } from "@webroute/common";
-import { DataResult, MiddlewareResult } from "./types";
+import { DataResult, MiddlewareResult, ResponseHandler } from "./types";
 
 export type AnyMiddlewareResult = MiddlewareResult<DataResult, any[]>;
 
@@ -70,7 +70,7 @@ export type ToFrameworkHandlers<
    * ```
    */
   onResponseHandler: (
-    handler: (response: Response) => Awaitable<Response>
+    handler: ResponseHandler
   ) => Awaitable<ReturnType<T>>;
 
   /**

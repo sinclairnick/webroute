@@ -25,8 +25,8 @@ declare const isAuthed: boolean;
 route()
   .use((req, { state }) => {
     if (isAuthed) {
-      // Return updated state object
-      return { ...state, isAuthed: true };
+      // Return state updates
+      return { isAuthed: true };
     }
 
     // Or, Return a response, completing the request early
@@ -62,7 +62,7 @@ Data | Response | ((response, ctx) => Response);
 
 A common use-case of middleware is adding some information to our request. In other words, we are storing some _state_ about the current request.
 
-Because `webroute` prohibits modifying a `Request` object, this is impossible. Instead we can just return a state object. This will be accessible with full-type safety in successive middleware and handlers.
+Because `webroute` prohibits modifying a `Request` object, this is impossible. Instead we can just return state updates as an object. This will be accessible with full-type safety in successive middleware and handlers.
 
 ```ts twoslash
 // ---cut-start---
@@ -77,18 +77,6 @@ route()
 		//         ^?
 	})
 ```
-
-<Accordions>
-<Accordion title="Appending to state, instead of overwriting">
-Bear in mind returning an object will _overwrite_ any existing state. So if we wish to keep the existing state, we can decide how we want to merge the old with new state. Typically that will look something like:
-
-```ts
-//...
-	return { ...state, foo: "bar" }
-//...
-```
-</Accordion>
-</Accordions>
 
 ### Response
 

@@ -2,10 +2,11 @@
 title: Basics
 description: Learn the basic API of routes
 ---
-import { Callout } from 'fumadocs-ui/components/callout';
+
+import { Callout } from "fumadocs-ui/components/callout";
 
 ```ts
-import { route } from "@webroute/route" 
+import { route } from "@webroute/route";
 ```
 
 A `webroute` is ultimately a declaration of an API endpoint, including validation, headers, middleware and the request handler.
@@ -18,8 +19,8 @@ A simple route can be as minimal as
 
 ```ts
 route().handle((req) => {
-	return new Response()
-})
+  return new Response();
+});
 ```
 
 But this provides no benefit over using a regular `(req: Request) => Response` handler. In fact the result is exactly this.
@@ -28,31 +29,34 @@ But this provides no benefit over using a regular `(req: Request) => Response` h
 
 ## Paths
 
-It's often helpful to define our route path in the same place as our route, in a declarative fashion. `webroute` supports string path patterns. 
+It's often helpful to define our route path in the same place as our route, in a declarative fashion. `webroute` supports string path patterns.
 
 ```ts
-route("/path/:param").handle(() => {})
+route("/path/:param").handle(() => {});
 ```
 
 <Callout>
-This approach is highly declarative and [inverts control](https://en.wikipedia.org/wiki/Inversion_of_control) compared to traditional API frameworks, which grants us more freedom with how we might want to execute our app.
+  This approach is highly declarative and [inverts
+  control](https://en.wikipedia.org/wiki/Inversion_of_control) compared to
+  traditional API frameworks, which grants us more freedom with how we might
+  want to execute our app.
 </Callout>
 
 <Callout>
-In theory we can use any path pattern style here. Exactly what style you should use will depend on how you aim to implement routing, if at all. Read more in [Routing](./routing)
+  In theory we can use any path pattern style here. Exactly what style you
+  should use will depend on how you aim to implement routing, if at all. Read
+  more in [Routing](./routing)
 </Callout>
-
 
 ## Method
 
 We can define the method(s) of a route in a similar fashion.
 
 ```ts
-route("/posts").method("get")
+route("/posts").method("get");
 // or
-route("/posts").method(["get", "post", /*...etc*/])
+route("/posts").method(["get", "post" /*...etc*/]);
 ```
-
 
 ## Validation
 
@@ -60,113 +64,119 @@ Any production API should be validating input and output to ensure the right inf
 
 Specifying the schema does not cause `webroute` to automatically run any validation or parsing. This improves performance and allows you to better control e.g. failed validation.
 
-
 <Callout>
-The below examples will use Zod schema, but you may use whatever validation you like. Most popular validation libraries are supported.
+  The below examples will use Zod schema, but you may use whatever validation
+  you like. Most popular validation libraries are supported.
 </Callout>
 
 ### Path Parameters
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
-import { z } from "zod"
+import { route } from "@webroute/route";
+import { z } from "zod";
 // ---cut-end---
 // GET /posts/123
 route("/posts/:id")
-	.method("get")
-	.params(z.object({ id: z.number() }))
-	.handle(async (req, { parse }) => {
-		// Run the parsing/validation, lazily
-		const { id } = await parse("params")
-		//      ^?
-	})
+  .method("get")
+  .params(z.object({ id: z.number() }))
+  .handle(async (req, { parse }) => {
+    // Run the parsing/validation, lazily
+    const { id } = await parse("params");
+    //      ^?
+  });
 ```
 
 ### Query Parameters
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
-import { z } from "zod"
+import { route } from "@webroute/route";
+import { z } from "zod";
 // ---cut-end---
 // GET /posts?limit=1&offset=2
 
 route("/posts")
-	.method("get")
-	.query(z.object({
-		limit: z.number().optional(),
-		offset: z.number().optional() 
-	}))
-	.handle(async (req, { parse }) => {
-		// Run the parsing/validation, lazily
-		const { limit, offset } = await parse("query")
-		//      ^^^^^  
-		//             ^?
-	})
+  .method("get")
+  .query(
+    z.object({
+      limit: z.number().optional(),
+      offset: z.number().optional(),
+    })
+  )
+  .handle(async (req, { parse }) => {
+    // Run the parsing/validation, lazily
+    const { limit, offset } = await parse("query");
+    //      ^^^^^
+    //             ^?
+  });
 ```
 
 ### Incoming Headers
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
-import { z } from "zod"
+import { route } from "@webroute/route";
+import { z } from "zod";
 // ---cut-end---
 // GET /posts -H "Authorization: Bearer eYon...."
 
 route("/posts/:id")
-	.method("get")
-	.headers(z.object({ Authorization: z.string().regex(/Bearer [a-zA-Z0-9]+/) }))
-	.handle(async (req, { parse }) => {
-		// Run the parsing/validation, lazily
-		const { Authorization } = await parse("headers")
-		//      ^?
-	})
+  .method("get")
+  .headers(z.object({ Authorization: z.string().regex(/Bearer [a-zA-Z0-9]+/) }))
+  .handle(async (req, { parse }) => {
+    // Run the parsing/validation, lazily
+    const { Authorization } = await parse("headers");
+    //      ^?
+  });
 ```
 
 ### Request Body
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
-import { z } from "zod"
+import { route } from "@webroute/route";
+import { z } from "zod";
 // ---cut-end---
 // POST /login -D { "email": "...", "password": "..." }
 
 route("/login")
-	.method("post")
-	.body(z.object({
-		email: z.string().email(),
-		password: z.string().min(10, "Password too short") 
-	}))
-	.handle(async (req, { parse }) => {
-		// Run the parsing/validation, lazily
-		const { email, password } = await parse("body")
-		//      ^^^^^
-		//             ^?
-	})
+  .method("post")
+  .body(
+    z.object({
+      email: z.string().email(),
+      password: z.string().min(10, "Password too short"),
+    })
+  )
+  .handle(async (req, { parse }) => {
+    // Run the parsing/validation, lazily
+    const { email, password } = await parse("body");
+    //      ^^^^^
+    //             ^?
+  });
 ```
 
 ### Output (response)
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
-import { z } from "zod"
-declare function formatMoney(x :any): string
+import { route } from "@webroute/route";
+import { z } from "zod";
+declare function formatMoney(x: any): string;
 // ---cut-end---
 // GET /balance
 
 route("/balance")
-	.method("get")
-	.output(z.object({ 
-		amount: z.number().transform(s => formatMoney(s)) 
-	}))
-	.handle(() => {
-		return { amount: 1_000_000 }
-		// <- "1,000,000"
-	})
+  .method("get")
+  .output(
+    z.object({
+      amount: z.number().transform((s) => formatMoney(s)),
+    })
+  )
+  .handle(() => {
+    return { amount: 1_000_000 };
+    // <- "1,000,000"
+  });
 ```
 
 ## Providers
@@ -175,22 +185,24 @@ Providers enable injecting services into the handler context via arbitrary initi
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
-declare class MyService { doSomething: () => any }
-declare const DIContainer: { get: (x: string) => any }
+import { route } from "@webroute/route";
+declare class MyService {
+  doSomething: () => any;
+}
+declare const DIContainer: { get: (x: string) => any };
 // ---cut-end---
 
 route()
-	.provide({
-		myService: () => new MyService(),
-		// Use arbitrary params
-		another: (req: Request) => DIContainer.get("thing") // Use a DI framework?
-	})
-	.handle((req, c) => {
-		c.services.myService().doSomething()
+  .provide({
+    myService: () => new MyService(),
+    // Use arbitrary params
+    another: (req: Request) => DIContainer.get("thing"), // Use a DI framework?
+  })
+  .handle((req, c) => {
+    c.services.myService().doSomething();
 
-		c.services.another(req)
-	})
+    c.services.another(req);
+  });
 ```
 
 ## Middleware
@@ -199,16 +211,16 @@ Middleware enables composing common functionality, with complete type-safety.
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
+import { route } from "@webroute/route";
 // ---cut-end---
 
 route()
-	.use(req => {
-		return { userId: "123" } // Adds to state
-	})
-	.handle((req, c) => {
-		c.state.userId
-	})
+  .use((req) => {
+    return { userId: "123" }; // Adds to state
+  })
+  .handle((req, c) => {
+    c.state.userId;
+  });
 ```
 
 Learn more about [Middleware](./middleware).
@@ -221,38 +233,38 @@ The following examples reference the below route definition
 
 ```ts title="example-route.ts" twoslash include main
 // ---cut-start---
-import { route } from "@webroute/route"
-import { z } from "zod"
+import { route } from "@webroute/route";
+import { z } from "zod";
 // ---cut-end---
 // Define some route
 const myRoute = route("/post/:id")
-	.method(["put", "post"])
-	.params(z.object({ id: z.number() }))
-	.query(z.object({ page: z.number() }))
-	.body(z.object({ name: z.string() }))
-	.output(z.object({ success: z.boolean() }))
-	.handle(() => ({ success: true }))
+  .method(["put", "post"])
+  .params(z.object({ id: z.number() }))
+  .query(z.object({ page: z.number() }))
+  .body(z.object({ name: z.string() }))
+  .output(z.object({ success: z.boolean() }))
+  .handle(() => ({ success: true }));
 ```
 
 ### Route Data
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
-import { z } from "zod"
+import { route, Route } from "@webroute/route";
+import { z } from "zod";
 const myRoute = route("/post/:id")
-	.method(["put", "post"])
-	.params(z.object({ id: z.number() }))
-	.query(z.object({ page: z.number() }))
-	.body(z.object({ name: z.string() }))
-	.output(z.object({ success: z.boolean() }))
-	.handle(() => ({ success: true }))
+  .method(["put", "post"])
+  .params(z.object({ id: z.number() }))
+  .query(z.object({ page: z.number() }))
+  .body(z.object({ name: z.string() }))
+  .output(z.object({ success: z.boolean() }))
+  .handle(() => ({ success: true }));
 // ---cut-end---
-const path = route.getPath(myRoute)
+const path = Route.getPath(myRoute);
 //    ^^^^
-const methods = route.getMethods(myRoute)
+const methods = Route.getMethods(myRoute);
 //    ^^^^^^^
-const operations = route.getOperationKeys(myRoute);
+const operations = Route.getOperationKeys(myRoute);
 //    ^^^^^^^^^^
 ```
 
@@ -260,33 +272,33 @@ const operations = route.getOperationKeys(myRoute);
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
-import { z } from "zod"
+import { route, Route } from "@webroute/route";
+import { z } from "zod";
 const myRoute = route("/post/:id")
-	.method(["put", "post"])
-	.params(z.object({ id: z.number() }))
-	.query(z.object({ page: z.number() }))
-	.body(z.object({ name: z.string() }))
-	.output(z.object({ success: z.boolean() }))
-	.handle(() => ({ success: true }))
+  .method(["put", "post"])
+  .params(z.object({ id: z.number() }))
+  .query(z.object({ page: z.number() }))
+  .body(z.object({ name: z.string() }))
+  .output(z.object({ success: z.boolean() }))
+  .handle(() => ({ success: true }));
 // ---cut-end---
 // Infer parts independently
-type Path = route.InferPath<typeof myRoute>
-type Methods = route.InferMethods<typeof myRoute>
+type Path = Route.InferPath<typeof myRoute>;
+type Methods = Route.InferMethods<typeof myRoute>;
 
 // Infer schema shapes
 // In = before transform
-type ParamsIn = route.InferParamsIn<typeof myRoute>
-type QueryIn = route.InferQueryIn<typeof myRoute>
-type BodyIn = route.InferBodyIn<typeof myRoute>
-type OutputIn = route.InferOutputIn<typeof myRoute>
+type ParamsIn = Route.InferParamsIn<typeof myRoute>;
+type QueryIn = Route.InferQueryIn<typeof myRoute>;
+type BodyIn = Route.InferBodyIn<typeof myRoute>;
+type OutputIn = Route.InferOutputIn<typeof myRoute>;
 
 // Out = after transform (if any)
 // type ParamsOut = route.InferParamsOut<typeof myRoute>
 // ...
 
 // Or infer all at once
-type RouteDef = route.InferRouteDef<typeof myRoute>;
+type RouteDef = Route.InferRouteDef<typeof myRoute>;
 ```
 
 `webroute` also provides some client-side type inference, which greatly speeds up development on the client side. Visit the [Client](./client) docs.

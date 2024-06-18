@@ -1,15 +1,15 @@
-import { AnyCompiledRoute, route } from "../route";
+import { AnyCompiledRoute, Route } from "../route";
 import { Simplify } from "@webroute/common";
 import { DenormalisedInput } from "./types";
 
 export namespace ToClient {
   export interface AnyRouteDef extends RouteDef<any> {}
   export type RouteDef<TRoute extends AnyCompiledRoute> =
-    route.InferRouteDef<TRoute>;
+    Route.InferRouteDef<TRoute>;
 
   export interface AnyEndpointDef extends EndpointDef<any> {}
   export type EndpointDef<TRoute extends AnyCompiledRoute> = {
-    [TMethod in route.InferMethods<TRoute>]: RouteDef<TRoute>;
+    [TMethod in Route.InferMethods<TRoute>]: RouteDef<TRoute>;
   };
 
   export type ToAppRoute<TRoute extends AnyRouteDef> = {
@@ -21,8 +21,8 @@ export namespace ToClient {
 
   export type InferApp<TRoutes extends DenormalisedInput> = Simplify<{
     [Key in keyof TRoutes as `${Uppercase<
-      route.InferMethods<TRoutes[Key]>
-    >} ${route.InferPath<TRoutes[Key]>}`]: Simplify<
+      Route.InferMethods<TRoutes[Key]>
+    >} ${Route.InferPath<TRoutes[Key]>}`]: Simplify<
       ToAppRoute<RouteDef<TRoutes[Key]>>
     >;
   }>;

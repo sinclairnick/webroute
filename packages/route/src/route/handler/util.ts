@@ -7,14 +7,14 @@ export const createParseFn = (
   _req: Request,
   def: RouteDefInner<any>
 ): ParseInputsFn<any, any, any, any> => {
-  const req = _req.clone();
-  const url = new URL(req.url);
+  const request = _req.clone();
+  const url = new URL(request.url);
 
   const query = cached(async () => {
     const map: Record<string, any> = {};
-    url.searchParams.forEach((value, key) => {
+    for (const [key, value] of url.searchParams.entries()) {
       map[key] = value;
-    });
+    }
 
     return def.query?.parser(map) ?? map;
   });
@@ -39,29 +39,29 @@ export const createParseFn = (
   });
 
   const body = cached(async () => {
-    const contentType = req.headers.get("content-type");
+    const contentType = request.headers.get("content-type");
 
     if (def.body) {
-      const data = await req.json();
+      const data = await request.json();
       return def.body?.parser(data);
     }
 
     if (contentType === "application/json") {
-      return req.json();
+      return request.json();
     }
 
     if (contentType?.startsWith("text/")) {
-      return req.text();
+      return request.text();
     }
 
-    return req.body;
+    return request.body;
   });
 
   const headers = cached(async () => {
     const map: Record<string, any> = {};
-    req.headers.forEach((value, key) => {
+    for (const [key, value] of request.headers.entries()) {
       map[key] = value;
-    });
+    }
 
     return def.headersReq?.parser(map) ?? map;
   });

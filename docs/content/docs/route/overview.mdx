@@ -2,9 +2,11 @@
 title: Overview
 ---
 
-import { Cards, Card } from "fumadocs-ui/components/card"
-import { Callout } from "fumadocs-ui/components/callout"
+import { Cards, Card } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Install } from "@/components/ui/install";
 
+<Install name="@webroute/route" />
 
 Webroute makes building fully-fledged standalone HTTP routes easy. The end result can be run anywhere web standard `Request` and `Response` are supported, including without any router.
 
@@ -12,40 +14,41 @@ Conceptually, `route` moves middleware and I/O validation out of the router and 
 
 ---
 
+## Introduction
+
 The utility of this approach becomes clear when used with `nextjs` or other filesystem routers, for example:
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
-import { z } from "zod"
+import { route } from "@webroute/route";
+import { z } from "zod";
 // ---cut-end---
 export const GET = route()
+  // Specify middleware, returning data will update the `state` field later
+  .use((req) => {
+    return { userId: "123" };
+  })
 
-	// Specify middleware, returning data will update the `state` field later
-	.use((req, { state }) => {
-		return { ...state, userId: "123" }
-	})
+  // Specify any input and output validators...
+  .body(z.object({ name: z.string() }))
 
-	// Specify any input and output validators...
-	.body(z.object({ name: z.string() }))
+  // Handle the request...
+  .handle(async (req, { state, parse }) => {
+    const { userId } = state;
+    const { name } = await parse("body"); // Lazily validate body
 
-	// Handle the request...
-	.handle(async (req, { state, parse }) => {
-		const { userId } = state
-		const { name } = await parse("body") // Lazily validate body
-
-		return { ok: true } // Sends as JSON
-		// or: return Response.json(...)
-	})
+    return { ok: true }; // Sends as JSON
+    // or: return Response.json(...)
+  });
 
 // Just a regular request handler
-const response = await GET(new Request("https://google.com"))
+const response = await GET(new Request("https://google.com"));
 ```
 
 And you could use this exact same route handler with Hono too.
 
 ```ts
-app.get("/post", c => GET(c.req.raw))
+app.get("/post", (c) => GET(c.req.raw));
 ```
 
 By packaging the validation and middleware (and more) with the route itself, it becomes incredibly portable, and you'll find your applications actually become _simpler_ too.

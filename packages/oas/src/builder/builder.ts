@@ -21,6 +21,18 @@ const onCollisionDefault: CreateSpecOptions["onCollision"] = ({
   );
 };
 
+/**
+ * Creates an OAS definition from the given operation list.
+ *
+ * Without providing the `formatter` option, schema are automatically coerced to the "any"
+ * type: `{}`.
+ *
+ * Providing a `formatter` enables producing schema-rich OAS.
+ *
+ * @param {OperationsArrayInput} operations
+ * @param {CreateSpecOptions} options
+ * @returns {oas31.OperationObject}
+ */
 export const createSpec = (
   /**
    * A list or record of operation information.

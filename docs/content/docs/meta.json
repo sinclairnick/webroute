@@ -4,6 +4,8 @@
   "pages": [
     "index",
     "comparisons",
+    "---Guides---",
+    "guides/quick-start",
     "---Packages---",
     "packages",
     "route",

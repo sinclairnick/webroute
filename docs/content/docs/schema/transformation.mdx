@@ -2,7 +2,7 @@
 title: Transformation
 ---
 
-import { Callout } from "fumadocs-ui/components/callout"
+import { Callout } from "fumadocs-ui/components/callout";
 
 We can transform schema into various formats, including other other libraries and JSON schema.
 
@@ -10,9 +10,10 @@ For out-of-the-box library support, view the [Library Support](/docs/schema/libr
 
 If you're looking to implement custom parsers and formatters, keep reading these docs.
 
-
 <Callout>
-Given the nature and complexity of schema/validation libraries, conversions tend to be a _somewhat lossy_ process, meaning perfect transformations are not always possible.
+  Given the nature and complexity of schema/validation libraries, conversions
+  tend to be a _somewhat lossy_ process, meaning perfect transformations are not
+  always possible.
 </Callout>
 
 ### Parser
@@ -20,31 +21,29 @@ Given the nature and complexity of schema/validation libraries, conversions tend
 Parsers convert a schema into an abstract "schema def". This is somewhat similar to JSON schema, but simpler and easier to work with.
 
 ```ts
-const parser = createParser(MyCustomParser)
+const parser = createParser(MyCustomParser);
 
 // or, e.g.
-const parser = createParser(ZodParser())
+const parser = createParser(ZodParser());
 
-const schemaDef = parser.parse(Schema)
+const schemaDef = parser.parse(Schema);
 ```
-
 
 ### Formatter
 
 `Formatter`s are used to convert schema defs into another form. For example, given a schema def, a `zod` formatter would convert the def into usable `zod` schema.
 
 ```ts
-const formatter = createFormatter(ZodFormatter)
+const formatter = createFormatter(ZodFormatter);
 
-const zodSchema = formatter.format(schemaDef)
-zodSchema.parse(value)
+const zodSchema = formatter.format(schemaDef);
+zodSchema.parse(value);
 ```
 
 ### Discriminator
 
 `Discriminator`s are used determine if a schema is of a particular library.
 
-
 ```ts
-const isZodSchema = ZodDiscriminator().isSchema(maybeZodSchema)
+const isZodSchema = ZodDiscriminator().isSchema(maybeZodSchema);
 ```

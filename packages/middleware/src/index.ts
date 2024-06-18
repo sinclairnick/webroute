@@ -4,7 +4,7 @@ export * from "./types";
 export * from "./to-framework";
 
 /**
- * An (optional) helper for defining a middleware function.
+ * A helper for defining a middleware function.
  *
  * Ensures the correct type signature is used, without losing the function type.
  *

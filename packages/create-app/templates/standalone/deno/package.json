@@ -1,0 +1,9 @@
+{
+  "scripts": {
+    "dev": "deno run --allow-net --watch src/index.ts",
+    "start": "deno src/index.ts"
+  },
+  "dependencies": {
+    "@webroute/router": "latest"
+  }
+}

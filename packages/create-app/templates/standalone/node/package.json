@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "build": "tsc",
+    "start": "node ./dist/index.js"
+  },
+  "dependencies": {
+    "@hono/node-server": "latest",
+    "@webroute/router": "latest"
+  },
+  "devDependencies": {
+    "tsx": "latest"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "name": "create-webroute-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsup-node",
+    "start": "node ./dist/index.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@clack/prompts": "^0.7.0",
+    "@commander-js/extra-typings": "^12.1.0",
+    "commander": "^12.1.0",
+    "detect-package-manager": "^3.0.2",
+    "picocolors": "^1.0.1",
+    "zx": "^8.1.2"
+  },
+  "devDependencies": {
+    "pkg-types": "^1.1.1"
+  }
+}

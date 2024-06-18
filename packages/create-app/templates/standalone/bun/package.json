@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts"
+  },
+  "dependencies": {
+    "@webroute/router": "latest"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  }
+}
