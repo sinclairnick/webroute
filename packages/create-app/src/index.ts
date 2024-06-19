@@ -3,8 +3,10 @@ import { intro } from "@clack/prompts";
 import pc from "picocolors";
 import { promptStandalone } from "./standalone/prompt";
 import { program } from "@commander-js/extra-typings";
+import pkg from "../package.json";
 
 program
+  .version(pkg.version)
   .description("Initialize a webroute app")
   .argument("<dest>", "Destination folder")
   .action(async (dest, opts) => {
