@@ -1,16 +1,14 @@
 {
   "name": "create-webroute-app",
-  "version": "0.1.0",
   "description": "",
-  "main": "dist/index.mjs",
-  "bin": "dist/index.mjs",
-  "scripts": {
-    "build": "tsup-node",
-    "start": "node ./dist/index.mjs"
+  "version": "0.1.0",
+  "author": {
+    "name": "Nick Sinclair",
+    "email": "nicksinclair@xtra.co.nz",
+    "url": "https://github.com/sinclairnick"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "bin": "dist/index.mjs",
+  "bugs": "https://github.com/sinclairnick/webroute/issues",
   "dependencies": {
     "@clack/prompts": "^0.7.0",
     "@commander-js/extra-typings": "^12.1.0",
@@ -22,5 +20,15 @@
   "devDependencies": {
     "pkg-types": "^1.1.1",
     "tsup": "^8.0.1"
+  },
+  "homepage": "https://webroute.vercel.app",
+  "keywords": [],
+  "license": "MIT",
+  "main": "dist/index.mjs",
+  "repository": "https://github.com/sinclairnick/webroute",
+  "scripts": {
+    "build": "tsup-node",
+    "publish-pkg": "pnpm run build && pnpm publish --access=public",
+    "start": "node ./dist/index.mjs"
   }
 }

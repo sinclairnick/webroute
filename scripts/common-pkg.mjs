@@ -11,7 +11,9 @@ const packages = [
   "router",
   "schema",
   "common",
+  "create-app",
 ];
+const skipReadmesFor = ["common", "create-app"];
 
 const main = async () => {
   const promises = packages.map(async (name) => {
@@ -47,7 +49,7 @@ const main = async () => {
     const license = await fs.promises.readFile("./LICENSE", "utf-8");
     await fs.promises.writeFile(`${prefix}/LICENSE`, license);
 
-    if (name === "common") return;
+    if (skipReadmesFor.includes(name)) return;
 
     // README
     const readme = [
