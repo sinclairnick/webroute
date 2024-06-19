@@ -14,7 +14,7 @@ To avoid repeating common path param elements, we might sometimes wish to add pa
 
 ```ts twoslash
 // ---cut-start---
-import { route } from "@webroute/route"
+import { route, Route } from "@webroute/route"
 // ---cut-end---
 const apiRoute = route("/api")
 
@@ -23,7 +23,7 @@ const postRoute = apiRoute.path("/post")
 const getPostRoute = postRoute.method("get").handle(() => {})
 
 // Even typescript understands
-type Path = route.InferPath<typeof getPostRoute>
+type Path = Route.InferPath<typeof getPostRoute>
 //   ^?
 
 ```
