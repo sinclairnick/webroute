@@ -3,7 +3,7 @@ import { OAS } from "@webroute/oas";
 
 export const helloRoute = OAS.Operation(
   publicRoute
-    .path("/")
+    .path("/hello")
     .method("get")
     .handle((req) => {
       return { hello: "world" };

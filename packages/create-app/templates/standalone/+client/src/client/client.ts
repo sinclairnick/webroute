@@ -1,4 +1,4 @@
-import { appRoutes } from "./routes";
+import { appRoutes } from "../routes";
 import { ToClient } from "@webroute/route";
 import { createTypedClient, createUrl } from "@webroute/client";
 
