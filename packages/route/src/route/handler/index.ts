@@ -18,7 +18,7 @@ function createNewBuilder(
   return createBuilder({ ...configA, ...configB });
 }
 
-export function createBuilder<TPath extends string>(
+export function createBuilder<TPath extends string | undefined = undefined>(
   def: Partial<AnyHandlerDefinition> = {}
 ): RouteBuilder<{
   Path: TPath;

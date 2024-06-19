@@ -13,6 +13,8 @@ export type * from "./handler/types";
  * @param {string?} Path
  * @returns
  */
-export function route<TPath extends string>(Path?: TPath) {
+export function route<TPath extends string | undefined = undefined>(
+  Path?: TPath
+) {
   return createBuilder<TPath>({ path: Path });
 }
