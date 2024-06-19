@@ -1,8 +1,9 @@
 {
   "name": "create-webroute-app",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.mjs",
+  "bin": "dist/index.mjs",
   "scripts": {
     "build": "tsup-node",
     "start": "node ./dist/index.mjs"
@@ -19,6 +20,7 @@
     "zx": "^8.1.2"
   },
   "devDependencies": {
-    "pkg-types": "^1.1.1"
+    "pkg-types": "^1.1.1",
+    "tsup": "^8.0.1"
   }
 }

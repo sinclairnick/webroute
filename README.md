@@ -32,6 +32,14 @@ export const myRoute = route("/post/:id")
 // myRoute: (req: Request) => Response
 ```
 
+## Quick Start
+
+To get up and running quickly with a fully-fledged app, you can use the `create-webroute-app` command:
+
+```sh
+npx create-webroute-app ./my-app
+```
+
 ## How is this different to X?
 
 Webroute is not a framework. Modern web apps are deployed to a range of different environments, runtimes and architectures. Webroute provides a handful of _independent_ libraries to help with common tasks like routing, route handling, middleware and client-side type-safety.
