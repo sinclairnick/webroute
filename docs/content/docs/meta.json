@@ -3,7 +3,6 @@
   "root": true,
   "pages": [
     "index",
-    "comparisons",
     "---Guides---",
     "guides/quick-start",
     "---Packages---",

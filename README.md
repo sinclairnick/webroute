@@ -1,91 +1,65 @@
 <div align="center">
-
+	
 <h1>Webroute</h1>
 
-<p><b>Building blocks for REST APIs, built on industry standards</b></p>
+<p>
+	<b>The web toolkit for full-stack connoisseurs.</b>
+</p>
 
 </div>
 
 <img src="./static/webroute-cover.jpg"/>
 
+<div align="center">
+<a href="https://webroute.vercel.app/docs">
+Docs
+</a>
+&bull;
+<a href="https://webroute.vercel.app/docs/guides/quick-start">
+Quick Start
+</a>
+&bull;
+<a href="https://webroute.vercel.app/docs/route/overview">
+Route
+</a>
+&bull;
+<a href="https://webroute.vercel.app/docs/client/overview">
+Client
+</a>
+&bull;
+<a href="https://webroute.vercel.app/docs/oas/overview">
+OpenAPI
+</a>
+</div>
+
 ## Overview
 
-Webroute is a set of building blocks which can combine to form a fully fledged web framework. Each tool is decoupled from the next, meaning they are all independently useful. But they can also be stacked, leaving you with a strong foundation for quickly building backend web apps that are future-proofed.
+Webroute provides a few packages which make building and consuming HTTP APIs a breeze, both on the client- and server-side.
 
-**View the [documentation](https://webroute.vercel.app).**
+As opposed to monolithic frameworks, webroute merely provides you with the tools to create powerful APIs alongside your favourite runtime, full-stack framework and/or platform.
 
-## Example Usage
+## Why?
 
-```ts
-import { route } from "@webroute/route";
+Modern API development is extremely fragmented across vast combinations of frameworks, runtimes and platforms. Monolithic web frameworks are no longer suitable.
 
-export const myRoute = route("/post/:id")
-  .method("get")
-  .use(isAuthed())
-  .params(z.object({ id: z.string() }))
-  .handle(async (req, c) => {
-    const { params } = await c.parse();
-    // ...
-    return { title: "..." };
-  });
-
-// myRoute: (req: Request) => Response
-```
-
-## Quick Start
-
-To get up and running quickly with a fully-fledged app, you can use the `create-webroute-app` command:
-
-```sh
-npx create-webroute-app ./my-app
-```
-
-## How is this different to X?
-
-Webroute is not a framework. Modern web apps are deployed to a range of different environments, runtimes and architectures. Webroute provides a handful of _independent_ libraries to help with common tasks like routing, route handling, middleware and client-side type-safety.
-
-Webroute was designed to get out of your way and to be minimally opinionated. We prefer requiring slightly more additional setup if it means much greater flexibility – and less lock-in – for the lifetime of an app.
-
-## [Packages](https://webroute.vercel.app/docs/packages)
-
-Webroute provides several packages that are entirely independent of one another. Combined, they can be used to create fully-fledged REST APIs.
-
-They will work with any framework or runtime that utilises web-standard `Request` and `Response` objects.
-
-| Package                                                                 | Purpose                                                       |
-| ----------------------------------------------------------------------- | ------------------------------------------------------------- |
-| [**Route**](https://webroute.vercel.app/docs/route/overview)            | Build powereful and atomic web-standard request handlers      |
-| [**Client**](https://webroute.vercel.app/docs/client/overview)          | Create type-safe clients for any REST API                     |
-| [**Middleware**](https://webroute.vercel.app/docs/middleware/overview)  | Middleware compatible with any framework                      |
-| [**Schema**](https://webroute.vercel.app/docs/schema/overview)          | Universal converters, parsers and infererence for any schema  |
-| [**Router**](https://webroute.vercel.app/docs/router/overview)          | Match incoming `Request`s to request handlers                 |
-| [**OpenAPI Spec (OAS)**](https://webroute.vercel.app/docs/oas/overview) | Define, generate and infer OpenAPI schema without any codegen |
+Instead, webroute has implemented the core elements you _might_ need in a web framework, and you can easily piece together those that suit your use case.
 
 ## Compatibility
 
-Webroute was built from the ground up to be friendly with most existing tools. It can be used standalone or alongside existing frameworks, and in various runtimes.
+Webroute works with all runtimes or frameworks that conform to the WinterCG Minimum Web Standard.
 
-### Frameworks:
+### Frameworks
 
-- ✅ Hono
-- ✅ NextJS
-- ✅ Remix
-- ✅ SolidStart
+- [x] `Hono`
+- [x] `Next.js`
+- [x] `Remix`
+- [x] `SolidStart`
+- [x] `SvelteKit`
 
-### Runtimes:
+### Runtimes
 
-- ✅ Bun
-- ✅ Deno
-- ✅ Node (via adapter)
-- ✅ Cloudflare Workers
-- ✅ Vercel Edge
-
----
-
-## Contribution
-
-Feel free to [open any PRs or issues](https://github.com/sinclairnick/webroute/issues) or [start a discussion](https://github.com/sinclairnick/webroute/issues).
-
-## Author
-
-Webroute was initially developed by [Nick Sinclair](https://github.com/sinclairnick)
+- [x] `Bun`
+- [x] `Deno`
+- [x] `Node` <small>(via adapter)</small>
+- [x] `Cloudflare Workes`
+- [x] `Vercel Edge`

@@ -3,14 +3,25 @@ title: Overview
 icon: Home
 ---
 
+Webroute is a toolkit for building and interacting with APIs in a type-safe, robust and ergonomic manner.
 
-**Webroute is a suite of independent tools for building server-side apps and APIs, based on the [WinterCG Minimum Common Web API](https://common-min-api.proposal.wintercg.org/).**
+It was designed to work with your existing stack, or be used standalone. As a result, webroute offers a selection of independent packages which you can mix-and-match as needed.
 
-Instead of a monolithic framework, Webroute provides a handful of independent packages. Boundaries between **routing**, **middleware**, **validation**, **routing** and **client** are clearly defined and separate. This means you're not tied down by framework or runtime.
+Additionally, industry standards are heavily leaned into so you can "learn the platform" instead of another bespoke framework API.
+
+## Get Started
+
+The fastest way to get started with webroute is via the `create-webroute-app` CLI.
+
+```sh
+npx create-webroute-app webroute-app
+```
+
+This will dynamically build an starter app with the features you require.
 
 ## Philosophy
 
-When building new web tools, the following principles are followed.
+To achieve a balance of flexibility, ease of use and interoperability, webroute adheres to a few principles.
 
 | Concept          | Description                                                                            |
 | ---------------- | :------------------------------------------------------------------------------------- |
@@ -19,5 +30,7 @@ When building new web tools, the following principles are followed.
 | **Pure**         | Preferring basic input/output functions over side-effectful ones                       |
 | **Atomic**       | Standalone functionality is better than requiring complex integration or orchestration |
 | **Declarative**  | When useful, prefer declarative over imperative approaches, enabling introspection     |
-| **No magic**     | No monkey-patching, wrapped `Request`/`Response` objects                               |
+| **No magic**     | No monkey-patching, no wrapped `Request`/`Response` objects, no magical compilers      |
 | **Composable**   | Prefer composition over orchestration so pipelines are traceable and reasonable        |
+
+These principles, and their benefits will become clearer over the course of these docs.
