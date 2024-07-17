@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --background: 255 100% 100%;
+  --primary: 217 91% 60%;
+  --card: 255 100% 100%;
+}
+
+.dark {
+  --background: 229 84% 5%;
+  --primary: 214 100% 97%;
+  --card: 226 57% 21%;
+}

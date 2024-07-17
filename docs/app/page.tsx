@@ -1,6 +1,7 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 
-const Data = [
+const Packages = [
   {
     name: "Route",
     npm: "route",
@@ -12,12 +13,6 @@ const Data = [
     npm: "client",
     href: "/docs/client/overview",
     about: "Interact with any REST API with full type-safety",
-  },
-  {
-    name: "Middleware",
-    npm: "middleware",
-    href: "/docs/middleware/overview",
-    about: "A spec for defining middleware reusable across frameworks",
   },
   {
     name: "Router",
@@ -32,6 +27,15 @@ const Data = [
     about:
       "Helpers for building OpenAPI definitions with schema/validation libraries",
   },
+];
+
+const More = [
+  {
+    name: "Middleware",
+    npm: "middleware",
+    href: "/docs/middleware/overview",
+    about: "A spec for defining middleware reusable across frameworks",
+  },
   {
     name: "Schema",
     npm: "schema",
@@ -39,6 +43,11 @@ const Data = [
     about: "Utilities for wrangling the diverse schema library ecosystem",
   },
 ];
+
+export const metadata: Metadata = {
+  title: "Webroute",
+  description: "Web APIs, built from the route up.",
+};
 
 export default function HomePage() {
   return (
@@ -49,18 +58,26 @@ export default function HomePage() {
           <h1 className="text-4xl font-medium mb-4">
             <pre>webroute</pre>
           </h1>
-          <p>Building blocks for modern web-standard REST APIs</p>
+          <p>{metadata.description}</p>
 
-          <Link
-            href="/docs"
-            className="underline text-lg font-medium text-blue-500 mt-4"
-          >
-            View docs
-          </Link>
+          <div className="flex gap-x-4 justify-center mx-auto">
+            <Link
+              href="/docs"
+              className="underline text-lg font-medium text-blue-500 mt-4"
+            >
+              Documentation
+            </Link>
+            <Link
+              href="https://github.com/sinclairnick/webroute"
+              className="underline text-lg font-medium text-blue-500 mt-4"
+            >
+              Github
+            </Link>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          {Data.map((x, i) => {
+          {Packages.map((x, i) => {
             return (
               <Link
                 key={i}

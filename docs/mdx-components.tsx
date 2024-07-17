@@ -1,7 +1,8 @@
 import type { MDXComponents } from "mdx/types";
 import defaultComponents from "fumadocs-ui/mdx";
 import { Popup, PopupContent, PopupTrigger } from "fumadocs-ui/twoslash/popup";
-import { Card, Cards } from "fumadocs-ui/components/card";
+import { Callout } from "fumadocs-ui/components/callout";
+import { Accordion, Accordions } from "fumadocs-ui/components/accordion";
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -10,5 +11,8 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     Popup,
     PopupContent,
     PopupTrigger,
+    Callout,
+    Accordion,
+    Accordions,
   };
 }
