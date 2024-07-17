@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { appRoutes } from "./routes";
 import { ZodError } from "zod";
-import { route } from "@webroute/route";
+import { route, Route } from "@webroute/route";
 
 describe("Routes", () => {
   test("GET /post errors on non-numeric id param", () => {
@@ -20,7 +20,7 @@ describe("Routes", () => {
   });
 
   test("Can override providers", async () => {
-    const overridden = route.withProviders(appRoutes.routeWithFooProvider, {
+    const overridden = Route.withProviders(appRoutes.routeWithFooProvider, {
       foo: () => "bar",
     });
 
