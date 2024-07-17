@@ -3,7 +3,7 @@
 <h1>Webroute</h1>
 
 <p>
-	<b>The web toolkit for full-stack connoisseurs.</b>
+	<b>Rethinking APIs, from the route-up.</b>
 </p>
 
 </div>
@@ -34,15 +34,21 @@ OpenAPI
 
 ## Overview
 
-Webroute provides a few packages which make building and consuming HTTP APIs a breeze, both on the client- and server-side.
+Webroute takes a "route-first" approach to API development. This means your routes are the source of truth and can be run standlone, or as part of a wider app.
 
-As opposed to monolithic frameworks, webroute merely provides you with the tools to create powerful APIs alongside your favourite runtime, full-stack framework and/or platform.
+By shifting all work to the route, and leaning into industry standards, your apps become compatible with virtually all runtimes and frameworks with minimal adjustment necessary.
 
 ## Why?
 
 Modern API development is extremely fragmented across vast combinations of frameworks, runtimes and platforms. Monolithic web frameworks are no longer suitable.
 
 Instead, webroute has implemented the core elements you _might_ need in a web framework, and you can easily piece together those that suit your use case.
+
+## What's in the box?
+
+Webroute provides the functionality of a full-blown framework, without being one. Instead, it offers a handful of packages which can be selectively installed to fill in the gaps, when your use case requires it.
+
+Webroute is "full-stack", in the sense it provides utilities and patterns for both the client-side and server-side. However, these client- and server-side tools are not dependent on the other - one can be used without the other.
 
 ## Compatibility
 
