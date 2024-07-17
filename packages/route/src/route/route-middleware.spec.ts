@@ -71,7 +71,7 @@ describe("route().use", () => {
     const res = await _route(req);
     const data = await res.json();
 
-    expect(data).toEqual({ id: 456 });
+    expect(data).toEqual({ id: "123", foo: true });
   });
 
   test("Handles conditional middleware", async () => {
