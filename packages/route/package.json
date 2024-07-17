@@ -1,7 +1,7 @@
 {
   "name": "@webroute/route",
   "description": "Build fully-fledged, atomic route handlers on web standards",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": {
     "name": "Nick Sinclair",
     "email": "nicksinclair@xtra.co.nz",
@@ -28,7 +28,7 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.mjs"
+      "require": "./dist/index.js"
     }
   },
   "files": [
@@ -44,7 +44,7 @@
   "scripts": {
     "build": "tsup-node",
     "check": "tsc --noEmit",
-    "publish-pkg": "pnpm run build && pnpm publish --access=public",
+    "publish-pkg": "pnpm run build && pnpm publish --access=public --no-git-checks",
     "test": "vitest"
   },
   "sideEffects": false,

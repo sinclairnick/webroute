@@ -66,6 +66,11 @@ export type InferProviders<TRoute extends AnyCompiledRoute> = InferPart<
   "Providers"
 >;
 
+export type InferState<TRoute extends AnyCompiledRoute> = InferPart<
+  TRoute,
+  "State"
+>;
+
 export interface DefinedRouteDef<TParams extends RouteParams> {
   ParamsIn: unknown extends TParams["ParamsIn"]
     ? [TParams["InferredParams"]] extends [never]
@@ -137,6 +142,12 @@ export const getMeta = <T extends AnyCompiledRoute>(route: T): InferMeta<T> => {
   return route[Def].meta;
 };
 
+export const clone = <T extends AnyCompiledRoute>(route: T): T => {
+  return Object.assign(function (this: ThisType<any>, ...args: [Request]): any {
+    return route.apply(this, args);
+  }, route);
+};
+
 /**
  * Retrieves any providers you may have registered with the given route.
  */
@@ -155,10 +166,14 @@ export const withProviders = <T extends AnyCompiledRoute>(
   route: T,
   providers: Partial<InferProviders<T>>
 ): T => {
-  route[Def].providers ??= {};
+  // Need to clone to avoid mutating the original route
+  const cloned = clone(route);
+
+  cloned[Def].providers ??= {};
+
   for (const key in providers) {
-    route[Def].providers[key] = providers[key];
+    cloned[Def].providers[key] = providers[key];
   }
 
-  return route;
+  return cloned;
 };

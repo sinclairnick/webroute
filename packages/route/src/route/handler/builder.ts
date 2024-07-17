@@ -245,10 +245,10 @@ export interface RouteBuilder<TParams extends RouteParams> {
     HeadersReqIn: TParams["HeadersReqIn"];
     HeadersReqOut: TParams["HeadersReqOut"];
 
-    // Update state if any has been returned
+    // Update state, if any has been returned
     State: void extends TResult
       ? TParams["State"] & TMutations
-      : TResult & TMutations;
+      : MergeObjectsShallow<TParams["State"], TResult>;
 
     Providers: TParams["Providers"];
   }>;

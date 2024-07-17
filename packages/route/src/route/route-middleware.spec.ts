@@ -1,5 +1,6 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
 import { route } from ".";
+import { RouteBuilder } from "./handler/builder";
 
 describe("route().use", () => {
   test("Handles middleware", async () => {
@@ -35,6 +36,36 @@ describe("route().use", () => {
         expectTypeOf<typeof state>().toEqualTypeOf<{ id: number }>();
         return state;
       });
+
+    const req = new Request("https://google.com");
+    const res = await _route(req);
+    const data = await res.json();
+
+    expect(data).toEqual({ id: 456 });
+  });
+
+  test("Handles chained middleware merging", async () => {
+    const routeA = route().use((req, { state }) => {
+      return { id: "123" };
+    });
+
+    const _route = routeA
+      .use((req, { state }) => {
+        return { foo: true };
+      })
+      .handle((req, { state }) => {
+        expectTypeOf<typeof state>().toEqualTypeOf<{
+          id: string;
+          foo: boolean;
+        }>();
+        return state;
+      });
+
+    type StateA = typeof routeA extends RouteBuilder<infer X>
+      ? X["State"]
+      : never;
+
+    expectTypeOf<StateA>().toEqualTypeOf<{ id: string }>();
 
     const req = new Request("https://google.com");
     const res = await _route(req);
@@ -101,20 +132,6 @@ describe("route().use", () => {
           a: number;
           b: number;
         }>();
-      });
-  });
-
-  test("Overwrites state if not spread", () => {
-    const _route = route()
-      .use(() => {
-        return { id: "123" };
-      })
-      .use((_, { state }) => {
-        expectTypeOf(state).toEqualTypeOf<{ id: string }>();
-        return { a: 1 };
-      })
-      .handle((req, { state }) => {
-        expectTypeOf(state).toEqualTypeOf<{ a: number }>();
       });
   });
 
