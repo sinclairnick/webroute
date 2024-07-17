@@ -1,0 +1,223 @@
+---
+title: Quick Start
+---
+
+The guide explores the main themes and webroute and will leave you with both a decent understanding of webroute and a starting point to build a real-world app.
+
+The resulting app will have the following:
+
+- [x] End-to-end type-safety
+- [x] Automatic OpenAPI spec generation
+- [x] Input/output validation
+- [x] Authentication middleware
+- [x] Compatibility with many runtimes and frameworks
+
+---
+
+## Creating API routes
+
+### 1. Define a Route
+
+To begin, we'll create a single `POST` route for creating new blog posts.
+
+```ts twoslash
+// npm i @webroute/route
+import { route } from "@webroute/route";
+
+const createPost = async () => {
+  // Create post somehow...
+  return { id: "123" };
+};
+
+const createPostRoute = route("/post")
+  .method("post")
+  .handle(() => {
+    return createPost();
+  });
+```
+
+Now we have a very basic route, not doing anything particularly interesting (yet). The result is, `createPostRoute`, is a web-standard request handler which can be run nearly anywhere.
+
+```ts
+// Regular web request handler...
+const response = createPostRoute(new Request(/**...*/));
+```
+
+### 2. Add Input Validation
+
+Often, we want to validate any input and/or output to ensure the correct data has been provided. We can specify a schema object or validator function to do just that.
+
+```ts twoslash {10-15}
+//---cut-start---
+import z from "zod";
+import { route } from "@webroute/route";
+
+const createPost = async () => {
+  // Create post somehow...
+  return { id: "123" };
+};
+//---cut-end---
+// Define a schema/validator, e.g. Zod
+const CreatePostInput = z.object({
+  title: z.string(),
+});
+
+const createPostRoute = route("/post")
+  .method("post")
+  .body(CreatePostInput)
+  .handle(async (req, c) => {
+    const { body } = await c.parse();
+
+    return createPost();
+  });
+```
+
+We could also specify path `.params()`, `.query()` params, `.headers()` and `output` (response) schema.
+
+<Callout title="Validating inputs">
+  Inputs are **not** validated until `.parse()` is called. This was designed to
+  make custom error handling straightforward.
+</Callout>
+
+## Using Middleware
+
+Middleware is a common part of any web framework. In webroute, return values are used to update request state, return early with a response or listen to and modify outgoing responses.
+
+### 1. Define Auth Middleware
+
+We want to ensure only logged in users can create posts. Since we expect this to be a fairly common use case, we can use middleware and composition to avoid unnecessary repititon.
+
+```ts
+// npm i @webroute/middleware
+import { defineMiddleware } from "@webroute/middleware";
+
+const isValid = (token: string) => {
+  // Somehow determine validity
+  return true;
+};
+
+export const isAuthed = () =>
+  defineMiddleware((request) => {
+    const bearer = request.headers.get("Bearer");
+    const token = bearer?.replace("Bearer ", "");
+
+    if (token == null || !isValid(token)) {
+      return Response.json({ code: "UNAUTHORIZED" }, { status: 401 });
+    }
+
+    return { token };
+  });
+```
+
+Here, we have defined a very basic function that returns a bearer token, if a valid one exists, otherwise an error response is returned.
+
+<Callout title="defineMiddleware is optional">
+  Note that `defineMiddleware` is not doing anything special under the hood. It
+  is used to ensure your middleware has compatible parameter and return types.
+</Callout>
+
+<Accordions>
+  <Accordion title="What can middleware return?">
+    Any function provided to `.use()` can return one of three things. A regular
+    object will _shallow update_ the request context's `state` property. A
+    `Response` will terminate the request early. And a response handler `(res:
+    Response) => Response` can listen to and optionally modify responses.
+  </Accordion>
+</Accordions>
+
+### 2. Register Middleware on Routes
+
+To register this with a route, we can call the `.use()` method. We can also – optionally – use _composition_ to create a reusable _base route_ for any future authed routes.
+
+```ts
+const authedRoute = route().use(isAuthed());
+
+// Extend from authedRoute
+const createPostRoute = authedRoute.path("/post").handle((req, c) => {
+  const { token } = c.state;
+});
+// ...snip
+```
+
+Any route handlers that extend off `authedRoute` will now have type-safe access to a `token`.
+
+## Routing
+
+Most of the time, we have multiple routes that we want to map an incoming request to. In other words, we require routing.
+
+### Filesystem Routing
+
+With filesystem routers, we can just export our routes as-is, and skip this section entirely.
+
+### Manual Routing
+
+Otherwise, we can use a router from the `@webroute/router` package to help us map requests to the various route handlers we have.
+
+First, we should collect all of our routes into a single object.
+
+```ts title="routes.ts"
+export const AppRoutes = {
+  createPostRoute,
+};
+```
+
+```ts title="main.ts"
+// npm i @webroute/router
+import { createRadixRouter } from "@webroute/router";
+import { AppRoutes } from "./routes";
+
+const router = createRadixRouter(AppRoutes);
+```
+
+This router allows us to match handler based on an incoming request. Therefore, our router can also be used anywhere web-standard requests are supported.
+
+```ts
+const handleRequest = async (request: Request) => {
+  const handler = router.match(request);
+
+  // If no match, 404
+  if (handler == null) {
+    return Response.json({ code: "NOT_FOUND" }, { status: 404 });
+  }
+
+  // Otherwise try to handle request
+  try {
+    return handler(request); // Handlers will always return Response
+  } catch (e) {
+    // Handle unhandled exceptions here
+    console.warn(e);
+    return Response.json({ code: "INTERNAL_SERVER_ERROR" }, { status: 500 });
+  }
+};
+```
+
+This root request handler is, in essence, our "app". It is the entrypoint of our API. Exactly how we use this entrypoint depends on the framework or runtime we decide to use.
+
+## Next Steps
+
+To understand how to run your webroute app, check out one of the many integration guides.
+
+**Full-stack Frameworks**
+
+- [**Next.js**](/docs/integrations/full-stack/nextjs)
+- [**Remix**](/docs/integrations/full-stack/remix)
+- [**SvelteKit**](/docs/integrations/full-stack/svelte-kit)
+- [**SolidStart**](/docs/integrations/full-stack/solid-start)
+
+**Standalone**
+
+- [**Bun**](/docs/integrations/standalone/bun)
+- [**Node**](/docs/integrations/standalone/node)
+- [**Deno**](/docs/integrations/standalone/deno)
+- [**Cloudflare Workers**](/docs/integrations/standalone/workers)
+
+**Web Frameworks**
+
+- [**Hono**](/docs/integrations/framework/hono)
+
+### More Functionality
+
+Webroute also provides additional packages for further enhancing or interacting with APIs.
+
+- Use `@webroute/client` to create typed API clients for any API
+- Use `@webroute/oas` to define and create OpenAPI specs

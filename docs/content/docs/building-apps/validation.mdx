@@ -1,0 +1,189 @@
+---
+title: Schema Validation
+---
+
+Typically, input/output validation is offered as an extension or plugin. With webroute, I/O validation is a first-class citizen and can be declared easily.
+
+## Overview
+
+We can define several different types of input and output using the `route` utility, including query params, path params, request body and headers, as well as response data.
+
+```ts
+route()
+  .query(SomeSchema) // Query params
+  .params(SomeSchema) // Path params
+  .body(SomeSchema) // Request body
+  .headers(SomeSchema) // Request headers
+  .output(SomeSchema); // Response, or "output", data
+```
+
+<Callout>
+  The `output` term is used instead of `reponse` to disambiguate from the HTTP
+  `Response`.
+</Callout>
+
+Declared input schema **are not automatically validated**. Webroute requires explicit parsing of the inputs, which can be done via the `.parse()` context method.
+
+```ts
+route()
+  // ---input schema defined here---
+  .handle(async (req, c) => {
+    // Parse everything at once
+    const { query, params, body, headers } = await c.parse();
+  });
+```
+
+While this adds slightly more work, it makes custom error handling significantly more flexible, including where and how parsing occurs.
+
+By default, we will want to parse all inputs at once. However, at times we may want to parse parts of the input individually, which we can do like so.
+
+```ts
+// ...
+const params = await c.parse("params");
+// ...
+```
+
+<Callout>
+  The `.parse()` function is async only to accomodate asynchronous schema, and
+  does not inherently carry out any asynchronous tasks.
+</Callout>
+
+## Schema Library Support
+
+Webroute is agnostic to schema validation library, meaning you can continue
+using most popular schema libraries.
+
+_The below examples will use `zod`._
+
+## Path Params
+
+Path parameters are defined in the route path. We can validate these parameters by supplying a `.params()` schema.
+
+```ts twoslash
+//---cut-start---
+import z from "zod";
+import { route } from "@webroute/route";
+//---cut-end---
+const PathParams = z.object({
+  id: z.number({ coerce: true }),
+});
+
+route("/user/:id")
+  .params(PathParams)
+  .handle(async (req, c) => {
+    const { id } = await c.parse("params");
+    //      ^?
+  });
+```
+
+### Inference
+
+Path parameters are also automatically inferred as type string. This means we have _some_ type-safety without providing any explicit schema.
+
+```ts twoslash
+//---cut-start---
+import z from "zod";
+import { route } from "@webroute/route";
+//---cut-end---
+route("/user/:id")
+  // No params defined, still some type-safety
+  .handle(async (req, c) => {
+    const { id } = await c.parse("params");
+    //      ^?
+  });
+```
+
+## Query Params
+
+Query params are typically used for secondary or optional data. They can be declared similar to path params.
+
+```ts twoslash
+//---cut-start---
+import z from "zod";
+import { route } from "@webroute/route";
+//---cut-end---
+const QueryParams = z.object({
+  limit: z.number({ coerce: true }).optional(),
+});
+
+route()
+  .query(QueryParams)
+  .handle(async (req, c) => {
+    const { limit } = await c.parse("query");
+    //      ^?
+  });
+```
+
+## Request Headers
+
+Some routes may require headers, which we can specify via `.headers()`.
+
+```ts twoslash
+//---cut-start---
+import z from "zod";
+import { route } from "@webroute/route";
+//---cut-end---
+const AuthHeaders = z.object({
+  Authorization: z.string().regex(/Bearer [a-zA-Z0-9]+/),
+});
+
+route()
+  .headers(AuthHeaders)
+  .handle(async (req, { parse }) => {
+    const { Authorization } = await parse("headers");
+    //       ^?
+  });
+```
+
+## Request Body
+
+We can specify request body schema using `.body()`.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/route";
+import { z } from "zod";
+// ---cut-end---
+
+route()
+  .body(z.object({ email: z.string().email() }))
+  .handle(async (req, { parse }) => {
+    const body = await parse("body");
+    //      ^?
+  });
+```
+
+## Output (response)
+
+In addition to validating whether our output is the correct shape, we often want to add, remove or format the response data. The `.output()` method allows specifying schema to do exactly that.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/route";
+import { z } from "zod";
+declare function formatMoney(x: any): string;
+// ---cut-end---
+
+const MoneyAmountResult = z.object({
+  amount: z.number().transform(formatMoney),
+});
+
+route("/balance")
+  .method("get")
+  .output(MoneyAmountResult)
+  .handle(() => {
+    return { amount: 1_000_000 };
+    // <- "1,000,000"
+  });
+```
+
+<Callout title="Output validation is automatic" type="warn">
+  Unlike input schema, outputs _are_ validated by webroute itself. If any errors
+  are thrown in the process, a root-level handler should be used to catch any of
+  these unexpected validation issues.
+</Callout>
+
+### Skipping Output Parsing
+
+{/* TODO: Links */}
+Returning a `Response` from a handler will **skip any validation**. While returned data is treated as `JSON`, a `Response` is returned to the user as is (with the exception of any [middleware](./) effects).

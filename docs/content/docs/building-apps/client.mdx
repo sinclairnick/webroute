@@ -1,0 +1,105 @@
+---
+title: Typed API Client
+---
+
+Often, it's a good idea to use types on the client side when interacting with APIs. However, by default we must manually duplicate any schema types and endpoint information. This both increases the risk and the necessary work.
+
+Webroute provides a `@webroute/client` package which brings our types into the client-side, alongside a typed client. This ensures we're always interacting with real endpoints, providing sufficient input data and recieving the correct responses.
+
+## Creating a Typed Client
+
+We can create a typed client using the `createTypedClient` export.
+
+```ts
+// npm i @webroute/client
+import { createTypedClient } from "@webroute/client";
+
+const client = createTypedClient<App>()({
+  // ...
+});
+
+const getPost = client("GET /post/:id");
+
+getPost({ params: { id: "123" } });
+```
+
+The `App` type here informs our client that But where is this `App` type coming from?
+
+## App Definitions
+
+Our "app definition" type can come from several places.
+
+- Automatically inferred from a webroute backend
+- Automatically inferred from an OpenAPI spec
+- Manually defined for an API without a TS or OpenAPI spec
+
+Ultimately, this type is fairly straightforward and looks something like
+
+```ts
+type App = {
+  "GET /foo": {
+    Params: {
+      /**...*/
+    };
+    Body: {
+      /**...*/
+    };
+    // etc.
+  };
+};
+```
+
+Aside from typed clients, this type definition is also useful picking off specific types. This can be achieved in a very straightforward manner.
+
+```ts
+type GetPostsParams = App["GET /posts"]["params"];
+```
+
+### From Webroute
+
+We can use our webroutes from the backend directly, by utilising the `ToRoute` helper.
+
+```ts
+import { ToClient } from "@webroute/route";
+
+const appRoutes = {
+  fooRoute,
+};
+
+type AppRoutes = typeof appRoutes;
+
+export type App = ToClient.InferApp<typeof appRoutes>;
+```
+
+### From OpenAPI
+
+We can directly infer a client for an OpenAPI-compatible backend by using the `@weroute/oas` package. This requires _no code generation_ whatsoever.
+
+```ts
+import { ParseSpec } from "@webroute/oas";
+
+type App = ParseSpec<OpenAPISpec>;
+```
+
+{/* TODO: Links */}
+To explore how you might acquire an `OpenAPISpec` type, refer to the [OpenAPI docs](./).
+
+## Implementing a Fetcher
+
+Our client makes no assumptions about how the actual fetching should work. As such, we must provide a `fetcher` function which does the work of calling an API, given the inputs.
+
+```ts
+const client = createTypedClient<App>()({
+  fetcher: async (config, extra) => {
+    const data = await fetch(/** Call API... */);
+
+    return {
+      /**...*/
+    };
+  },
+});
+```
+
+The `config` param provides us with the request information: path, method, input data. It's up to us to initiate the request itself in our fetcher function.
+
+We can provide any number of extra parameters and any return object. Both will be correctly typed, and the result's `data` property will have the correct return type of the given request.

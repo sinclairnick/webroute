@@ -1,11 +1,19 @@
 ---
 title: Overview
-icon: Home
 ---
 
-Webroute is a toolkit for building and interacting with APIs in a type-safe, robust and ergonomic manner.
+Webroute is a collection of libraries which, when combined, form a fully-fledged web framework with all the typical affordances, and more:
 
-It was designed to work with your existing stack, or be used standalone. As a result, webroute offers a selection of independent packages which you can mix-and-match as needed.
+- [x] End-to-end type-safety
+- [x] I/O validation <small>(BYO schema library)</small>
+- [x] Type-safe middleware
+- [x] Automatic and configurable OpenAPI specs
+- [x] Async
+- [x] Web standard `Request` and `Response`
+
+As the name suggests, webroute is primarily concerned with the **routes** of a web application. It makes few assumptions about what type of app you're running.
+
+Any given webroute possesses all necessary information and functionality, independent of any root `app` or `router`. Each route is capable of it's own middleware, validation, methods, path and dependency injection.
 
 Additionally, industry standards are heavily leaned into so you can "learn the platform" instead of another bespoke framework API.
 
@@ -17,20 +25,54 @@ The fastest way to get started with webroute is via the `create-webroute-app` CL
 npx create-webroute-app webroute-app
 ```
 
-This will dynamically build an starter app with the features you require.
+## Introduction
 
-## Philosophy
+Webroute has several packages, but chief among them is the `@webroute/route` package. Unlike traditional frameworks which rely on a router to orchestrate a web application, webroute packs everything into the route itself, by leveraging bog-standard JavaScript composition.
 
-To achieve a balance of flexibility, ease of use and interoperability, webroute adheres to a few principles.
+As a result, every route is a standalone web request handler which can be used anywhere the web-standard `Request` and `Response` is available.
 
-| Concept          | Description                                                                            |
-| ---------------- | :------------------------------------------------------------------------------------- |
-| **Web Standard** | Use web standard interfaces over bespoke abstractions                                  |
-| **Immutable**    | Avoiding mutating data, or if you must, doing so explicitly                            |
-| **Pure**         | Preferring basic input/output functions over side-effectful ones                       |
-| **Atomic**       | Standalone functionality is better than requiring complex integration or orchestration |
-| **Declarative**  | When useful, prefer declarative over imperative approaches, enabling introspection     |
-| **No magic**     | No monkey-patching, no wrapped `Request`/`Response` objects, no magical compilers      |
-| **Composable**   | Prefer composition over orchestration so pipelines are traceable and reasonable        |
+### Example Usage
 
-These principles, and their benefits will become clearer over the course of these docs.
+```ts
+import { route } from "@webroute/route";
+
+const myRoute = route("/user/:id")
+  .use(authMiddleware)
+  .params(z.object({ id: z.string() }))
+  .handle(async () => {
+    // ...do work
+  });
+```
+
+This simple route is now fully contained, in the form `(req: Request) => Response`. As such, it can be used with virtually any framework or runtime, with no modification required.
+
+The `route` builder only has a handful of methods for building fully-fledged route handlers. The API is intentionally simple, but don't let that fool you – it's rather powerful.
+
+{/* TODO: Link */}
+[View the docs for `route`](./)
+
+## Other Packages
+{/* TODO: Link */}
+On top of the `route` builder, webroute offers packages for [routing](./) incoming requests to handlers, defining and emitting [OpenAPI specs](./) and creating type-safe [API clients](./), among other things.
+
+These packages have all been designed to be useful in isolation, so you won't have to adopt an entire ecosystem or paradigm to use any one of them.
+
+## Usage with `Next.js`, `Remix` et al.
+
+While so-called "meta-frameworks" such as `Next.js` offer basic API route capabilities, it's common to layer a framework like `Hono`, `express` or `tRPC` on top for more complex functionality.
+
+However, each of these approaches require packing all routes into a single entrypoint. Consequently, we no longer benefit from filesystem routing and have introduced another routing paradigm to our app.
+
+Webroute makes no assumptions about routing whatsoever - a route handler has everything it needs. This makes it the best approach to building complex APIs within your existing meta-frameworks.
+
+{/* TODO: Link */}
+[Learn more](./) about using webroute with `{Next.js, Remix, SolidStart, SvelteKit,...}`.
+
+## Usage with `Bun`, `Deno`, `Node`
+
+Webroute is also capable of working standalone or within existing backend frameworks and runtimes.
+
+When necessary, the incredibly straightforward `@webroute/router` package can be introduced to map incoming requests to your app's routes.
+
+{/* TODO: Link */}
+[Learn more](./) about standalone usage.

@@ -1,0 +1,12 @@
+{
+  "pages": [
+    "quick-start",
+    "routes",
+    "validation",
+    "middleware",
+    "routing",
+    "client",
+    "openapi",
+    "..."
+  ]
+}

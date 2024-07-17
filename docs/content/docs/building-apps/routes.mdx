@@ -1,0 +1,232 @@
+---
+title: Route Fundamentals
+---
+
+A `webroute` is simply definition for an endpoint. That definition can include methods, a path, middleware, input/output validation and much more. This is useful because it means each route is self-sufficient. In turn, this opens up many opportunities for keeping code simple, more robust, more type-safe and more portable across runtimes, frameworks and platforms.
+
+Webroutes are created using the `route` builder from `@webroute/route`. The `route` builder is very much a _utility_ that can be introduced into existing projects to build more powerful routes.
+
+```ts
+// npm i @webroute/route
+import { route } from "@webroute/route";
+
+const myRoute = route().handle(() => {
+  return new Response("OK");
+});
+```
+
+In this trivial example, the `myRoute` export is a web-standard request handler, in the form `(request: Request) => Response`. This function signature enables us to use our routes nearly anywhere.
+
+## Overview
+
+At a minimum, a route should have a _handler_ – a function that processes the incoming request. However, we can specify several more properties which enrich the information about and functionality of our routes.
+
+- **HTTP info**: `.path()`, `.method()`
+- **Handling**: `.handle()`
+- **Schema validation**: `.params()`, `.query`, `.body()`, `.headers()`, `.output()`
+- **Middleware**: `.use()`
+- **Dependency injection**: `.provide()`
+
+### Example Usage
+
+```ts
+route("/user/:id")
+  .use(isAuthed)
+  .params(z.object({ id: z.number({ coerce: true }) }))
+  .handle(async (req, c) => {
+    const userId = c.state.userId; // Provided by isAuthed
+
+    return { userId }; // Will be JSON.stringified
+  });
+```
+
+Here we are using auth middleware, specifying path param schema and handling our request.
+
+### Immutability
+
+{/* TODO: Link */}
+The routes themselves are immutable. So every time we chain a method, we are creating a new instance which is entirely isolated. This enables powerful patterns like [Composition](./).
+
+Immutability also means the following will **not** work:
+
+```ts
+const myRoute = route("");
+
+myRoute.params(Params); // <- This will not affect `myRoute`
+```
+
+## HTTP Path and Method
+
+Every HTTP endpoint has a path and a method. By defining these, we easily wire up routes to external routers, create OpenAPI specs and end-to-end type-safe clients.
+
+<Callout>
+  Depending on how your app is deployed, you may not _require_ setting these
+  properties but it can still be helpful.
+</Callout>
+
+### Route Path
+
+A route path can be defined when initialising a new route.
+
+```ts
+const myRoute = route("/foo");
+```
+
+It can also be specified explicitly via `.path()`.
+
+```ts
+route().path("/foo");
+```
+
+Bear in mind, paths are **appended**, which enables path prefixing.
+
+```ts
+const apiRoute = route("/api");
+
+const myRoute = apiRoute.path("/foo");
+// -> /api/foo
+```
+
+We can also define path parameters. The style of path parameter adheres to the web [URLPattern API](https://developer.mozilla.org/en-US/docs/Web/API/URL_Pattern_API), which is essentially the `express`-like syntax familiar to most.
+
+```ts
+route("/user/:id");
+```
+
+### Route Method(s)
+
+We can similarly define methods for our path. However, specifying new `.method`s will override previous declarations. We can define methods in several ways.
+
+```ts
+route().method("get"); // lowercase string
+route().method("GET"); // uppercase string
+route().method(["get", "post"]); // array of many methods
+```
+
+## Request Handling
+
+As we have seen, our actual request handling logic exists is specified via the `.handle()` method. Request handlers look something like
+
+```ts
+route().handle(() => {
+  // Handling logic
+});
+```
+
+### Parameters
+
+Request handlers always receive two arguments.
+
+#### The Incoming `Request`
+
+The incoming `Request` provides all the incoming information sent by some client. It arrives to the request handler untouched, unchanged. Any changes must be applied via...
+
+#### The Request Context
+
+The second parameter is the webroute request context. It provides context-dependent functionality and is specific to that route.
+
+```ts
+route().handle((req, c) => {
+  // ...
+});
+```
+
+### Return Type
+
+Request handlers can return raw _data_, or a `Response`.
+
+#### Returning Data
+
+If we return data, it is implied the data is of `JSON` type, and a `Response` will be invisibly created as such. The data is `JSON.stringify`d and the `Response` has `Content-Type: application/json`.
+
+#### Returning a Response
+
+While returning raw data is handy, we often require customising the `Response` status or headers. In this case, we should initialise and return a `Reponse`.
+
+```ts
+	.handle(() => {
+		return new Response("OK", { status: 201 })
+	});
+```
+
+### Request State
+
+Often, requests require state to be propagated through the request pipeline. For example, middleware may wish to add some data to be used by downstream handlers.
+
+Instead of simply placing state on the `Request` itself, webroute provides the more explicit `.state` property on the request context.
+
+```ts
+route().handle((req, c) => {
+  const userId = c.state.userId;
+});
+```
+
+State can also be _strongly typed_, which makes our applications more robust by avoiding accessing incorrect or missing data.
+
+{/* TODO: Links */}
+You can learn more about updating state in the [Middleware docs](./).
+
+## Route Utilities
+
+The `Route` utility, as opposed to the lowercase `route`, can help extract information about our routes. This includes the path and methods, as well as any type information, like query or param types.
+
+```ts
+import { Route } from "@webroute/route";
+```
+
+### Route Values
+
+```ts
+const path = Route.getPath(myRoute);
+const methods = Route.getMethods(myRoute);
+const operations = Route.getOperationKeys(myRoute);
+```
+
+### Route Types
+
+We can infer all parts of a route definition.
+
+```ts
+type RouteDef = Route.InferRouteDef<typeof myRoute>;
+```
+
+Or by individual part.
+
+```ts
+type Path = Route.InferPath<typeof myRoute>;
+type Methods = Route.InferMethods<typeof myRoute>;
+
+// In = before transform
+type ParamsIn = Route.InferParamsIn<typeof myRoute>;
+type QueryIn = Route.InferQueryIn<typeof myRoute>;
+// ...etc
+
+// Out = after transform (if any)
+type ParamsOut = route.InferParamsOut<typeof myRoute>;
+type QueryOut = Route.InferQueryOut<typeof myRoute>;
+// ...etc
+```
+
+## Additional Reading
+
+### Schema Validation
+
+Our routes can also perform powerful, type-safe schema validation. For example:
+
+{/* TODO: Link */}
+Read the [Validation](./) docs.
+
+### Middleware
+
+Complex request pipelines can be created simply by using middleware and composition.
+
+{/* TODO: Link */}
+View the [Middleware](./) guide.
+
+### Dependency Injection
+
+Some prefer to use dependency injection to invert control. Basic dependency injection is possible using the `.provide()` method.
+
+{/* TODO: Link */}
+Learn more about [Dependency Injection](./).
+import ts from "typescript"

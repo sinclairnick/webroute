@@ -1,0 +1,42 @@
+---
+title: Motivation and Philosophy
+---
+
+## Background
+
+Modern web/API development is highly fragmented across frameworks, runtimes and deployment platforms. As such, we can no longer make strong assumptions about how applications will be structured or executed.
+
+On top of this, existing frameworks inevitably force us to learn bespoke abstractions. For example, `express`, `Next.js` and `Hono` all use different types of `Request` object, and therefore require framework-specific ecosystems too.
+
+## Approach
+
+Webroute was designed "from the route up" to cater to these challenges, while providing a best-in-class developer experience. Table-stakes like end-to-end type-safety are naturally afforded, and industry standards are leveraged as much as possible, so you can "learn the platform", instead of another framework.
+
+One consequence of this approach is that webroute need not be a framework. Moreover, it should run basically anywhere and it's components should be relatively independent/decoupled and open to swapping in and out with other tools you might prefer.
+
+Ultimately, webroute aims to get out of your way as much as possible, and avoid many of the headaches of traditional web frameworks.
+
+## Philosophy
+
+The above motivations have resulted in the following principles which aim to retain a high level of flexibility, interoperability and future-proofing.
+
+| Concept          | Description                                                                            |
+| ---------------- | :------------------------------------------------------------------------------------- |
+| **Web Standard** | Use web standard interfaces over bespoke abstractions                                  |
+| **Immutable**    | Avoiding mutating data, or if you must, doing so explicitly                            |
+| **Pure**         | Preferring basic input/output functions over side-effectful ones                       |
+| **Atomic**       | Standalone functionality is better than requiring complex integration or orchestration |
+| **Declarative**  | When useful, prefer declarative over imperative approaches, enabling introspection     |
+| **No magic**     | No monkey-patching, no wrapped `Request`/`Response` objects, no magical compilers      |
+| **Composable**   | Prefer composition over orchestration so pipelines are traceable and reasonable        |
+
+These principles, and their benefits will become clearer over the course of these docs.
+
+## Next Steps
+
+Webroute was built to be very simple and intuitive, minimising the number of footguns, usage of magic and amount of new material to learn. Details are abstracted away carefully, and industry standards are leveraged so any learning is highly transferrable.
+
+Additionally, each package aims to be highly unopinionated, and solve a specific, narrow problem without assuming much. Often, referring to the code-hint documentation is enough to learn the small amount there is to learn.
+
+{/* TODO: Links */}
+You can learn more about [webroute's philosophy](./), or see an overview of the currently [offered packages](./).

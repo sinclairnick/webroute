@@ -1,0 +1,84 @@
+---
+title: Dependency Injection
+---
+
+Dependency injection enables _inversion of control_. This can make it easier to manage and modify how application services are provided to our routes. It can also make it easier to test, by injection service stubs, for example.
+
+<Callout>
+  Dependency injection in webroute terms strictly means _providing services to
+  routes_.
+</Callout>
+
+## Provide Services
+
+The `.provide()` method is a simple way to inject dependencies into our routes. It expects an object mapping service names to providers, which are functions that return a service instance.
+
+```ts
+const myRoute = route()
+  .provide({
+    db: () => new DatabaseClient(),
+  })
+  .handle((req, c) => {
+    const db = c.services.db();
+  });
+```
+
+Calls to `.provide` can be chained, where the "service maps" are shallow merged with previously defined ones.
+
+Under the hood, nothing magical is occurring whatsoever. The service maps are simply passed to the handler. But this layer of indirection enables easy overriding of services down the track.
+
+## Overriding Providers
+
+We can override providers by using the `Route` utility.
+
+```ts
+import { Route } from "@webroute/route";
+
+const myRoute_test = Route.withProviders(myRoute, {
+  db: () => jest.fn(),
+});
+```
+
+## More Complex Behaviour
+
+Webroute dependency injection is very straightforward, and doesn't perform any magic by itself. The service map we `.provide()` is simply passed to the handler directly - nothing impressive.
+
+Using this basic approach, a new instance of each service will be initialised each time. Often, this is adequate. However, sometimes we need more complex behaviour.
+
+Each request will initialise a new insance of our service. To alter this behaviour, we can employ additional techniques, like using singletons for global services or "DI container" for greater control.
+
+### Singletons and Global Instances
+
+To use global instances, we merely need to maintain the reference to a single service instance.
+
+```ts
+const db = new DatabaseClient();
+
+route()
+  .provide({ db: () => db })
+  .handle((req, c) => {
+    const db = c.services.db();
+  });
+```
+
+Now our `db` will always resolve to the same instance.
+
+### DI Containers
+
+We can utilise DI containers to achieve more complex dependency injection behaviour.
+
+One popular DI container is `typedi`. View the [`typedi` docs](https://github.com/typestack/typedi).
+
+```ts
+import { Container, Service } from "typedi";
+
+// ...some services here
+
+route()
+  .provide({ db: () => Container.get(DatabaseService) })
+  .handle((req, c) => {
+    const db = c.services.db();
+  });
+```
+
+The advantage of using DI containers is that they enable services that depend on one another to be initialised correctly, without any explicit initialisation.

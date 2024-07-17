@@ -1,0 +1,191 @@
+---
+title: Middleware
+description: Guidelines for building future-proof middleware
+---
+
+Middleware helps with code reuse and orchestrating more sophisticated request pipelines. Webroute offers a simple, powerful and novel approach to middleware to avoid some of the pitfalls of previous approaches.
+
+<Accordions>
+<Accordion title="The Pitfalls of Traditional Middleware">
+
+In most web frameworks, one must register middleware to the root `app` or `router`, and assign it to some (or all) path patterns. Since middleware frequently changes the nature of the request, type-safety would be helpful here. However, type-safety is virtually impossible in this situation.
+
+Moreover, middleware often alters the course of the request. As a result, trying to reason about the flow of the request throughout our app becomes incedibly difficult in non-trivial apps.
+
+All of this also assumes some root instance that middleware can attach to. In this day and age, this assumption isn't quite as reliable as it used to be, with e.g. the popularisation of filesystem routing.
+
+To remedy these issues, webroute middleware deviated from this traditional approach in several ways.
+
+</Accordion>
+</Accordions>
+
+## Overview
+
+Webroute's approach to middleware is highly _functional_. Instead of middleware imperatively orchestrating the app, it is a _pure function_ which merely accepts inputs and returns outputs. Consequently, many of the common bugs are avoided.
+
+This approach means middleware are always _strongly type-safe_ and connected in-code. Our routes will alway know what middleware runs before it and what state middleware may or may not provide.
+
+## Getting Started
+
+To register a middleware function, we use the `.use()` method. The handler we provide takes the same parameters as a request handler.
+
+```ts
+route().use((req, c) => {
+  console.log("URL:", req.url);
+});
+```
+
+Middleware works incredibly well with the _composition_ pattern.
+
+```ts
+const routeWithMiddleware = route().use((req) => {
+  console.log("URL:", req.url);
+});
+
+const oneRoute = routeWithMiddleware.handle(() => {});
+const anotherRoute = routeWithMiddleware.handle(() => {});
+```
+
+## Middleware Effects
+
+Most middleware wants to _change_ or _orchestrate_ our app somehow. Because web-standard `Request`s are immutable, we can't directly modify the `Request` object. Moreover, webroute doesn't provide any function like `next()` to orchestrate the app flow. Instead, webroute uses return values to enable these actions.
+
+### Updating Request State
+
+A common use-case of middleware is adding some information to our request. In other words, we are storing some _state_ about the current request. We can return a plain JavaScript object to indicate a state update is in order. Webroute will read the type of the object, which will be reflected in future access of the `state` property.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/route";
+// ---cut-end---
+route()
+  .use((req, { state }) => {
+    return { elvenBreadCount: 3 };
+  })
+  .handle((req, { state }) => {
+    //             ^?
+  });
+```
+
+State updates from additional middleware will be _shallow merged_ with the request state.
+
+### Early Response
+
+Middleware is commonly used to guard subsequent handlers by returning a response early under some condition. For example authentication and authorisation middleware.
+
+If we return a `Response` from middleware, this will trigger an early response.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/route";
+declare function getUser(req: Request): { id: number } | undefined;
+// ---cut-end---
+route()
+  .use((req, { state }) => {
+    if (req.headers.get("x-is-balrog")) {
+      return new Response("You shall not pass.", { status: 401 });
+    }
+    return { isAragon: true };
+  })
+  .handle((req, { state }) => {
+    return "You passed.";
+  });
+```
+
+### Response Handlers
+
+Another use for middleware is to listen to and potentially alter the `Response` on its way out. Such response handlers are the third and final variant a middleware can return. Response handlers are functions which accept a `Response` as the only parameter. They may optionally return an updated `Response`.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/route";
+// ---cut-end---
+route().use((req, { state }) => {
+  const start = Date.now();
+
+  return (response) => {
+    console.log("Took", Date.now() - start);
+
+    return new Response(response.body, { status: 203 });
+  };
+});
+```
+
+<Callout>
+
+Request middleware run in order of registration. Response handlers run in the reverse order.
+
+</Callout>
+
+### Escape Hatch: Mutating State
+
+Most of the time, middleware will only need to do one of these three things at once. They are _almost_ mutually exclusive options. However, in rare cases we may want to update request state _and_ return early or handle responses.
+
+In this case, we can use the escape hatch of mutating state directly, i.e. without returning. Not only can we mutate state, but we can do so without sacrificing type-safety.
+
+```ts twoslash
+// ---cut-start---
+import { route } from "@webroute/route";
+// ---cut-end---
+route()
+  .use<{ hasRing: boolean }>((req, c) => {
+    const stateMut = c.state as any;
+    stateMut.hasRing = false;
+
+    return new Response("OK");
+  })
+  .handle((req, c) => {
+    const { hasRing } = c.state;
+    //      ^?
+  });
+```
+
+Here we provide a generic type parameter indicating how our `state`s type will change.
+
+## Defining Middleware
+
+While creating middleware inline is a valid approach, it makes reusing middleware more difficult. Instead, we can define middleware elsewhere.
+
+As we've seen, middleware is inherently basic, so we can define middleware like so.
+
+```ts
+export const myMiddleware = (req: Request) => {
+  // Implement middleware
+};
+```
+
+Instead of making our middleware reliant on the context param, we encourage specifically defining only what is needed. This helps with testing and will make your code less fragile.
+
+## A Realistic Example
+
+So far the examples have been relatively contrived. Here is a more realistic glimpse at what working with middleware might look like.
+
+```ts twoslash
+import { route } from "@webroute/route";
+declare const verifyJwt: (token?: string) => { id: string };
+//---cut---
+const bearerToken = (req: Request) => {
+  return {
+    bearerToken: req.headers.get("Authorization")?.replace("Bearer", "").trim(),
+  };
+};
+
+const isAuthed = (req: Request, bearerToken?: string) => {
+  try {
+    const { id } = verifyJwt(bearerToken);
+    return { userId: id };
+  } catch (e) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+};
+
+const authedRoute = route()
+  .use(bearerToken)
+  // Pass data as needed
+  .use((req, c) => isAuthed(req, c.state.bearerToken));
+
+const myRoute = authedRoute.path("/foo").handle((req, c) => {
+  const { userId } = c.state;
+  //      ^?
+});
+```

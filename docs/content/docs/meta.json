@@ -2,18 +2,22 @@
   "title": "Webroute",
   "root": true,
   "pages": [
+    "---Introduction---",
     "index",
-    "---Guides---",
-    "guides/quick-start",
+    "introduction/philosophy",
+    "introduction/packages",
+    "---Building Apps---",
+    "...building-apps",
+    "---Integrations---",
+    "integrations/full-stack",
+    "integrations/standalone",
+    "integrations/framework",
     "---Packages---",
-    "packages",
-    "route",
-    "client",
-    "middleware",
-    "router",
-    "oas",
-    "schema",
-    "---About---",
-    "acknowledgements"
+    "reference/route",
+    "reference/client",
+    "reference/router",
+    "reference/middleware",
+    "reference/schema",
+    "reference/oas"
   ]
 }

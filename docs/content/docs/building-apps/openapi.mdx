@@ -1,0 +1,68 @@
+---
+title: OpenAPI
+description: Using OpenAPI specs to define API contracts
+---
+
+OpenAPI enables producing declarative descriptions of our APIs, independent of their implementation. This has several benefits, including self-documentation and making schema and endpoint information available across app boundaries.
+
+We can utilise webroute packages to both define and consume OpenAPIs, on the client and server side.
+
+## OpenAPI Spec Definitions
+
+Out of the box, we can produce a fairly comprehensive OpenAPI spec of our API by leveraging the `@weboute/oas` package.
+
+```ts
+import { normaliseRoutes, createSpec } from "@webroute/route";
+
+const routes = normaliseRoutes({
+  myRoute,
+});
+
+const spec = createSpec(routes);
+```
+
+Here, we've derived an entire OpenAPI spec from our app. Noticably, though, our schema definitions missing. For our OpenAPI spec to understand our schema validators which we've provided to `.params()`, `.body()` etc., we must provide a "formatter" to do so.
+
+### Schema Formatters
+
+Hand-rolling a schema converter is no small feat. Luckily, webroute provides converters for most popular schema libraries.
+
+The `@webroute/schema` library contains functionality for working with schema libraries. One such utility helps convert any schema into JSONSchema form, compatible with our OpenAPI schema.
+
+{/* TODO: Is this import right? */}
+
+```ts
+import { ZodJsonSchemaFormatter } from "@webroute/oas/zod";
+
+const spec = createSpec(routes, {
+  formatter: ZodJsonSchemaFormatter(), // <--
+});
+```
+
+This approach supports using multiple schema libraries at once, and dynamically formatting them with the corresponding formatter function.
+
+Now our generated OpenAPI spec will have all schema information too.
+
+## Customisation
+
+The return `spec` value can be customised as much as you want, but it can be cumbersome to modify our OpenAPI spec in this way.
+
+We can specify fine-grained OpenAPI-related metadata by using the `OAS` export.
+
+```ts
+import { OAS } from "@webroute/oas";
+
+const OASUserSchema = OAS.Schema(UserSchema, {
+  id: "User",
+});
+
+const UserAsParam = OAS.Param(OASUserSchema, {
+  // ...param-specific configuration
+});
+```
+
+Bear in mind each customisation is entirely optional.
+
+{/* TODO: Link */}
+
+For the full list of `OAS` decorators, refer to the [OpenAPI docs](./).
