@@ -11,7 +11,7 @@
     "build:packages": "turbo build --filter '@webroute/**'",
     "check": "turbo check",
     "format:pkg-json": "./scripts/common-pkg.mjs && syncpack format",
-    "test": "turbo test"
+    "test": "CI=1 turbo test"
   },
   "workspaces": [
     "docs",

@@ -7,17 +7,6 @@
     "introduction/philosophy",
     "introduction/packages",
     "---Building Apps---",
-    "...building-apps",
-    "---Integrations---",
-    "integrations/full-stack",
-    "integrations/standalone",
-    "integrations/framework",
-    "---Packages---",
-    "reference/route",
-    "reference/client",
-    "reference/router",
-    "reference/middleware",
-    "reference/schema",
-    "reference/oas"
+    "...building-apps"
   ]
 }

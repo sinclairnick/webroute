@@ -2,9 +2,7 @@
 title: Quick Start
 ---
 
-The guide explores the main themes and webroute and will leave you with both a decent understanding of webroute and a starting point to build a real-world app.
-
-The resulting app will have the following:
+The guide will leave you with both a decent understanding of webroute and a starting point to build a real-world app. The resulting app will have the following:
 
 - [x] End-to-end type-safety
 - [x] Automatic OpenAPI spec generation
@@ -143,15 +141,15 @@ Any route handlers that extend off `authedRoute` will now have type-safe access 
 
 ## Routing
 
-Most of the time, we have multiple routes that we want to map an incoming request to. In other words, we require routing.
+Most of the time, we have multiple routes that we want to map an incoming request to. In other words, we require routing of some sort.
 
 ### Filesystem Routing
 
-With filesystem routers, we can just export our routes as-is, and skip this section entirely.
+In filesystem routing contexts like Next.js, we can just export our routes as-is from route handler files (or their equivalent).
 
 ### Manual Routing
 
-Otherwise, we can use a router from the `@webroute/router` package to help us map requests to the various route handlers we have.
+For explicit routing, we can use a router from the `@webroute/router` package to help us map requests to the various route handlers we have.
 
 First, we should collect all of our routes into a single object.
 
@@ -164,9 +162,13 @@ export const AppRoutes = {
 ```ts title="main.ts"
 // npm i @webroute/router
 import { createRadixRouter } from "@webroute/router";
+import { Route } from "@webroute/route";
 import { AppRoutes } from "./routes";
 
-const router = createRadixRouter(AppRoutes);
+// Create an array of { path, method, payload } for AppRoutes
+const routeList = Object.values(AppRoutes).map(Route.normalise);
+
+const router = createRadixRouter(routeList);
 ```
 
 This router allows us to match handler based on an incoming request. Therefore, our router can also be used anywhere web-standard requests are supported.

@@ -1,14 +1,14 @@
 import { appRoutes } from "./routes";
 import { openApiRoute } from "./openapi";
-import { normaliseRoutes } from "@webroute/route";
 import { createRadixRouter } from "@webroute/router";
+import { Route } from "@webroute/route";
 
 const allRoutes = {
   ...appRoutes,
   openApiRoute,
 };
 
-const routes = normaliseRoutes(allRoutes);
+const routes = Object.values(allRoutes).map(Route.normalise);
 
 const router = createRadixRouter(routes);
 
