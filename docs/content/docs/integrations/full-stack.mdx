@@ -1,0 +1,63 @@
+---
+title: Full-Stack Frameworks
+---
+
+Webroute is particularly suited for full-stack or meta-frameworks like `Next.js`, `Remix`, `SolidStart` and `SvelteKit`.
+
+By default, these frameworks offer a minimal and unopinionated approach to building and using APIs. When reaching for more complex functionality though, we are often forced to use a monolithic framework like `Hono` or `Express`. However, this defeats the purpose and benefits of using filesystem routing.
+
+---
+
+## Introduction
+
+Since each webroute is a self-contained and web-standard request
+handler, all we need to do is export our webroute from a route handler
+file.
+
+As such, webroutes work in many places. Below, we provide basic examples of using webroute within your favourite full-stack frameworks.
+
+## `Next.js`
+
+We can export routes from `Next.js` route handler files like so.
+
+```ts title="api/foo/route.ts"
+export const GET = route().handle(() => {
+  return "OK";
+});
+```
+
+Learn more about [routes](/docs/building-apps/routes) and how they can enhance developing `Next.js` apps.
+
+## `Remix`
+
+```ts title="app/routes/my-route.ts"
+const myRoute = route().handle(() => {
+  return "OK";
+});
+
+export const loader = ({ request }: LoaderFunctionArgs) => myRoute(request);
+```
+
+Learn more about [routes](/docs/building-apps/routes) and how they can enhance developing `Remix` apps.
+
+## `SolidStart`
+
+```ts title="routes/api/foo.ts"
+export const GET = route().handle(() => {
+  return "OK";
+});
+```
+
+Learn more about [routes](/docs/building-apps/routes) and how they can enhance developing `SolidStart` apps.
+
+## `SvelteKit`
+
+```ts title="src/routes/api/foo/+server.ts"
+const myRoute = route().handle(() => {
+  return "OK";
+});
+
+export const GET = ({ request }: RequestHandler) => myRoute(request);
+```
+
+Learn more about [routes](/docs/building-apps/routes) and how they can enhance developing `SolidStart` apps.

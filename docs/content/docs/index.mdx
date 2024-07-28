@@ -2,7 +2,17 @@
 title: Overview
 ---
 
-Webroute is a collection of libraries which, when combined, form a fully-fledged web framework with all the typical affordances, and more:
+Webroute rethinks server-side apps, "from the route up".
+
+As the name suggests, webroutes are concerned with the **routes** of an app first and foremost. A "webroute" is a self-contained and portable request handler, compatible with any web-standard runtime or framework.
+
+**Self-contained**: Webroutes are "self-contained" in that any middleware, validation, paths, methods or other information are stored at the route - not the `app` or `router` level. In turn, we can bring our routes into any framework or runtime.
+
+**Portable**: The resulting webroute is a bog-standard request handler, build on WinterCG web-standards. This makes them the most portable and future-proofed way to define endpoints for your next app.
+
+---
+
+Webroute is packaged as a collection of libraries which culminate in a fully-fledged web framework with all the typical affordances, and more:
 
 - [x] End-to-end type-safety
 - [x] I/O validation <small>(BYO schema library)</small>
@@ -11,11 +21,9 @@ Webroute is a collection of libraries which, when combined, form a fully-fledged
 - [x] Async
 - [x] Web standard `Request` and `Response`
 
-As the name suggests, webroute is primarily concerned with the **routes** of a web application. It makes few assumptions about what type of app you're running.
+Packages are independent of one another, minimising lock-in and maximising visibility and flexibility.
 
-Any given webroute possesses all necessary information and functionality, independent of any root `app` or `router`. Each route is capable of it's own middleware, validation, methods, path and dependency injection.
-
-Additionally, industry standards are heavily leaned into so you can "learn the platform" instead of another bespoke framework API.
+---
 
 ## Get Started
 
@@ -48,12 +56,11 @@ This simple route is now fully contained, in the form `(req: Request) => Respons
 
 The `route` builder only has a handful of methods for building fully-fledged route handlers. The API is intentionally simple, but don't let that fool you – it's rather powerful.
 
-{/* TODO: Link */}
-[View the docs for `route`](./)
+[View the docs for `route`](/docs/building-apps/routes)
 
 ## Other Packages
-{/* TODO: Link */}
-On top of the `route` builder, webroute offers packages for [routing](./) incoming requests to handlers, defining and emitting [OpenAPI specs](./) and creating type-safe [API clients](./), among other things.
+
+On top of the `route` builder, webroute offers packages for [routing](/docs/building-apps/routing) incoming requests to handlers, defining and emitting [OpenAPI specs](/docs/building-apps/openapi) and creating type-safe [API clients](/docs/building-apps/client), among other things.
 
 These packages have all been designed to be useful in isolation, so you won't have to adopt an entire ecosystem or paradigm to use any one of them.
 
@@ -65,8 +72,7 @@ However, each of these approaches require packing all routes into a single entry
 
 Webroute makes no assumptions about routing whatsoever - a route handler has everything it needs. This makes it the best approach to building complex APIs within your existing meta-frameworks.
 
-{/* TODO: Link */}
-[Learn more](./) about using webroute with `{Next.js, Remix, SolidStart, SvelteKit,...}`.
+[Learn more](/docs/integrations/full-stack) about using webroute with `{Next.js, Remix, SolidStart, SvelteKit,...}`.
 
 ## Usage with `Bun`, `Deno`, `Node`
 
@@ -74,5 +80,4 @@ Webroute is also capable of working standalone or within existing backend framew
 
 When necessary, the incredibly straightforward `@webroute/router` package can be introduced to map incoming requests to your app's routes.
 
-{/* TODO: Link */}
-[Learn more](./) about standalone usage.
+[Learn more](/docs/integrations/standalone) about standalone usage.

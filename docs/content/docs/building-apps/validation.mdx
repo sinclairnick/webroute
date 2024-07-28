@@ -1,5 +1,5 @@
 ---
-title: Schema Validation
+title: Validation
 ---
 
 Typically, input/output validation is offered as an extension or plugin. With webroute, I/O validation is a first-class citizen and can be declared easily.
@@ -185,5 +185,4 @@ route("/balance")
 
 ### Skipping Output Parsing
 
-{/* TODO: Links */}
-Returning a `Response` from a handler will **skip any validation**. While returned data is treated as `JSON`, a `Response` is returned to the user as is (with the exception of any [middleware](./) effects).
+Returning a `Response` from a handler will **skip any validation**. While returned data is treated as `JSON`, a `Response` is returned to the user as is (with the exception of any [middleware](/docs/building-apps/middleware) effects).

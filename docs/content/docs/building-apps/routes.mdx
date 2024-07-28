@@ -1,5 +1,5 @@
 ---
-title: Route Fundamentals
+title: Routes
 ---
 
 A `webroute` is simply definition for an endpoint. That definition can include methods, a path, middleware, input/output validation and much more. This is useful because it means each route is self-sufficient. In turn, this opens up many opportunities for keeping code simple, more robust, more type-safe and more portable across runtimes, frameworks and platforms.
@@ -44,8 +44,7 @@ Here we are using auth middleware, specifying path param schema and handling our
 
 ### Immutability
 
-{/* TODO: Link */}
-The routes themselves are immutable. So every time we chain a method, we are creating a new instance which is entirely isolated. This enables powerful patterns like [Composition](./).
+The routes themselves are immutable. So every time we chain a method, we are creating a new instance which is entirely isolated. This enables powerful patterns like composition.
 
 Immutability also means the following will **not** work:
 
@@ -163,8 +162,7 @@ route().handle((req, c) => {
 
 State can also be _strongly typed_, which makes our applications more robust by avoiding accessing incorrect or missing data.
 
-{/* TODO: Links */}
-You can learn more about updating state in the [Middleware docs](./).
+You can learn more about updating state in the [Middleware docs](/docs/building-apps/middleware).
 
 ## Route Utilities
 
@@ -213,20 +211,16 @@ type QueryOut = Route.InferQueryOut<typeof myRoute>;
 
 Our routes can also perform powerful, type-safe schema validation. For example:
 
-{/* TODO: Link */}
-Read the [Validation](./) docs.
+Read the [validation](/docs/building-apps/validation) docs.
 
 ### Middleware
 
 Complex request pipelines can be created simply by using middleware and composition.
 
-{/* TODO: Link */}
-View the [Middleware](./) guide.
+View the [middleware](/docs/building-apps/middleware) guide.
 
 ### Dependency Injection
 
 Some prefer to use dependency injection to invert control. Basic dependency injection is possible using the `.provide()` method.
 
-{/* TODO: Link */}
-Learn more about [Dependency Injection](./).
-import ts from "typescript"
+Learn more about [Dependency Injection](/docs/building-apps/dependency-injection).

@@ -57,7 +57,7 @@ type GetPostsParams = App["GET /posts"]["params"];
 
 ### From Webroute
 
-We can use our webroutes from the backend directly, by utilising the `ToRoute` helper.
+We can use our webroutes from the backend directly, by utilising the `ToClient` helper.
 
 ```ts
 import { ToClient } from "@webroute/route";
@@ -81,8 +81,7 @@ import { ParseSpec } from "@webroute/oas";
 type App = ParseSpec<OpenAPISpec>;
 ```
 
-{/* TODO: Links */}
-To explore how you might acquire an `OpenAPISpec` type, refer to the [OpenAPI docs](./).
+To explore how you might acquire an `OpenAPISpec` type, refer to the [OpenAPI docs](/docs/building-apps/openapi).
 
 ## Implementing a Fetcher
 

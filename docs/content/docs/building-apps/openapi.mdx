@@ -12,11 +12,10 @@ We can utilise webroute packages to both define and consume OpenAPIs, on the cli
 Out of the box, we can produce a fairly comprehensive OpenAPI spec of our API by leveraging the `@weboute/oas` package.
 
 ```ts
-import { normaliseRoutes, createSpec } from "@webroute/route";
+import { Route } from "@webroute/route";
+import { createSpec } from "@webroute/oas";
 
-const routes = normaliseRoutes({
-  myRoute,
-});
+const routes = Object.values(appRoutes).map(Route.normalise);
 
 const spec = createSpec(routes);
 ```
@@ -63,6 +62,5 @@ const UserAsParam = OAS.Param(OASUserSchema, {
 
 Bear in mind each customisation is entirely optional.
 
-{/* TODO: Link */}
-
-For the full list of `OAS` decorators, refer to the [OpenAPI docs](./).
+{/* TODO: Link to full OpenAPI docs */}
+{/* For the full list of `OAS` decorators, refer to the [OpenAPI docs](./). */}

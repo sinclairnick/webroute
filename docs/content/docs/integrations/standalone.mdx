@@ -1,0 +1,97 @@
+---
+title: Standalone Apps
+---
+
+Webroutes are very versatile, and can be used as standalone apps. Here we cover some tips for getting webroute apps up and running with various runtimes.
+
+---
+
+## Prerequisites
+
+The below assumes you have some root handler for requests, which may or may not perform routing (it's up to you).
+
+```ts title="example-root-handler.ts"
+const appRoutes = { myRoute, myOtherRoute };
+
+// Create an array of { path, method, payload } for AppRoutes
+const routeList = Object.values(appRoutes).map(Route.normalise);
+
+const router = createRadixRouter(routeList);
+
+const app = (request: Request) => {
+  const handler = router.match(request);
+
+  return handler?.(request) ?? new Response("Not found", { status: 404 });
+};
+```
+
+<Callout>
+  For more detailed advice on how to implement routing, please visit the
+  [Routing](./routing) docs.
+</Callout>
+
+---
+
+## Node
+
+While Node has supported the web standard `Request` and `Response` classes from v21, it does not provide a standard way to access an incoming HTTP `Request`.
+
+Until node provides a built-in WinterCG-compliant server, one should use [`@hono/node-server`](https://github.com/honojs/node-server) which converts the traditional node Request/Responses to the web-standard counterpart, on the fly.
+
+```ts
+import { serve } from "@hono/node-server";
+
+serve({ fetch: app }); // <- Provides us with `Request` and `Response` in node.
+```
+
+## Bun
+
+```ts
+Bun.serve({ fetch: app });
+```
+
+## Deno
+
+```ts
+Deno.serve(app);
+```
+
+## Cloudflare Workers
+
+The `workerd` runtime that Cloudflare Workers utilise expects a default export with a `fetch` property.
+
+```ts
+export default {
+  fetch: app,
+};
+```
+
+<Accordions>
+	<Accordion title="What about `env` and `ctx`">
+		Cloudflare also exposes environment bindings and context via two additional paremeters, `env` and `ctx`. To access these within our routes we can simply assign `env` and/or `ctx` to globally accessible variables.
+
+    	```ts title="global.ts"
+    	export let env: Env;
+    	export let ctx: Ctx;
+    	```
+
+    	```ts title="index.ts"
+    	import { env } from "./global"
+
+    	export default {
+    		fetch: (req, _env, _ctx) => {
+    			env = _env
+    			ctx = _ctx
+    		}
+    	}
+    	```
+
+    	```ts title="my-route.ts"
+    	import { env } from "./global"
+    	// ...
+    	const myVar = env.MY_VAR
+    	//...
+    	```
+    </Accordion>
+
+</Accordions>

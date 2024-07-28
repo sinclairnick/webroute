@@ -7,6 +7,9 @@
     "introduction/philosophy",
     "introduction/packages",
     "---Building Apps---",
-    "...building-apps"
+    "...building-apps",
+    "---Integrations---",
+    "integrations/full-stack",
+    "integrations/standalone"
   ]
 }
