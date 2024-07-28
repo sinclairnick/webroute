@@ -177,3 +177,27 @@ export const withProviders = <T extends AnyCompiledRoute>(
 
   return cloned;
 };
+
+export const normalise = <T extends AnyCompiledRoute>(route: T) => {
+  const path = getPath(route);
+  const methods = getMethods(route);
+
+  if (path == null) {
+    throw new Error(`No path provided for route.`);
+  }
+
+  if (methods == null || methods.length === 0) {
+    throw new Error(`No method(s) provided for route.`);
+  }
+
+  return {
+    path,
+    methods,
+    payload: route,
+    Query: route[Def].query?.schema,
+    Params: route[Def].params?.schema,
+    Body: route[Def].body?.schema,
+    Headers: route[Def].headersReq?.schema,
+    Output: route[Def].output?.schema,
+  };
+};

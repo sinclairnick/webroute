@@ -1,5 +1,5 @@
 import { describe, test, expect } from "vitest";
-import { route, normaliseRoutes } from "@webroute/route";
+import { Route, route } from "@webroute/route";
 import { createSpec } from "./builder/builder";
 
 describe("Webroute", () => {
@@ -8,9 +8,7 @@ describe("Webroute", () => {
       .method("get")
       .handle(() => {});
 
-    const normalised = normaliseRoutes({
-      myRoute,
-    });
+    const normalised = [myRoute].map(Route.normalise);
 
     const spec = createSpec(normalised, {
       formatter: () => ({}),

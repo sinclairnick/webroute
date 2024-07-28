@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { route, normaliseRoutes } from "@webroute/route";
+import { route, Route } from "@webroute/route";
 import { createLinearRouter, createRadixRouter } from ".";
 
 describe("Webroute", () => {
@@ -8,9 +8,7 @@ describe("Webroute", () => {
       .method("get")
       .handle(() => {});
 
-    const normalised = normaliseRoutes({
-      myRoute,
-    });
+    const normalised = [myRoute].map(Route.normalise);
 
     const linear = createLinearRouter(normalised);
     const radix = createRadixRouter(normalised);
