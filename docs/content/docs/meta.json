@@ -10,6 +10,8 @@
     "...building-apps",
     "---Integrations---",
     "integrations/full-stack",
-    "integrations/standalone"
+    "integrations/standalone",
+    "---Reference---",
+    "reference/route"
   ]
 }
