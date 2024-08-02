@@ -1,3 +1,3 @@
 export * from "./route";
 export * from "./adapter";
-export type * from "./util";
+export type { AnyRootConfig, RootConfig } from "./util";

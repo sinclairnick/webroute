@@ -11,7 +11,12 @@
     "---Integrations---",
     "integrations/full-stack",
     "integrations/standalone",
-    "---Reference---",
-    "reference/route"
+    "---API Reference---",
+    "reference/route",
+    "reference/client",
+    "reference/oas",
+    "reference/router",
+    "reference/middleware",
+    "reference/schema"
   ]
 }

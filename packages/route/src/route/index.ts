@@ -1,11 +1,11 @@
 import { createBuilder } from "./handler";
+
 export * as Route from "./helpers";
-export * from "./helpers";
 export type * from "./helpers";
 
 // Export all types
-export type * from "./handler";
 export type * from "./handler/types";
+export type * from "./handler/builder";
 
 /**
  * Initialises a route builder.

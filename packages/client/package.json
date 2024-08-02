@@ -34,7 +34,8 @@
     "build": "tsup-node",
     "check": "tsc --noEmit",
     "publish-pkg": "pnpm run build && pnpm publish --access=public --no-git-checks",
-    "test": "vitest"
+    "test": "vitest",
+    "docs": "typedoc"
   },
   "sideEffects": false,
   "types": "dist/index.d.ts"

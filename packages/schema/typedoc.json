@@ -1,0 +1,8 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "extends": ["../config/typedoc.json"],
+  "entryPoints": ["./src/index.ts", "./src/validators/*.ts"],
+  "out": "../../docs/content/docs/reference/schema",
+  "publicPath": "/docs/reference/schema",
+  "exclude": ["**/*spec.ts"]
+}

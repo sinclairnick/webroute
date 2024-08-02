@@ -2,3 +2,4 @@ dist
 node_modules
 .DS_STORE
 .turbo
+docs/content/docs/reference

@@ -11,10 +11,18 @@
     "build:packages": "turbo build --filter '@webroute/**'",
     "check": "turbo check",
     "format:pkg-json": "./scripts/common-pkg.mjs && syncpack format",
-    "test": "CI=1 turbo test"
+    "test": "CI=1 turbo test",
+    "docs": "turbo docs"
   },
   "workspaces": [
     "docs",
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "typedoc": "^0.26.5",
+    "typedoc-plugin-frontmatter": "^1.0.0",
+    "typedoc-plugin-markdown": "^4.2.3",
+    "typedoc-plugin-mdn-links": "^3.2.6",
+    "typedoc-plugin-remove-references": "^0.0.6"
+  }
 }

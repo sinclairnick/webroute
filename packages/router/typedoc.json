@@ -1,0 +1,7 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "extends": ["../config/typedoc.json"],
+  "entryPoints": ["./src/index.ts"],
+  "out": "../../docs/content/docs/reference/router",
+  "publicPath": "/docs/reference/router"
+}

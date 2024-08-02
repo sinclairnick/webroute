@@ -1,6 +1,6 @@
 import { describe, test, expectTypeOf } from "vitest";
 import { generateTestRoutes } from "../internal/test-util";
-import { ToClient } from "./client";
+import { ToClient } from ".";
 
 describe("ToClient", () => {
   const routes = generateTestRoutes();
