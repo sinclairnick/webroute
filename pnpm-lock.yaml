@@ -221,9 +221,6 @@ importers:
         specifier: workspace:*
         version: link:../common
     optionalDependencies:
-      '@hattip/compose':
-        specifier: ^0.0.45
-        version: 0.0.45
       hono:
         specifier: ^4.3.7
         version: 4.3.7

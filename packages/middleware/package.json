@@ -12,7 +12,6 @@
     "@webroute/common": "workspace:*"
   },
   "devDependencies": {
-    "@hattip/compose": "^0.0.45",
     "hono": "^4.3.7",
     "tsup": "^8.0.1",
     "vitest": "^1.6.0"
@@ -28,8 +27,7 @@
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "optionalDependencies": {
-    "hono": "^4.3.7",
-    "@hattip/compose": "^0.0.45"
+    "hono": "^4.3.7"
   },
   "private": false,
   "repository": "https://github.com/sinclairnick/webroute",
