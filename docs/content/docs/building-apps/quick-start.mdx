@@ -34,7 +34,7 @@ const createPostRoute = route("/post")
   });
 ```
 
-Now we have a very basic route, not doing anything particularly interesting (yet). The result is, `createPostRoute`, is a web-standard request handler which can be run nearly anywhere.
+Now we have a very basic route, not doing anything particularly interesting (yet). The result, `createPostRoute`, is a web-standard request handler which can be run nearly anywhere, including `Next.js` API routes, within a `Hono` app or as part of a standalone `Bun` or `Node` app, among others.
 
 ```ts
 // Regular web request handler...
@@ -43,7 +43,7 @@ const response = createPostRoute(new Request(/**...*/));
 
 ### 2. Add Input Validation
 
-Often, we want to validate any input and/or output to ensure the correct data has been provided. We can specify a schema object or validator function to do just that.
+Validating the inputs and outputs coming in and out of our server is a critical component of any serious backend application. Webroute's offer first-class support for specifying validation schema, supporting all popular schema libraries.
 
 ```ts twoslash {10-15}
 //---cut-start---
@@ -70,11 +70,13 @@ const createPostRoute = route("/post")
   });
 ```
 
-We could also specify path `.params()`, `.query()` params, `.headers()` and `output` (response) schema.
+By specifying our schema(s) up front, we can make our routes more declarative, avoid a lot of boilerplate code and achieve full type-safety within our route handler.
+
+Here, we specified the `body`, but we could also specify path `.params()`, `.query()` params, `.headers()` and `output` (response) schema.
 
 <Callout title="Validating inputs">
-  Inputs are **not** validated until `.parse()` is called. This was designed to
-  make custom error handling straightforward.
+  Bear in mind, inputs are only parsed upon calling the `.parse()` method, to
+  enable greater flexibility with error handling.
 </Callout>
 
 ## Using Middleware
