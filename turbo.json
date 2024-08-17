@@ -10,7 +10,7 @@
     },
     "docs": {
       "dependsOn": ["^build"],
-      "cache": false
+      "outputs": ["content/reference/**"]
     },
     "check": {},
     "publish-pkg": {}
