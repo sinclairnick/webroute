@@ -1,5 +1,5 @@
 import { describe, expect, expectTypeOf, test } from "vitest";
-import { AnyMiddlewareFn, defineMiddleware } from ".";
+import { AnyMiddlewareFn, MiddlewareFn, defineMiddleware } from ".";
 
 describe("Middleware", () => {
   describe("Types", () => {
@@ -76,6 +76,17 @@ describe("Middleware", () => {
       }) satisfies AnyMiddlewareFn;
 
       expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
+    });
+
+    test("Allows return response handler with different input rest vs. response handler rest", () => {
+      const middleware = ((req: Request, rest1: number, rest2: string) => {
+        return (response, rest1: boolean, rest2: symbol) => new Response();
+      }) satisfies AnyMiddlewareFn;
+
+      expectTypeOf(middleware).toMatchTypeOf<AnyMiddlewareFn>();
+      expectTypeOf(middleware).toMatchTypeOf<
+        MiddlewareFn<void, [number, string], [boolean, symbol]>
+      >();
     });
 
     test("Allows async req handler", () => {

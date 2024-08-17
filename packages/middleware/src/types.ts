@@ -42,8 +42,12 @@ export type MiddlewareResult<
  */
 export type MiddlewareFn<
   T extends DataResult | void = void,
-  TRest extends any[] = any[]
-> = (request: Request, ...rest: TRest) => Awaitable<MiddlewareResult<T, TRest>>;
+  TRest extends any[] = any[],
+  TRestRes extends any[] = any[]
+> = (
+  request: Request,
+  ...rest: TRest
+) => Awaitable<MiddlewareResult<T, TRestRes>>;
 
 export type InferMiddlewareFnResult<T extends MiddlewareFn> = Awaited<
   ReturnType<T>
