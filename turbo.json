@@ -9,7 +9,8 @@
       "dependsOn": ["^build"]
     },
     "docs": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "cache": false
     },
     "check": {},
     "publish-pkg": {}

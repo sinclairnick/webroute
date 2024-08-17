@@ -9,6 +9,7 @@
   "packageManager": "pnpm@9.1.3",
   "scripts": {
     "build:packages": "turbo build --filter '@webroute/**'",
+    "build:package-docs": "turbo docs --filter '@webroute/**'",
     "check": "turbo check",
     "format:pkg-json": "./scripts/common-pkg.mjs && syncpack format",
     "test": "CI=1 turbo test",
