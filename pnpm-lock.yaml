@@ -126,7 +126,7 @@ importers:
         version: 0.27.0
       '@webroute/middleware':
         specifier: latest
-        version: 0.8.0
+        version: 0.9.0
       '@webroute/oas':
         specifier: latest
         version: 0.5.0
@@ -1378,6 +1378,9 @@ packages:
   '@webroute/middleware@0.8.0':
     resolution: {integrity: sha512-OKVOnzClDDvALBS3wbgNHRo+gDGmvquj8ey09r6he/6R6DcVyBdjOs6tW5lp+puSzAjsYFTUaBjaIJvw8IaXnA==}
 
+  '@webroute/middleware@0.9.0':
+    resolution: {integrity: sha512-KECzsFrxadVRpZYfA4W4xElANOAucOigrAN8g/7BEHTFL8tIcT2xZ0SzxpSY07foGbBbipq7GLC0hrfauNuoKQ==}
+
   '@webroute/oas@0.5.0':
     resolution: {integrity: sha512-BuBzSPhgKBQMYVx5dNfLkFghuUolb/Zssk/ChIFr9ioH9jTynRxZtJDpa9qmiPucq9OPFMAOvUUl8vsh3gr1IQ==}
 
@@ -1513,7 +1516,6 @@ packages:
 
   bun@1.1.13:
     resolution: {integrity: sha512-yrujTLEspzQJfh7hd2xkYM5skQsjBwVm/wq0cyYBkR5x4FRveOUqeAqtFOPH4aHvsDgwVN+dO0uIrlvE7dDsDQ==}
-    cpu: [arm64, x64]
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -4207,6 +4209,13 @@ snapshots:
   '@webroute/common@1.1.0': {}
 
   '@webroute/middleware@0.8.0':
+    dependencies:
+      '@webroute/common': 1.0.0
+    optionalDependencies:
+      '@hattip/compose': 0.0.45
+      hono: 4.3.7
+
+  '@webroute/middleware@0.9.0':
     dependencies:
       '@webroute/common': 1.0.0
     optionalDependencies:
