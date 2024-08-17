@@ -8,7 +8,7 @@ As the name suggests, webroutes are concerned with the **routes** of an app firs
 
 **Self-contained**: Webroutes are "self-contained" in that any middleware, validation, paths, methods or other information are stored at the route - not the `app` or `router` level. In turn, we can bring our routes into any framework or runtime.
 
-**Portable**: The resulting webroute is a bog-standard request handler, build on WinterCG web-standards. This makes them the most portable and future-proofed way to define endpoints for your next app.
+**Portable**: The resulting webroute is a bog-standard request handler, built on WinterCG web-standards. This makes them the most portable and future-proofed way to define endpoints for your next app.
 
 ---
 
@@ -35,7 +35,7 @@ npx create-webroute-app webroute-app
 
 ## Introduction
 
-Webroute has several packages, but chief among them is the `@webroute/route` package. Unlike traditional frameworks which rely on a router to orchestrate a web application, webroute packs everything into the route itself, by leveraging bog-standard JavaScript composition.
+Webroute has several packages, but chief among them is `@webroute/route`. Unlike traditional frameworks which rely on a router to orchestrate a web application, webroute packs everything into the route itself, by leveraging bog-standard JavaScript composition.
 
 As a result, every route is a standalone web request handler which can be used anywhere the web-standard `Request` and `Response` is available.
 
