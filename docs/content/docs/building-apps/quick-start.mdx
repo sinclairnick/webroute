@@ -149,6 +149,8 @@ Most of the time, we have multiple routes that we want to map an incoming reques
 
 In filesystem routing contexts like Next.js, we can just export our routes as-is from route handler files (or their equivalent).
 
+[Learn more](/docs/integrations/full-stack) about integrating with full-stack frameworks.
+
 ### Manual Routing
 
 For explicit routing, we can use a router from the `@webroute/router` package to help us map requests to the various route handlers we have.
@@ -167,7 +169,7 @@ import { createRadixRouter } from "@webroute/router";
 import { Route } from "@webroute/route";
 import { AppRoutes } from "./routes";
 
-// Create an array of { path, method, payload } for AppRoutes
+// Creates an array of { path, method, payload } for AppRoutes
 const routeList = Object.values(AppRoutes).map(Route.normalise);
 
 const router = createRadixRouter(routeList);
