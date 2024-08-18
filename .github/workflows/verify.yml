@@ -6,7 +6,9 @@ on:
       - "main"
 
 jobs:
-  publish:
+  verify:
+    name: Verify
+
     runs-on: ubuntu-latest
 
     strategy:
@@ -30,3 +32,24 @@ jobs:
         run: pnpm test
       - name: Type check
         run: pnpm check
+
+  verify-bun:
+    name: Verify (bun)
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.1.3
+      - name: Install packages
+        run: pnpm i
+      - name: Build packages
+        run: pnpm build:packages
+      - name: Run tests
+        run: bun run test
+      - name: Type check
+        run: bun run check
