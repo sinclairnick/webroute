@@ -34,7 +34,7 @@
   "module": "dist/index.mjs",
   "repository": "https://github.com/sinclairnick/webroute",
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsup",
     "publish-pkg": "pnpm run build && pnpm publish --access=public --no-git-checks",
     "test": "vitest",
     "docs": "typedoc"
