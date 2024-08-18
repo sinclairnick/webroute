@@ -189,8 +189,8 @@ export function createBuilder<TPath extends string | undefined = undefined>(
             const result = await middleware(response, ctx);
 
             // Set response if one was returned
-            if (result && isBun) {
-              response = fixResponseClone(result);
+            if (result) {
+              response = isBun ? fixResponseClone(result) : result;
             }
           }
         }
