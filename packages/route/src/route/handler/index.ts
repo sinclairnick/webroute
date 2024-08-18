@@ -110,9 +110,7 @@ export function createBuilder<TPath extends string | undefined = undefined>(
     },
     handle(handler) {
       const _handler = async (_req: Request) => {
-        if (isBun) {
-          const req = fixRequestClone(_req);
-        }
+        const req = isBun ? fixRequestClone(_req) : _req;
 
         const parse = createParseFn(req, def);
         const middlewareOut: MiddlewareOutFn[] = [];
