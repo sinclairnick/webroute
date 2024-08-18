@@ -116,4 +116,49 @@ describe("route().execution", () => {
 
     expect(data.a).toBe("a_transformed");
   });
+
+  test("Handles request cloning", async () => {
+    const _route = route()
+      .use(async (req) => {
+        await req.clone().json();
+      })
+      .handle(async (req) => {
+        return await req.clone().json();
+      });
+
+    const req = new Request("https://google.com", {
+      method: "POST",
+      body: JSON.stringify({ foo: "bar" }),
+    });
+
+    const res = await _route(req);
+
+    expect(res).toBeDefined();
+    const json = await res.json();
+    expect(json).toBeDefined();
+    expect(json).toEqual({ foo: "bar" });
+  });
+
+  test("Handles response cloning", async () => {
+    const _route = route()
+      .use(async (req) => {
+        return async (res) => {
+          const json = await res.clone().json();
+
+          return Response.json(json);
+        };
+      })
+      .handle(async (req) => {
+        return { foo: "bar" };
+      });
+
+    const req = new Request("https://google.com");
+
+    const res = await _route(req);
+
+    expect(res).toBeDefined();
+    const json = await res.json();
+    expect(json).toBeDefined();
+    expect(json).toEqual({ foo: "bar" });
+  });
 });
