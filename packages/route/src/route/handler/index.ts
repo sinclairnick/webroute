@@ -10,6 +10,7 @@ import { AnyRouteBuilder, RouteBuilder } from "./builder";
 import { Def, createParseFn } from "./util";
 import { getParseFn } from "@webroute/schema";
 import { fixRequestClone, fixResponseClone } from "../patch";
+import { isBun } from "../../util";
 
 function createNewBuilder(
   configA: AnyHandlerDefinition,
@@ -109,7 +110,9 @@ export function createBuilder<TPath extends string | undefined = undefined>(
     },
     handle(handler) {
       const _handler = async (_req: Request) => {
-        const req = fixRequestClone(_req);
+        if (isBun) {
+          const req = fixRequestClone(_req);
+        }
 
         const parse = createParseFn(req, def);
         const middlewareOut: MiddlewareOutFn[] = [];
@@ -175,7 +178,9 @@ export function createBuilder<TPath extends string | undefined = undefined>(
           }
         }
 
-        response = fixResponseClone(response);
+        if (isBun) {
+          response = fixResponseClone(response);
+        }
 
         // --- RES MIDDLEWARE ---
         // Run through outgoing middleware
@@ -186,7 +191,7 @@ export function createBuilder<TPath extends string | undefined = undefined>(
             const result = await middleware(response, ctx);
 
             // Set response if one was returned
-            if (result) {
+            if (result && isBun) {
               response = fixResponseClone(result);
             }
           }
