@@ -1,5 +1,11 @@
 # @webroute/oas
 
+## 0.6.0
+
+### Minor Changes
+
+- Use more lenient monorepo deps
+
 ## 0.5.0
 
 ### Minor Changes

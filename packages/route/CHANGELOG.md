@@ -1,5 +1,11 @@
 # @webroute/route
 
+## 0.8.0
+
+### Minor Changes
+
+- Use more lenient monorepo deps
+
 ## 0.7.0
 
 ### Minor Changes

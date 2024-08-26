@@ -1,7 +1,7 @@
 {
   "name": "@webroute/route",
   "description": "Build fully-fledged, atomic route handlers on web standards",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": {
     "name": "Nick Sinclair",
     "email": "nicksinclair@xtra.co.nz",
@@ -10,8 +10,8 @@
   "bugs": "https://github.com/sinclairnick/webroute/issues",
   "dependencies": {
     "@webroute/common": "workspace:*",
-    "@webroute/middleware": "workspace:*",
-    "@webroute/schema": "workspace:*",
+    "@webroute/middleware": "workspace:^",
+    "@webroute/schema": "workspace:^",
     "debug": "^4.3.4"
   },
   "devDependencies": {

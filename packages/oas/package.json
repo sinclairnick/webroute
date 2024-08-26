@@ -1,7 +1,7 @@
 {
   "name": "@webroute/oas",
   "description": "OpenAPI tools for defining and inferring OpenAPI specs",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": {
     "name": "Nick Sinclair",
     "email": "nicksinclair@xtra.co.nz",
@@ -10,13 +10,13 @@
   "bugs": "https://github.com/sinclairnick/webroute/issues",
   "dependencies": {
     "@webroute/common": "workspace:*",
-    "@webroute/schema": "workspace:*",
+    "@webroute/schema": "workspace:^",
     "openapi3-ts": "^4.3.2",
     "scule": "^1.3.0"
   },
   "devDependencies": {
-    "@webroute/client": "workspace:*",
-    "@webroute/route": "workspace:*",
+    "@webroute/client": "workspace:^",
+    "@webroute/route": "workspace:^",
     "tsup": "^8.0.1",
     "vitest": "^1.6.0",
     "zod": "^3.22.4"
