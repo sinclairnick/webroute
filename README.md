@@ -3,7 +3,7 @@
 <h1>Webroute</h1>
 
 <p>
-	<b>Rethinking APIs, from the route-up.</b>
+	<b>Web APIs, from the route-up.</b>
 </p>
 
 </div>
@@ -34,15 +34,43 @@ OpenAPI
 
 ## Overview
 
-Webroute takes a "route-first" approach to API development. This means your routes are the source of truth and can be run standlone, or as part of a wider app.
+Webroute helps you build self-sufficient, web-standard routes that have everything they need: path, method, I/O shape and validation, middleware and request handler.
 
-By shifting all work to the route, and leaning into industry standards, your apps become compatible with virtually all runtimes and frameworks with minimal adjustment necessary.
+It was invented to make building sophisticated APIs easier in the diverse ecosystem of serverless (but also serverful) full-stack and backend development.
 
-## Why?
+## Features
 
-Modern API development is extremely fragmented across vast combinations of frameworks, runtimes and platforms. Monolithic web frameworks are no longer suitable.
+- 👋 Unopinionated and minimal API, by design
+- 🔒 End-to-end type safety (including middleware)
+- ✅ First-class validation and schema support
+- 🕸️ HTTP based
+- 🚏 Works well with serverless routes
+- 🐳 ...or monolithic backends
 
-Instead, webroute has implemented the core elements you _might_ need in a web framework, and you can easily piece together those that suit your use case.
+## Example Usage
+
+A basic webroute might look something like this:
+
+```ts
+import { route } from "@webroute/route";
+
+const myRoute = route("/user/:id")
+  .use(authMiddleware)
+  .params(z.object({ id: z.string() }))
+  .handle(async (req) => {
+    // ...do work
+  });
+```
+
+Which is just a regular web-standard request handler:
+
+```ts
+const response = myRoute(new Request("..."));
+```
+
+Being web-standard and self-sufficient, it can be used directly, with no modification, with popular frameworks like `Next.js`, and `Hono` or within runtimes like `bun`, `deno` and node.
+
+Read the [Quick Start](https://webroute.vercel.app/docs/building-apps/quick-start).
 
 ## What's in the box?
 
