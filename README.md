@@ -38,6 +38,10 @@ Webroute helps you build self-sufficient, web-standard routes that have everythi
 
 It was invented to make building sophisticated APIs easier in the diverse ecosystem of serverless (but also serverful) full-stack and backend development.
 
+### Inspiration
+
+Webroute was heavily inspired by tRPC, but built specifically for HTTP. So if you're a fan of either, you'll probably like webroute.
+
 ## Features
 
 - 👋 Unopinionated and minimal API, by design
