@@ -1,5 +1,7 @@
 // This file contains temporary patches which will eventually be deleted when they can be.
 
+import { isBun } from "../util";
+
 function fixedRequestClone(this: Request) {
   const [a, b] = this.body?.tee() ?? [null, null];
 
@@ -22,6 +24,7 @@ function fixedRequestClone(this: Request) {
  * is fixed
  */
 export const fixRequestClone = (req: Request): Request => {
+  if (!isBun) return req;
   req.clone = fixedRequestClone.bind(req);
 
   return req;
@@ -45,6 +48,7 @@ function fixedResponseClone(this: Response) {
  * is fixed
  */
 export const fixResponseClone = (res: Response): Response => {
+  if (!isBun) return res;
   res.clone = fixedResponseClone.bind(res);
 
   return res;
