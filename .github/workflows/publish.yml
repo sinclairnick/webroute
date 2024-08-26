@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     tags:
-      - "*"
+      - "@webroute/*"
 
 jobs:
   publish:
@@ -16,20 +16,12 @@ jobs:
       - uses: pnpm/action-setup@v4
         with:
           version: 9.1.3
-      - name: Extract package name
-        run: |
-          TAG_NAME="${GITHUB_REF#refs/tags/}"
-
-          # Split the tag into two parts by the first slash
-          PKG_NAME="${TAG_NAME%%/*}"
-
-          # Set environment variables for subsequent steps
-          echo "PKG_NAME=$PKG_NAME" >> $GITHUB_ENV
-      - name: Install packages
-        run: pnpm i
-      - name: Build package
-        run: pnpm turbo build --filter $PKG_NAME...
-      - uses: JS-DevTools/npm-publish@v3
+      - name: Create Release Pull Request or Publish to npm
+        id: changesets
+        uses: changesets/action@v1
         with:
-          token: ${{ secrets.NPM_TOKEN }}
-          package: "packages/${{ env.PKG_NAME }}"
+          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          publish: pnpm release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

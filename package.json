@@ -15,7 +15,8 @@
     "check": "turbo check",
     "format:pkg-json": "./scripts/common-pkg.mjs && syncpack format",
     "test": "CI=1 turbo test",
-    "clean": "rimraf -g \"./packages/**/dist\" \"./packages/**/node_modules\""
+    "clean": "rimraf -g \"./packages/**/dist\" \"./packages/**/node_modules\"",
+    "release": "pnpm build:packages && pnpm changeset publish"
   },
   "workspaces": [
     "docs",
