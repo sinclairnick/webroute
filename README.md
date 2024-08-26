@@ -15,19 +15,19 @@
 Docs
 </a>
 &bull;
-<a href="https://webroute.vercel.app/docs/guides/quick-start">
+<a href="https://webroute.vercel.app/docs/building-apps/quick-start">
 Quick Start
 </a>
 &bull;
-<a href="https://webroute.vercel.app/docs/route/overview">
+<a href="https://webroute.vercel.app/docs/building-apps/routes">
 Route
 </a>
 &bull;
-<a href="https://webroute.vercel.app/docs/client/overview">
+<a href="https://webroute.vercel.app/docs/building-apps/client">
 Client
 </a>
 &bull;
-<a href="https://webroute.vercel.app/docs/oas/overview">
+<a href="https://webroute.vercel.app/docs/building-apps/openapi">
 OpenAPI
 </a>
 </div>
