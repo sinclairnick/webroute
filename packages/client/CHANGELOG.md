@@ -1,5 +1,11 @@
 # @webroute/client
 
+## 0.28.1
+
+### Patch Changes
+
+- Improve return types, simplify type def
+
 ## 0.28.0
 
 ### Minor Changes

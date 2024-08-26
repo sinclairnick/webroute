@@ -51,7 +51,7 @@ describe("Client", () => {
 
   test("Creates correct return type", () => {
     const client = createTypedClient<App>()({
-      fetcher: async (config) => {
+      fetcher: (config) => {
         return { data: {} };
       },
     });
@@ -62,7 +62,20 @@ describe("Client", () => {
     expectTypeOf<Actual>().toEqualTypeOf<Expectation>();
   });
 
-  test("Creates correct return type with additional context", () => {
+  test("Creates correct return type with additional context (sync)", () => {
+    const client = createTypedClient<App>()({
+      fetcher: (config) => {
+        return { data: {}, b: 2 };
+      },
+    });
+    const getHello = client("GET /hello");
+
+    type Expectation = { data: { result: boolean }; b: number };
+    type Actual = Awaited<ReturnType<typeof getHello>>;
+    expectTypeOf<Actual>().toEqualTypeOf<Expectation>();
+  });
+
+  test("Creates correct return type with additional context (async)", () => {
     const client = createTypedClient<App>()({
       fetcher: async (config) => {
         return { data: {}, b: 2 };
