@@ -32,7 +32,7 @@
   "private": false,
   "repository": "https://github.com/sinclairnick/webroute",
   "scripts": {
-    "build": "tsup-node",
+    "build": "tsup",
     "check": "tsc --noEmit",
     "publish-pkg": "pnpm run build && pnpm publish --access=public --no-git-checks",
     "test": "vitest",

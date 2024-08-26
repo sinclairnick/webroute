@@ -20,3 +20,6 @@ export const cached = <T extends () => any>(fn: T) => {
     return result;
   };
 };
+
+// @ts-ignore
+export const isBun = typeof Bun !== "undefined";
