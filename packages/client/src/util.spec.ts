@@ -4,7 +4,6 @@ import { createUrl } from "./util";
 describe("Util", () => {
   test("Inlines missing path values", () => {
     const result = createUrl({
-      method: "get",
       path: "/user/:userId/posts/:postId/new",
     });
 
@@ -13,7 +12,6 @@ describe("Util", () => {
 
   test("Inlines partial path values", () => {
     const result = createUrl({
-      method: "get",
       path: "/user/:userId/posts/:postId/new",
       params: { userId: "123" },
     });
@@ -23,7 +21,6 @@ describe("Util", () => {
 
   test("Inlines multiple path values", () => {
     const result = createUrl({
-      method: "get",
       path: "/user/:userId/posts/:postId/new",
       params: { userId: "123", postId: "456" },
     });
@@ -33,7 +30,6 @@ describe("Util", () => {
 
   test("Ignores extraneous path values", () => {
     const result = createUrl({
-      method: "get",
       path: "/user/:userId/posts/:postId/new",
       params: { userId: "123", postId: "456", blah: 24 },
     });
@@ -43,7 +39,6 @@ describe("Util", () => {
 
   test("Adds query params", () => {
     const result = createUrl({
-      method: "get",
       path: "/user",
       query: {
         a: 1,
@@ -56,7 +51,6 @@ describe("Util", () => {
 
   test("Encodes query params", () => {
     const result = createUrl({
-      method: "get",
       path: "/user",
       query: {
         a: "%hello",
@@ -69,7 +63,6 @@ describe("Util", () => {
 
   test("Handles relative url", () => {
     const result = createUrl({
-      method: "get",
       path: "/user",
     });
 
@@ -78,7 +71,6 @@ describe("Util", () => {
 
   test("Handles absolute url", () => {
     const result = createUrl({
-      method: "get",
       path: "https://webroute.dev/user",
     });
 

@@ -39,7 +39,9 @@ export const appendQueryParams = (
   return withQuery(url, query);
 };
 
-export const createUrl = (config: FetcherConfig) => {
+export const createUrl = (
+  config: Pick<FetcherConfig, "path" | "params" | "query">
+) => {
   const url = substitutePathParams(config);
   return appendQueryParams(url, config);
 };

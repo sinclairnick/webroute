@@ -1,5 +1,11 @@
 # @webroute/client
 
+## 0.28.0
+
+### Minor Changes
+
+- Remove superfluous fields from fetcher config
+
 ## 0.27.0
 
 ### Minor Changes
