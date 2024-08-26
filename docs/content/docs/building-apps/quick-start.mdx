@@ -34,12 +34,14 @@ const createPostRoute = route("/post")
   });
 ```
 
-Now we have a very basic route, not doing anything particularly interesting (yet). The result, `createPostRoute`, is a web-standard request handler which can be run nearly anywhere, including `Next.js` API routes, within a `Hono` app or as part of a standalone `Bun` or `Node` app, among others.
+This basic route, `createPostRoute`, is a web-standard request handler which can be run nearly anywhere, including `Next.js` API routes, within a `Hono` app or as part of a standalone `Bun` or `Node` app.
 
 ```ts
 // Regular web request handler...
 const response = createPostRoute(new Request(/**...*/));
 ```
+
+**But our route isn't doing anything interesting yet!**
 
 ### 2. Add Input Validation
 
@@ -70,9 +72,9 @@ const createPostRoute = route("/post")
   });
 ```
 
-By specifying our schema(s) up front, we can make our routes more declarative, avoid a lot of boilerplate code and achieve full type-safety within our route handler.
+By specifying our schema up front, our routes more declarative and enable [OpenAPI spec generation](/docs/building-apps/openapi), type-inference and end-to-end type-safety, among other things.
 
-Here, we specified the `body`, but we could also specify path `.params()`, `.query()` params, `.headers()` and `output` (response) schema.
+We can also specify schema for path `.params()`, `.query()` params, `.headers()` and response `.output()`s.
 
 <Callout title="Validating inputs">
   Bear in mind, inputs are only parsed upon calling the `.parse()` method, to
@@ -91,11 +93,6 @@ We want to ensure only logged in users can create posts. Since we expect this to
 // npm i @webroute/middleware
 import { defineMiddleware } from "@webroute/middleware";
 
-const isValid = (token: string) => {
-  // Somehow determine validity
-  return true;
-};
-
 export const isAuthed = () =>
   defineMiddleware((request) => {
     const bearer = request.headers.get("Bearer");
@@ -109,21 +106,14 @@ export const isAuthed = () =>
   });
 ```
 
-Here, we have defined a very basic function that returns a bearer token, if a valid one exists, otherwise an error response is returned.
+Our middleware simply returns any state updates and requires no bespoke API calls like `next()`, nor can we modify the immutable `request` object.
+
+Learn more about what can be achieved by different [middleware return types](/docs/building-apps/middleware#middleware-effects).
 
 <Callout title="defineMiddleware is optional">
   Note that `defineMiddleware` is not doing anything special under the hood. It
   is used to ensure your middleware has compatible parameter and return types.
 </Callout>
-
-<Accordions>
-  <Accordion title="What can middleware return?">
-    Any function provided to `.use()` can return one of three things. A regular
-    object will _shallow update_ the request context's `state` property. A
-    `Response` will terminate the request early. And a response handler `(res:
-    Response) => Response` can listen to and optionally modify responses.
-  </Accordion>
-</Accordions>
 
 ### 2. Register Middleware on Routes
 
@@ -139,7 +129,7 @@ const createPostRoute = authedRoute.path("/post").handle((req, c) => {
 // ...snip
 ```
 
-Any route handlers that extend off `authedRoute` will now have type-safe access to a `token`.
+The `.state` property of our requet context, `c`, houses all the data returned from any middleware on the way to our request handler. Because webroutes are immutable, we can reuse our base routes and maintain independent state between them. By using this pattern, our middleware is automatically type-safe with no extra work.
 
 ## Routing
 
