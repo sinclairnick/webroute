@@ -37,7 +37,7 @@ importers:
         specifier: ^2.0.11
         version: 2.0.14
       typescript:
-        specifier: ^5.4.5
+        specifier: ^5.5.0
         version: 5.5.4
 
   docs:
@@ -122,20 +122,20 @@ importers:
   examples/full:
     dependencies:
       '@sinclair/typebox':
-        specifier: ^0.32.31
+        specifier: ^0.32.35
         version: 0.32.35
       '@webroute/client':
         specifier: latest
         version: 0.27.0
       '@webroute/middleware':
         specifier: latest
-        version: 0.9.0
+        version: 0.10.0
       '@webroute/oas':
         specifier: latest
         version: 0.5.0
       '@webroute/route':
         specifier: latest
-        version: 0.6.0
+        version: 0.7.0
       '@webroute/router':
         specifier: latest
         version: 0.4.0
@@ -143,21 +143,21 @@ importers:
         specifier: latest
         version: 0.5.0
       axios:
-        specifier: ^1.7.2
-        version: 1.7.4
+        specifier: ^1.7.5
+        version: 1.7.5
       typescript:
         specifier: ^5.0.0
         version: 5.5.4
       zod:
-        specifier: ^3.22.4
+        specifier: ^3.23.8
         version: 3.23.8
     devDependencies:
       '@types/bun':
         specifier: latest
         version: 1.1.8
       bun:
-        specifier: ^1.1.13
-        version: 1.1.24
+        specifier: ^1.1.26
+        version: 1.1.26
       vitest:
         specifier: ^1.6.0
         version: 1.6.0(@types/node@20.15.0)
@@ -241,7 +241,7 @@ importers:
         specifier: workspace:*
         version: link:../common
       '@webroute/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       openapi3-ts:
         specifier: ^4.3.2
@@ -251,10 +251,10 @@ importers:
         version: 1.3.0
     devDependencies:
       '@webroute/client':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../client
       '@webroute/route':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../route
       tsup:
         specifier: ^8.0.1
@@ -272,10 +272,10 @@ importers:
         specifier: workspace:*
         version: link:../common
       '@webroute/middleware':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../middleware
       '@webroute/schema':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../schema
       debug:
         specifier: ^4.3.4
@@ -760,12 +760,6 @@ packages:
   '@hapi/topo@5.1.0':
     resolution: {integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg==}
 
-  '@hattip/compose@0.0.45':
-    resolution: {integrity: sha512-Xrxk2kx6htAoR/fBQEnhhqfjBdHFBi2UtiFuhD6qSSwEaD2jTGkyDzYAmVqPIO0ZSvIlIBBpGKdXip4JhdBMww==}
-
-  '@hattip/core@0.0.45':
-    resolution: {integrity: sha512-4BK9dPU7sLvmP9sUq048uSaKFvQY2Qa6D0xQteQBIiDYuTdbopcUQLETM1sdkUeUtFxHPwPu/NclfJAC5INarw==}
-
   '@isaacs/cliui@8.0.2':
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
     engines: {node: '>=12'}
@@ -870,43 +864,43 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@oven/bun-darwin-aarch64@1.1.24':
-    resolution: {integrity: sha512-tT4omX5C9X4tlS0uLiypb6uECTbKjg3/dRNBjAROyL8tLJdndNR0SksfS7IQz0vD4zzifk98ZEsDML4gt+LFgQ==}
+  '@oven/bun-darwin-aarch64@1.1.26':
+    resolution: {integrity: sha512-E8/3i0RIvsIWS+kyeIlbwBh+4qB5DsQIfcO6xr4p3t7tEzvRWnrFkJrbJthru/eB1UsVV9PJ/hsxTrp3m3za4A==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oven/bun-darwin-x64-baseline@1.1.24':
-    resolution: {integrity: sha512-jp7VhUDNA58scDHF8CKSClUdeWmWGiCWwxcrqs/81jNiARKCb+wjy+nEXWjc8KOB45NAhGaB3BBbl6EM3GzIDw==}
+  '@oven/bun-darwin-x64-baseline@1.1.26':
+    resolution: {integrity: sha512-36HQlQfbrwP//xOS5VFN9AR/iH6BDQo3y8j5282DmRO+h6jylwlg+2+Sfz+1uXDOLDQWCbnNv3Mpl8+Ltso6cQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@oven/bun-darwin-x64@1.1.24':
-    resolution: {integrity: sha512-jSt9jL0mE1zh/8OEWR6fdnGaDF8iWnMwd2a4N2qRuWcr8/QCEjvfK4iJPaJ6f8W06z01CxO5+O4pMF94s6z3pw==}
+  '@oven/bun-darwin-x64@1.1.26':
+    resolution: {integrity: sha512-ENRAAGBr2zh0VfETZXqcNPO3ZnnKDX3U6E/oWY+J70uWa9dJqRlRaj1oLB63AGoYJBNdhEcsSmTAk7toCJ+PGQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@oven/bun-linux-aarch64@1.1.24':
-    resolution: {integrity: sha512-yw/OHSEqygnWJelfuXJP3hSjNVzJ7adxL/Z9vxQPMYi7c7zdfMiggoH9V4U1VIcggfoMH1Gfc5lVpKowuJsSBA==}
+  '@oven/bun-linux-aarch64@1.1.26':
+    resolution: {integrity: sha512-MqE/ClaEMW6B5i5UIYJnHbadWLt6QQQHV3NBlXd78Mhx1OiZY0YmARQmAItPUp9mxIEgGuA2QyrKvgGD3pzWPQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@oven/bun-linux-x64-baseline@1.1.24':
-    resolution: {integrity: sha512-L2p9MOY7ug1RzaMYcAknEefMPw+w0LPR9qv780G/SO0uBe1JGl3IzO6/hsPnjj65uT/nNuR+YJXeZbH6p1iwfQ==}
+  '@oven/bun-linux-x64-baseline@1.1.26':
+    resolution: {integrity: sha512-jQeSLodwfQu5pG529jYG73VSFq26hdrTspxo9E/1B1WvwKrs2Vtz3w32zv+JWH+gvZqc28A/yK6pAmzQMiscNg==}
     cpu: [x64]
     os: [linux]
 
-  '@oven/bun-linux-x64@1.1.24':
-    resolution: {integrity: sha512-U8j716mLJFG5KsFypWgE+uNULo3Y5R0tgP7vEPnPAL4lvwt7IM4Jg1LyxzcEm0jDVrJU3TNaYsu4bsxVVAxmSg==}
+  '@oven/bun-linux-x64@1.1.26':
+    resolution: {integrity: sha512-sD/ZegJpnBg93qsKsiGnJgTROc68CWONwZpvtL65cBROLBqKb965ofhPUaM5oV8HckfaTDmT37cks59hG+tHvw==}
     cpu: [x64]
     os: [linux]
 
-  '@oven/bun-windows-x64-baseline@1.1.24':
-    resolution: {integrity: sha512-Yznr5LJb8Q3MoyG9dM3UosnJSHwOe8AL1AA9fpkVC+TdTl6lmXxjk6JUsE4THQDloRYGN9eqpLLJbK7O6t0aUQ==}
+  '@oven/bun-windows-x64-baseline@1.1.26':
+    resolution: {integrity: sha512-qb593xu9WIKBCHd47z7ZaZTC9h8r4T6qDbBV/XGLhxdZEJb24ePWdhW8WoHxa9hsATio9SByozqwblXb2tJncw==}
     cpu: [x64]
     os: [win32]
 
-  '@oven/bun-windows-x64@1.1.24':
-    resolution: {integrity: sha512-8DWCMsavfxAYuJRMRV5M8Tkhttjh/vJo9DEIEBVOfKbKQHoqOnlmXgK7FBPNTqyVzKpmv+W80bTrRoxlnTnk7A==}
+  '@oven/bun-windows-x64@1.1.26':
+    resolution: {integrity: sha512-EkyW6JYnZPFxD9XsdEDqFxVCnWnAoyacUAiOEUYAiz8LsnbHLMlOfbdw7KYzvm7UPFoEkUZKD78eSdpg6q6c+Q==}
     cpu: [x64]
     os: [win32]
 
@@ -1606,24 +1600,18 @@ packages:
   '@webroute/common@1.1.0':
     resolution: {integrity: sha512-kVPJQR4o+MKxiqZFmKh3RRShq5JOrnOA4lLMalt8tciyqZDeOE/FtOXHxF0MDB8kFteVk9rxZko5LtrWVDU3CA==}
 
-  '@webroute/middleware@0.8.0':
-    resolution: {integrity: sha512-OKVOnzClDDvALBS3wbgNHRo+gDGmvquj8ey09r6he/6R6DcVyBdjOs6tW5lp+puSzAjsYFTUaBjaIJvw8IaXnA==}
-
-  '@webroute/middleware@0.9.0':
-    resolution: {integrity: sha512-KECzsFrxadVRpZYfA4W4xElANOAucOigrAN8g/7BEHTFL8tIcT2xZ0SzxpSY07foGbBbipq7GLC0hrfauNuoKQ==}
+  '@webroute/middleware@0.10.0':
+    resolution: {integrity: sha512-285RwsPEdolb6anbB81qrWjSm59ExSeo3f0GpSXYWcf9uelP8Ih88IKavPXao+QLvVWRow5drbGy/SuULEkjBg==}
 
   '@webroute/oas@0.5.0':
     resolution: {integrity: sha512-BuBzSPhgKBQMYVx5dNfLkFghuUolb/Zssk/ChIFr9ioH9jTynRxZtJDpa9qmiPucq9OPFMAOvUUl8vsh3gr1IQ==}
 
-  '@webroute/route@0.6.0':
-    resolution: {integrity: sha512-w4XMPRdLjuqpRiGrPfzpIuhtlXLX2NuClWMq3pRAqdRxlj2ZVJeulzSqDR5eSe7vyxl1DLUTfIQnt/1g7prfKg==}
+  '@webroute/route@0.7.0':
+    resolution: {integrity: sha512-cfse20+ftucrFTnhxVcir14hRaJjbceTU56fKH69XXDHemspzMKNz9VOLYIpO3U90IYYc4O7MblQoQZnIlzs0w==}
     engines: {node: ^20.0.0}
 
   '@webroute/router@0.4.0':
     resolution: {integrity: sha512-A//kx4i1NQPYSNj6vY79fAU2LtFYWcQCsYl/9q1ewZGnqqVETTBJ3STC54zwhCD8vfTX/kLRDxVbqq/tgOQw4g==}
-
-  '@webroute/schema@0.4.0':
-    resolution: {integrity: sha512-ZRv2jAuACvaR/j7syVB0HEwnQocqfLJZwqamUJjb0ymLpnkD70kZFgUzxEsz8TX31clr+owdTGSBcJoz5d8AhQ==}
 
   '@webroute/schema@0.5.0':
     resolution: {integrity: sha512-35ye3JQEZLpXpCbeMOjpOzJtITdkVGJqe/7ziWb7ZLCHtXYATV11TfL8mcYWO+9r/UT0njt2ROKC1csL2PHFYQ==}
@@ -1711,8 +1699,8 @@ packages:
     peerDependencies:
       postcss: ^8.1.0
 
-  axios@1.7.4:
-    resolution: {integrity: sha512-DukmaFRnY6AzAALSH4J2M3k6PkaC+MfaAGdEERRWcC9q3/TWQwLpHR8ZRLKTdQ3aBDL64EdluRDjJqKw+BPZEw==}
+  axios@1.7.5:
+    resolution: {integrity: sha512-fZu86yCo+svH3uqJ/yTdQ0QHpQu5oL+/QE+QPSv6BZSkDAoky9vytxp7u5qk83OJFS3kEBcesWni9WTZAv3tSw==}
 
   bail@2.0.2:
     resolution: {integrity: sha512-0xO6mYd7JB2YesxDKplafRpsiOzPt9V02ddPCLbY1xYGPOX24NTyN50qnUxgCPcSoYMhKpAuBTjQoRZCAkUDRw==}
@@ -1749,9 +1737,8 @@ packages:
   bun-types@1.1.26:
     resolution: {integrity: sha512-n7jDe62LsB2+WE8Q8/mT3azkPaatKlj/2MyP6hi3mKvPz9oPpB6JW/Ll6JHtNLudasFFuvfgklYSE+rreGvBjw==}
 
-  bun@1.1.24:
-    resolution: {integrity: sha512-vZt5zNVaoNTSlNprdVdQVZInBcGC2QSik6o9ZsMzuYiiUEAEqpRwwMXAYDUN85mt2FNnsGvmk/8xVlUXS7IzEw==}
-    cpu: [arm64, x64]
+  bun@1.1.26:
+    resolution: {integrity: sha512-dWSewAqE7sVbYmflJxgG47dW4vmsbar7VAnQ4ao45y3ulr3n7CwdsMLFnzd28jhPRtF+rsaVK2y4OLIkP3OD4A==}
     os: [darwin, linux, win32]
     hasBin: true
 
@@ -2240,6 +2227,10 @@ packages:
 
   hono@4.5.6:
     resolution: {integrity: sha512-9SuUC/zLQv8YAcnIxJko0KCeLI0Q6menPsDWuJ9jaH+r8ZkVXeLqeLs1QJXCPKKbURAWj9x0SJBSFh803EnAUw==}
+    engines: {node: '>=16.0.0'}
+
+  hono@4.5.8:
+    resolution: {integrity: sha512-pqpSlcdqGkpTTRpLYU1PnCz52gVr0zVR9H5GzMyJWuKQLLEBQxh96q45QizJ2PPX8NATtz2mu31/PKW/Jt+90Q==}
     engines: {node: '>=16.0.0'}
 
   hosted-git-info@7.0.2:
@@ -4114,14 +4105,6 @@ snapshots:
       '@hapi/hoek': 9.3.0
     optional: true
 
-  '@hattip/compose@0.0.45':
-    dependencies:
-      '@hattip/core': 0.0.45
-    optional: true
-
-  '@hattip/core@0.0.45':
-    optional: true
-
   '@isaacs/cliui@8.0.2':
     dependencies:
       string-width: 5.1.2
@@ -4237,28 +4220,28 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.17.1
 
-  '@oven/bun-darwin-aarch64@1.1.24':
+  '@oven/bun-darwin-aarch64@1.1.26':
     optional: true
 
-  '@oven/bun-darwin-x64-baseline@1.1.24':
+  '@oven/bun-darwin-x64-baseline@1.1.26':
     optional: true
 
-  '@oven/bun-darwin-x64@1.1.24':
+  '@oven/bun-darwin-x64@1.1.26':
     optional: true
 
-  '@oven/bun-linux-aarch64@1.1.24':
+  '@oven/bun-linux-aarch64@1.1.26':
     optional: true
 
-  '@oven/bun-linux-x64-baseline@1.1.24':
+  '@oven/bun-linux-x64-baseline@1.1.26':
     optional: true
 
-  '@oven/bun-linux-x64@1.1.24':
+  '@oven/bun-linux-x64@1.1.26':
     optional: true
 
-  '@oven/bun-windows-x64-baseline@1.1.24':
+  '@oven/bun-windows-x64-baseline@1.1.26':
     optional: true
 
-  '@oven/bun-windows-x64@1.1.24':
+  '@oven/bun-windows-x64@1.1.26':
     optional: true
 
   '@pkgjs/parseargs@0.11.0':
@@ -4946,19 +4929,11 @@ snapshots:
 
   '@webroute/common@1.1.0': {}
 
-  '@webroute/middleware@0.8.0':
+  '@webroute/middleware@0.10.0':
     dependencies:
       '@webroute/common': 1.0.0
     optionalDependencies:
-      '@hattip/compose': 0.0.45
-      hono: 4.5.6
-
-  '@webroute/middleware@0.9.0':
-    dependencies:
-      '@webroute/common': 1.0.0
-    optionalDependencies:
-      '@hattip/compose': 0.0.45
-      hono: 4.5.6
+      hono: 4.5.8
 
   '@webroute/oas@0.5.0':
     dependencies:
@@ -4967,11 +4942,11 @@ snapshots:
       openapi3-ts: 4.3.3
       scule: 1.3.0
 
-  '@webroute/route@0.6.0':
+  '@webroute/route@0.7.0':
     dependencies:
       '@webroute/common': 1.0.0
-      '@webroute/middleware': 0.8.0
-      '@webroute/schema': 0.4.0
+      '@webroute/middleware': 0.10.0
+      '@webroute/schema': 0.5.0
       debug: 4.3.6
     transitivePeerDependencies:
       - supports-color
@@ -4980,16 +4955,6 @@ snapshots:
     dependencies:
       radix3: 1.1.2
       urlpattern-polyfill: 10.0.0
-
-  '@webroute/schema@0.4.0':
-    optionalDependencies:
-      '@sinclair/typebox': 0.32.35
-      joi: 17.13.3
-      runtypes: 6.7.0
-      superstruct: 1.0.4
-      valibot: 0.31.0-rc.0
-      yup: 1.4.0
-      zod: 3.23.8
 
   '@webroute/schema@0.5.0':
     optionalDependencies:
@@ -5066,7 +5031,7 @@ snapshots:
       postcss: 8.4.41
       postcss-value-parser: 4.2.0
 
-  axios@1.7.4:
+  axios@1.7.5:
     dependencies:
       follow-redirects: 1.15.6
       form-data: 4.0.0
@@ -5114,16 +5079,16 @@ snapshots:
       '@types/node': 20.12.14
       '@types/ws': 8.5.12
 
-  bun@1.1.24:
+  bun@1.1.26:
     optionalDependencies:
-      '@oven/bun-darwin-aarch64': 1.1.24
-      '@oven/bun-darwin-x64': 1.1.24
-      '@oven/bun-darwin-x64-baseline': 1.1.24
-      '@oven/bun-linux-aarch64': 1.1.24
-      '@oven/bun-linux-x64': 1.1.24
-      '@oven/bun-linux-x64-baseline': 1.1.24
-      '@oven/bun-windows-x64': 1.1.24
-      '@oven/bun-windows-x64-baseline': 1.1.24
+      '@oven/bun-darwin-aarch64': 1.1.26
+      '@oven/bun-darwin-x64': 1.1.26
+      '@oven/bun-darwin-x64-baseline': 1.1.26
+      '@oven/bun-linux-aarch64': 1.1.26
+      '@oven/bun-linux-x64': 1.1.26
+      '@oven/bun-linux-x64-baseline': 1.1.26
+      '@oven/bun-windows-x64': 1.1.26
+      '@oven/bun-windows-x64-baseline': 1.1.26
 
   bundle-require@5.0.0(esbuild@0.23.1):
     dependencies:
@@ -5739,6 +5704,9 @@ snapshots:
       '@types/hast': 3.0.4
 
   hono@4.5.6: {}
+
+  hono@4.5.8:
+    optional: true
 
   hosted-git-info@7.0.2:
     dependencies:
