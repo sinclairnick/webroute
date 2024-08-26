@@ -1,7 +1,7 @@
 {
   "name": "@webroute/client",
   "description": "Unopinionated utilities for interacting with REST APIs on the client-side",
-  "version": "0.26.0",
+  "version": "0.27.0",
   "author": {
     "name": "Nick Sinclair",
     "email": "nicksinclair@xtra.co.nz",

@@ -17,7 +17,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
-  "private": false,
+  "private": true,
   "repository": "https://github.com/sinclairnick/webroute",
   "scripts": {
     "build": "tsup",
