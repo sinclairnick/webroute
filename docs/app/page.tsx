@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Webroute",
-  description: "Rethinking APIs, from the route up.",
+  description: "Web APIs, from the route up.",
 };
 
 export default function HomePage() {
