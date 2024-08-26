@@ -8,7 +8,7 @@ import pkg from "../package.json";
 program
   .version(pkg.version)
   .description("Initialize a webroute app")
-  .argument("<dest>", "Destination folder")
+  .argument("[dest]", "Destination folder")
   .action(async (dest, opts) => {
     intro(pc.bold("Create Webroute App"));
 
