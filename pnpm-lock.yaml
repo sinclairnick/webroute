@@ -122,7 +122,7 @@ importers:
   examples/full:
     dependencies:
       '@sinclair/typebox':
-        specifier: ^0.32.35
+        specifier: ^0.32.31
         version: 0.32.35
       '@webroute/client':
         specifier: latest
@@ -143,20 +143,20 @@ importers:
         specifier: latest
         version: 0.5.0
       axios:
-        specifier: ^1.7.5
+        specifier: ^1.7.2
         version: 1.7.5
       typescript:
         specifier: ^5.0.0
         version: 5.5.4
       zod:
-        specifier: ^3.23.8
+        specifier: ^3.22.4
         version: 3.23.8
     devDependencies:
       '@types/bun':
         specifier: latest
         version: 1.1.8
       bun:
-        specifier: ^1.1.26
+        specifier: ^1.1.13
         version: 1.1.26
       vitest:
         specifier: ^1.6.0
@@ -193,7 +193,7 @@ importers:
   packages/create-app:
     dependencies:
       '@clack/prompts':
-        specifier: ^0.7.0
+        specifier: 0.7.0
         version: 0.7.0
       '@commander-js/extra-typings':
         specifier: ^12.1.0
@@ -1739,7 +1739,6 @@ packages:
 
   bun@1.1.26:
     resolution: {integrity: sha512-dWSewAqE7sVbYmflJxgG47dW4vmsbar7VAnQ4ao45y3ulr3n7CwdsMLFnzd28jhPRtF+rsaVK2y4OLIkP3OD4A==}
-    cpu: [arm64, x64]
     os: [darwin, linux, win32]
     hasBin: true
 

@@ -1,7 +1,7 @@
 {
   "name": "create-webroute-app",
   "description": "",
-  "version": "0.4.0",
+  "version": "0.6.0",
   "author": {
     "name": "Nick Sinclair",
     "email": "nicksinclair@xtra.co.nz",
@@ -10,7 +10,7 @@
   "bin": "dist/index.mjs",
   "bugs": "https://github.com/sinclairnick/webroute/issues",
   "dependencies": {
-    "@clack/prompts": "^0.7.0",
+    "@clack/prompts": "0.7.0",
     "@commander-js/extra-typings": "^12.1.0",
     "commander": "^12.1.0",
     "detect-package-manager": "^3.0.2",
