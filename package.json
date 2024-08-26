@@ -1,6 +1,7 @@
 {
   "name": "root",
   "devDependencies": {
+    "@changesets/cli": "^2.27.7",
     "pkg-types": "^1.1.1",
     "syncpack": "^12.3.2",
     "turbo": "^2.0.11",
