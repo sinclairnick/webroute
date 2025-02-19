@@ -32,6 +32,9 @@ OpenAPI
 </a>
 </div>
 
+> [!WARNING]  
+> This project has been succeeded by a much simpler and better approach, called [Midwinter.js](https://github.com/sinclairnick/midwinter.js).
+
 ## Overview
 
 Webroute helps you build self-sufficient, web-standard routes that have everything they need: path, method, I/O shape and validation, middleware and request handler.
